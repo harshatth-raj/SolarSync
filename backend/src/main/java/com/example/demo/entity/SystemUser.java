@@ -1,22 +1,17 @@
 import jakarta.annotation.Generated;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
 import jakarta.persistence.*;
 
 @Entity
 @Table(name="system_users")
 
-public class Systemuser{
+public class SystemUser{
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
 
+
+        @Column(unique= true)
     private Long id;
-    @Column(unique= true)
+
 
     private String username;
     private String password;
@@ -26,6 +21,14 @@ public class Systemuser{
        public SystemUser(){
 
     }
+
+    public Long getId(){
+        return id;
+    }
+    public void setId(Long id){
+        this.id=id;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -64,12 +67,6 @@ public class Systemuser{
 
  
 
-    public Long getId(){
-        return id;
-    }
-    public void setId(Long id){
-        this.id=id;
-    }
-
+    
     
 }
