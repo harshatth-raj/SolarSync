@@ -23,6 +23,11 @@ public class SystemUser{
 
        public SystemUser(){
 
+
+    }
+
+    public SystemUser(){
+        
     }
 
     public Long getId(){
