@@ -1,7 +1,9 @@
 package com.example.demo.repository;
 
-import org.springframework.;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public class SystemUserRepository {
+import com.example.demo.entity.SystemUser;
+
+public interface SystemUserRepository extends JpaRepository<SystemUser, Long> {
     
 }
