@@ -26,7 +26,7 @@ public class SystemUser{
 
     }
 
-    public SystemUser(Long id,String username,String password,String email,){
+    public SystemUser(Long id,String username,String password,String email,Role user){
          this.id=id;
          this.username=username;
          this.password=password;
