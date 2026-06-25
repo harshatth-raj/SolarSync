@@ -9,7 +9,9 @@ public class RegisterDto {
     private String username;
     @NotBlank
     private String password;
+    @NotBlank
     private String email;
+    @NotBlank
     private Role user;
 
     public String getUsername() {
