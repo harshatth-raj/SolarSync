@@ -2,16 +2,13 @@ package com.example.demo.dto;
 
 import com.example.demo.enums.Role;
 
-import jakarta.validation.constraints.NotBlank;
+
 
 public class RegisterDto {
-    @NotBlank
+
     private String username;
-    @NotBlank
     private String password;
-    @NotBlank
     private String email;
-    @NotBlank
     private Role user;
 
     public String getUsername() {
