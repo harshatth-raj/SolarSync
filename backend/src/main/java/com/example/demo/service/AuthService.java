@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.RegisterDto;
+import com.example.demo.entity.SystemUser;
 import com.example.demo.repository.SystemUserRepository;
 
 public class AuthService {
@@ -10,6 +12,8 @@ public class AuthService {
 
     }
 
-    public SystemUser
+    public SystemUser createUser(RegisterDto dto){
+        SystemUser user =new SystemUser();
+    }
  
 }
