@@ -13,6 +13,6 @@ public class UserController {
     }
 
     public SystemUser createUser(@RequestBody RegisterDto dto){
-        return service
+        return service.createUser(dto);
     }
 }
