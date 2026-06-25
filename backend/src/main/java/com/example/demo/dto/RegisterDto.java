@@ -8,8 +8,11 @@ public class RegisterDto {
     private String email;
     private Role user;
 
-    public RegisterDto(String username,Str){
-
+    public RegisterDto(String username,String password,String email,Role user ){
+       this.username=username;
+       this.password=password;
+       this.email=email;
+       
 }
 
 }
