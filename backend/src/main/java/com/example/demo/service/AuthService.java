@@ -14,6 +14,10 @@ public class AuthService {
 
     public SystemUser createUser(RegisterDto dto){
         SystemUser user =new SystemUser();
+
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        use
     }
  
 }
