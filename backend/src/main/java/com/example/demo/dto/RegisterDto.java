@@ -1,5 +1,8 @@
 package com.example.demo.dto;
 
 public class RegisterDto {
-    private 
+    private String email;
+    private String password;
+    private String username;
+    
 }
