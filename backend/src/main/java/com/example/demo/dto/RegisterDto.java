@@ -7,4 +7,7 @@ public class RegisterDto {
     private String password;
     private String username;
     private Role user;
+
+    public RegisterDto
+
 }
