@@ -1,5 +1,6 @@
 package com.example.demo.enums;
 
-public class Role {
-    
+public enum Role {
+    SYSTEM_ADMINISTRATOR,
+    SOLAR 
 }
