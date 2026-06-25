@@ -26,8 +26,8 @@ public class SystemUser{
 
     }
 
-    public SystemUser(){
-        
+    public SystemUser(Long id,String username,String password,String email){
+
     }
 
     public Long getId(){
