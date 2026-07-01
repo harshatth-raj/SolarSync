@@ -1,8 +1,12 @@
 package com.example.demo.service;
 
+import org.springframework.stereotype.Service;
+
 import com.example.demo.dto.RegisterDto;
 import com.example.demo.entity.SystemUser;
 import com.example.demo.repository.SystemUserRepository;
+
+@Service
 
 public class AuthService {
     public final SystemUserRepository repo;
