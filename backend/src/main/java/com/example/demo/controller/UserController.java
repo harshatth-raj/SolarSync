@@ -19,7 +19,7 @@ public class UserController {
         this.service=service;
     }
 
-    @PostMapping("r")
+    @PostMapping("register")
     public SystemUser createUser(@RequestBody RegisterDto dto){
         return service.createUser(dto);
     }
