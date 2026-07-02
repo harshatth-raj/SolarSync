@@ -32,5 +32,26 @@ public class AuthService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getUser'");
     }
+
+       public SystemUser UpdateUser(Long id,RegisterDto dto){
+        SystemUser user=getUser(id);
+
+        user.setUsername(dto.getUsername());
+    
+        user.setPassword(dto.getPassword());
+        user.setEmail(dto.getEmail());
+        user.setRole(dto.getRole());
+        
+
+                return repo.save(user);
+        
+    }
+
+    public void DeleteUser(Long id){
+        SystemUser existingUser = getUser(id);
+        repo.delete(existingUser);
+    }
+}
+
  
 }
