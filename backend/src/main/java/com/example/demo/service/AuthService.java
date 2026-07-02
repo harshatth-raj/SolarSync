@@ -27,5 +27,10 @@ public class AuthService {
         return repo.save(user);
 
     }
+
+    public SystemUser getUser(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUser'");
+    }
  
 }
