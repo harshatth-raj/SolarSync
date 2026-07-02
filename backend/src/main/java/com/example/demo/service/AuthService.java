@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.RegisterDto;
@@ -32,6 +34,14 @@ public class AuthService {
     //     // TODO Auto-generated method stub
     //     throw new UnsupportedOperationException("Unimplemented method 'getUser'");
     // }
+
+
+        public List<SystemUser>getAllUsers(){
+        return repo.findAll();
+    }
+    public SystemUser getUser(Long id){
+        return repo.findById(id).orElseThrow(()-> new RuntimeException("User not found"));
+    }
 
        public SystemUser UpdateUser(Long id,RegisterDto dto){
         SystemUser user=getUser(id);
