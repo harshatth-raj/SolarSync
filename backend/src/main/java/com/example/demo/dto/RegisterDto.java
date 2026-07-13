@@ -1,31 +1,38 @@
 package com.example.demo.dto;
 
 import com.example.demo.enums.Role;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class RegisterDto {
 
-    @NotBlank
+    @NotBlank(message = "Username is required")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Password is required")
     private String password;
 
-    @Email
-    @NotBlank
+    @Email(message = "Invalid email")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    private Role user;
+    @NotNull(message = "Role is required")
+    private Role role;
 
     public RegisterDto() {
     }
 
-    public RegisterDto(String username, String password, String email, Role user) {
+    public RegisterDto(String username,
+                       String password,
+                       String email,
+                       Role role) {
+
         this.username = username;
         this.password = password;
         this.email = email;
-        this.user = user;
+        this.role = role;
     }
 
     public String getUsername() {
@@ -52,11 +59,11 @@ public class RegisterDto {
         this.email = email;
     }
 
-    public Role getUser() {
-        return user;
+    public Role getRole() {
+        return role;
     }
 
-    public void setUser(Role user) {
-        this.user = user;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
