@@ -13,8 +13,8 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtils {
 
     // Minimum 256-bit secret (Base64 encoded)
-    private static final String SECRET_KEY =
-            "U29sYXJTeW5jU3VwZXJTZWNyZXRLZXlGb3JKV1RUZXN0MTIzNDU2Nzg5";
+private static final String SECRET_KEY =
+"VGhpc0lzQVNlY3VyZVNvbGFyU3luY0pXVFNlY3JldEtleUZvclNwcmluZ0Jvb3Qz";
 
     private static final long JWT_EXPIRATION = 1000 * 60 * 60 * 24;
 
