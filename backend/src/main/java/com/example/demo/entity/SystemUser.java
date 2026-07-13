@@ -1,45 +1,54 @@
 package com.example.demo.entity;
 
 import com.example.demo.enums.Role;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name="system_users")
+@Table(name = "system_users")
+public class SystemUser {
 
-public class SystemUser{
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-
-
-        @Column(unique= true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    @NotBlank
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @JsonIgnore
+    @NotBlank
+    @Column(nullable = false)
     private String password;
+
+    @Email
+    @NotBlank
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role user;
 
-       public SystemUser(){
-
-
+    public SystemUser() {
     }
 
-    public SystemUser(Long id,String username,String password,String email,Role user){
-         this.id=id;
-         this.username=username;
-         this.password=password;
-         this.email=email;
-         this.user=user;
-
+    public SystemUser(Long id, String username, String password, String email, Role user) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.user = user;
     }
 
-    public Long getId(){
+    public Long getId() {
         return id;
     }
-    public void setId(Long id){
-        this.id=id;
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -73,13 +82,4 @@ public class SystemUser{
     public void setUser(Role user) {
         this.user = user;
     }
-    
-    @Enumerated(EnumType.STRING)
-    private Role user;
-
-
- 
-
-    
-    
 }
