@@ -14,33 +14,33 @@ public class SystemUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(nullable = false, unique = true)
+    @NotBlank(message = "Username is required")
+    @Column(unique = true, nullable = false)
     private String username;
 
     @JsonIgnore
-    @NotBlank
+    @NotBlank(message = "Password is required")
     @Column(nullable = false)
     private String password;
 
-    @Email
-    @NotBlank
-    @Column(nullable = false, unique = true)
+    @Email(message = "Invalid email")
+    @NotBlank(message = "Email is required")
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role user;
+    private Role role;
 
     public SystemUser() {
     }
 
-    public SystemUser(Long id, String username, String password, String email, Role user) {
+    public SystemUser(Long id, String username, String password, String email, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.user = user;
+        this.role = role;
     }
 
     public Long getId() {
@@ -75,11 +75,11 @@ public class SystemUser {
         this.email = email;
     }
 
-    public Role getUser() {
-        return user;
+    public Role getRole() {
+        return role;
     }
 
-    public void setUser(Role user) {
-        this.user = user;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
