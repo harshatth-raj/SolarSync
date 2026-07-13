@@ -1,14 +1,22 @@
 package com.example.demo.entity;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.example.demo.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "system_users")
-public class SystemUser {
+public class SystemUser implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +43,12 @@ public class SystemUser {
     public SystemUser() {
     }
 
-    public SystemUser(Long id, String username, String password, String email, Role role) {
+    public SystemUser(Long id,
+                      String username,
+                      String password,
+                      String email,
+                      Role role) {
+
         this.id = id;
         this.username = username;
         this.password = password;
@@ -51,6 +64,7 @@ public class SystemUser {
         this.id = id;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
@@ -59,6 +73,7 @@ public class SystemUser {
         this.username = username;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
@@ -82,4 +97,38 @@ public class SystemUser {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    // ===============================
+    // Spring Security Methods
+    // ===============================
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + role.name())
+        );
+
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

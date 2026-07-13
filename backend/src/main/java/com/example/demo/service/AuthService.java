@@ -2,10 +2,14 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.AuthRequestDto;
+import com.example.demo.dto.AuthResponseDto;
 import com.example.demo.dto.RegisterDto;
 import com.example.demo.entity.SystemUser;
 import com.example.demo.repository.SystemUserRepository;
@@ -14,58 +18,85 @@ import com.example.demo.repository.SystemUserRepository;
 @Transactional
 public class AuthService {
 
-    private final SystemUserRepository repo;
+    private final SystemUserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthService(SystemUserRepository repo, PasswordEncoder passwordEncoder) {
-        this.repo = repo;
+    public AuthService(
+            SystemUserRepository repository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            AuthenticationManager authenticationManager) {
+
+        this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
     }
 
-    // Create User
-    public SystemUser createUser(RegisterDto dto) {
+    // Register User
+    public SystemUser register(RegisterDto dto) {
+
+        if (repository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (repository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
 
         SystemUser user = new SystemUser();
 
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setEmail(dto.getEmail());
-        user.setUser(dto.getUser());
+        user.setRole(dto.getRole());
 
-        return repo.save(user);
+        return repository.save(user);
+    }
+
+    // Login User
+    public AuthResponseDto login(AuthRequestDto dto) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        dto.getUsername(),
+                        dto.getPassword()));
+
+        String token = jwtService.generateToken(dto.getUsername());
+
+        SystemUser user = repository.findByUsername(dto.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return new AuthResponseDto(
+                token,
+                user.getUsername(),
+                user.getRole().name());
     }
 
     // Get All Users
     @Transactional(readOnly = true)
     public List<SystemUser> getAllUsers() {
-        return repo.findAll();
+        return repository.findAll();
     }
 
     // Get User By Id
     @Transactional(readOnly = true)
-    public SystemUser getUser(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id : " + id));
-    }
+    public SystemUser getUserById(Long id) {
 
-    // Update User
-    public SystemUser UpdateUser(Long id, RegisterDto dto) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        SystemUser user = getUser(id);
-
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setEmail(dto.getEmail());
-        user.setUser(dto.getUser());
-
-        return repo.save(user);
     }
 
     // Delete User
     public void deleteUser(Long id) {
 
-        SystemUser user = getUser(id);
+        SystemUser user = getUserById(id);
 
-        repo.delete(user);
+        repository.delete(user);
+
     }
+
 }
