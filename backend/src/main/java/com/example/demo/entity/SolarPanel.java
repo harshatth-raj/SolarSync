@@ -1,79 +1,85 @@
 package com.example.demo.entity;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.demo.enums.PanelStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "solar_panels")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SolarPanel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(nullable = false)
-    private String panelSerialNumber;
-
-    @Column(nullable = false)
-    private Double capacity;
-
-    @NotBlank
-    @Column(nullable = false)
-    private String status;
-
     @ManyToOne
     @JoinColumn(name = "site_id", nullable = false)
+    @JsonBackReference
     private SolarSite site;
 
-    public SolarPanel() {
-    }
+    @Column(
+            name = "serial_number",
+            unique = true,
+            nullable = false
+    )
+    private String serialNumber;
 
-    public SolarPanel(Long id, String panelSerialNumber, Double capacity, String status, SolarSite site) {
-        this.id = id;
-        this.panelSerialNumber = panelSerialNumber;
-        this.capacity = capacity;
-        this.status = status;
-        this.site = site;
-    }
+    @Column(
+            name = "model_type",
+            nullable = false
+    )
+    private String modelType;
 
-    public Long getId() {
-        return id;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(
+            nullable = false,
+            columnDefinition = "VARCHAR(50)"
+    )
+    private PanelStatus status;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(
+            name = "installation_date",
+            nullable = false
+    )
+    private LocalDate installationDate;
 
-    public String getPanelSerialNumber() {
-        return panelSerialNumber;
-    }
+    @Builder.Default
+    @Column(
+            name = "usage_count",
+            nullable = false
+    )
+    private int usageCount = 0;
 
-    public void setPanelSerialNumber(String panelSerialNumber) {
-        this.panelSerialNumber = panelSerialNumber;
-    }
+    @OneToMany(
+            mappedBy = "panel",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonIgnore
+    @Builder.Default
+    private List<EnergyMetric> metrics = new ArrayList<>();
 
-    public Double getCapacity() {
-        return capacity;
-    }
+    @OneToMany(
+            mappedBy = "panel",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonIgnore
+    @Builder.Default
+    private List<MaintenanceTicket> tickets = new ArrayList<>();
 
-    public void setCapacity(Double capacity) {
-        this.capacity = capacity;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public SolarSite getSite() {
-        return site;
-    }
-
-    public void setSite(SolarSite site) {
-        this.site = site;
-    }
 }
