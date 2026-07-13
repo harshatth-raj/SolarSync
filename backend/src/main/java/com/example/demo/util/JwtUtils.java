@@ -2,19 +2,18 @@ package com.example.demo.util;
 
 import java.security.Key;
 import java.util.Date;
-
-import javax.crypto.SecretKey;
+import java.util.function.Function;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 public class JwtUtils {
 
-    // Minimum 256-bit secret (Base64 encoded)
-private static final String SECRET_KEY =
-"VGhpc0lzQVNlY3VyZVNvbGFyU3luY0pXVFNlY3JldEtleUZvclNwcmluZ0Jvb3Qz";
+    private static final String SECRET_KEY =
+            "VGhpc0lzQVNlY3VyZVNvbGFyU3luY0pXVFNlY3JldEtleUZvclNwcmluZ0Jvb3Qz";
 
     private static final long JWT_EXPIRATION = 1000 * 60 * 60 * 24;
 
@@ -22,34 +21,39 @@ private static final String SECRET_KEY =
     }
 
     private static Key getSigningKey() {
-
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-
-        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
-
-        return key;
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public static String generateToken(String username) {
 
         return Jwts.builder()
-
-                .subject(username)
-
-                .issuedAt(new Date())
-
-                .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
-
-                .signWith(getSigningKey())
-
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
-
     }
 
     public static String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 
-        return extractAllClaims(token).getSubject();
+    public static <T> T extractClaim(String token,
+                                     Function<Claims, T> claimsResolver) {
 
+        final Claims claims = extractAllClaims(token);
+
+        return claimsResolver.apply(claims);
+    }
+
+    public static Claims extractAllClaims(String token) {
+
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public static boolean validateToken(String token) {
@@ -65,21 +69,6 @@ private static final String SECRET_KEY =
             return false;
 
         }
-
-    }
-
-    public static Claims extractAllClaims(String token) {
-
-        return Jwts.parser()
-
-                .verifyWith((SecretKey) getSigningKey())
-
-                .build()
-
-                .parseSignedClaims(token)
-
-                .getPayload();
-
     }
 
 }
