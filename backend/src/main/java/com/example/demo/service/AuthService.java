@@ -2,63 +2,70 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.RegisterDto;
 import com.example.demo.entity.SystemUser;
 import com.example.demo.repository.SystemUserRepository;
 
 @Service
-
+@Transactional
 public class AuthService {
-    public final SystemUserRepository repo;
 
-    public AuthService(SystemUserRepository repo){
-        this.repo=repo;
+    private final SystemUserRepository repo;
+    private final PasswordEncoder passwordEncoder;
 
+    public AuthService(SystemUserRepository repo, PasswordEncoder passwordEncoder) {
+        this.repo = repo;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public SystemUser createUser(RegisterDto dto){
-        SystemUser user =new SystemUser();
+    // Create User
+    public SystemUser createUser(RegisterDto dto) {
 
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        SystemUser user = new SystemUser();
+
         user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setEmail(dto.getEmail());
         user.setUser(dto.getUser());
 
         return repo.save(user);
-
     }
 
-    // public SystemUser getUser(Long id) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getUser'");
-    // }
-
-
-        public List<SystemUser>getAllUsers(){
+    // Get All Users
+    @Transactional(readOnly = true)
+    public List<SystemUser> getAllUsers() {
         return repo.findAll();
     }
-    public SystemUser getUser(Long id){
-        return repo.findById(id).orElseThrow(()-> new RuntimeException("User not found"));
+
+    // Get User By Id
+    @Transactional(readOnly = true)
+    public SystemUser getUser(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id : " + id));
     }
 
-       public SystemUser UpdateUser(Long id,RegisterDto dto){
-        SystemUser user=getUser(id);
+    // Update User
+    public SystemUser UpdateUser(Long id, RegisterDto dto) {
+
+        SystemUser user = getUser(id);
 
         user.setUsername(dto.getUsername());
-    
-        user.setPassword(dto.getPassword());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setEmail(dto.getEmail());
         user.setUser(dto.getUser());
-        
 
-                return repo.save(user);
-        
+        return repo.save(user);
     }
 
-    public void DeleteUser(Long id){
-        SystemUser existingUser = getUser(id);
-        repo.delete(existingUser);
+    // Delete User
+    public void deleteUser(Long id) {
+
+        SystemUser user = getUser(id);
+
+        repo.delete(user);
     }
 }
