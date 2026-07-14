@@ -7,30 +7,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.SolarSite;
-import com.example.demo.service.SiteService;
+import com.example.demo.service.SiteManagementService;
 
 @RestController
 @RequestMapping("/api/sites")
 public class SiteController {
 
-    private final SiteService service;
+    private final SiteManagementService service;
 
-    public SiteController(SiteService service) {
+    public SiteController(SiteManagementService service) {
         this.service = service;
     }
 
     @PostMapping
     public ResponseEntity<SolarSite> createSite(@RequestBody SolarSite site) {
-        return new ResponseEntity<>(service.createSite(site), HttpStatus.CREATED);
+
+        SolarSite savedSite = service.createSite(site);
+
+        return new ResponseEntity<>(savedSite, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<SolarSite>> getAllSites() {
+
         return ResponseEntity.ok(service.getAllSites());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SolarSite> getSiteById(@PathVariable Long id) {
+
         return ResponseEntity.ok(service.getSiteById(id));
     }
 
@@ -39,7 +44,9 @@ public class SiteController {
             @PathVariable Long id,
             @RequestBody SolarSite site) {
 
-        return ResponseEntity.ok(service.updateSite(id, site));
+        SolarSite updatedSite = service.updateSite(id, site);
+
+        return ResponseEntity.ok(updatedSite);
     }
 
     @DeleteMapping("/{id}")
