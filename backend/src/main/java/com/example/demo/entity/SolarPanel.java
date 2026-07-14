@@ -9,17 +9,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "solar_panels")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class SolarPanel {
 
     @Id
@@ -31,55 +23,137 @@ public class SolarPanel {
     @JsonBackReference
     private SolarSite site;
 
-    @Column(
-            name = "serial_number",
-            unique = true,
-            nullable = false
-    )
+    @Column(name = "serial_number", unique = true, nullable = false)
     private String serialNumber;
 
-    @Column(
-            name = "model_type",
-            nullable = false
-    )
+    @Column(name = "model_type", nullable = false)
     private String modelType;
 
     @Enumerated(EnumType.STRING)
-    @Column(
-            nullable = false,
-            columnDefinition = "VARCHAR(50)"
-    )
+    @Column(nullable = false)
     private PanelStatus status;
 
-    @Column(
-            name = "installation_date",
-            nullable = false
-    )
+    @Column(name = "installation_date", nullable = false)
     private LocalDate installationDate;
 
-    @Builder.Default
-    @Column(
-            name = "usage_count",
-            nullable = false
-    )
+    @Column(name = "usage_count", nullable = false)
     private int usageCount = 0;
 
     @OneToMany(
             mappedBy = "panel",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+            orphanRemoval = true)
     @JsonIgnore
-    @Builder.Default
     private List<EnergyMetric> metrics = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "panel",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+            orphanRemoval = true)
     @JsonIgnore
-    @Builder.Default
     private List<MaintenanceTicket> tickets = new ArrayList<>();
 
+    public SolarPanel() {
+    }
+
+    public SolarPanel(Long id,
+                      SolarSite site,
+                      String serialNumber,
+                      String modelType,
+                      PanelStatus status,
+                      LocalDate installationDate,
+                      int usageCount,
+                      List<EnergyMetric> metrics,
+                      List<MaintenanceTicket> tickets) {
+
+        this.id = id;
+        this.site = site;
+        this.serialNumber = serialNumber;
+        this.modelType = modelType;
+        this.status = status;
+        this.installationDate = installationDate;
+        this.usageCount = usageCount;
+        this.metrics = metrics;
+        this.tickets = tickets;
+    }
+
+    // --------------------
+    // Getters
+    // --------------------
+
+    public Long getId() {
+        return id;
+    }
+
+    public SolarSite getSite() {
+        return site;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public String getModelType() {
+        return modelType;
+    }
+
+    public PanelStatus getStatus() {
+        return status;
+    }
+
+    public LocalDate getInstallationDate() {
+        return installationDate;
+    }
+
+    public int getUsageCount() {
+        return usageCount;
+    }
+
+    public List<EnergyMetric> getMetrics() {
+        return metrics;
+    }
+
+    public List<MaintenanceTicket> getTickets() {
+        return tickets;
+    }
+
+    // --------------------
+    // Setters
+    // --------------------
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setSite(SolarSite site) {
+        this.site = site;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public void setModelType(String modelType) {
+        this.modelType = modelType;
+    }
+
+    public void setStatus(PanelStatus status) {
+        this.status = status;
+    }
+
+    public void setInstallationDate(LocalDate installationDate) {
+        this.installationDate = installationDate;
+    }
+
+    public void setUsageCount(int usageCount) {
+        this.usageCount = usageCount;
+    }
+
+    public void setMetrics(List<EnergyMetric> metrics) {
+        this.metrics = metrics;
+    }
+
+    public void setTickets(List<MaintenanceTicket> tickets) {
+        this.tickets = tickets;
+    }
 }

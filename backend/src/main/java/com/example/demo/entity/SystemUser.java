@@ -43,18 +43,18 @@ public class SystemUser implements UserDetails {
     public SystemUser() {
     }
 
-    public SystemUser(Long id,
-                      String username,
-                      String password,
-                      String email,
-                      Role role) {
-
+    public SystemUser(Long id, String username, String password,
+                      String email, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
     }
+
+    // --------------------
+    // Getters & Setters
+    // --------------------
 
     public Long getId() {
         return id;
@@ -98,17 +98,15 @@ public class SystemUser implements UserDetails {
         this.role = role;
     }
 
-    // ===============================
-    // Spring Security Methods
-    // ===============================
+    // --------------------
+    // Spring Security
+    // --------------------
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         return List.of(
                 new SimpleGrantedAuthority("ROLE_" + role.name())
         );
-
     }
 
     @Override
