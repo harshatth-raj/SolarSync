@@ -38,11 +38,14 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
-                                "/api/auth/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**")
-                        .permitAll()
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs",
+                                "/api/**"
+                        ).permitAll()
 
                         .anyRequest()
                         .authenticated())
@@ -54,7 +57,5 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-
     }
-
 }
