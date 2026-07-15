@@ -4,6 +4,8 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+import org.springframework.security.core.userdetails.UserDetails;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -25,6 +27,7 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    // Existing method
     public static String generateToken(String username) {
 
         return Jwts.builder()
@@ -35,12 +38,18 @@ public class JwtUtils {
                 .compact();
     }
 
+    // Added overload
+    public static String generateToken(UserDetails userDetails) {
+        return generateToken(userDetails.getUsername());
+    }
+
     public static String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public static <T> T extractClaim(String token,
-                                     Function<Claims, T> claimsResolver) {
+    public static <T> T extractClaim(
+            String token,
+            Function<Claims, T> claimsResolver) {
 
         final Claims claims = extractAllClaims(token);
 
@@ -56,19 +65,32 @@ public class JwtUtils {
                 .getBody();
     }
 
+    // Existing method
     public static boolean validateToken(String token) {
 
         try {
-
             extractAllClaims(token);
-
             return true;
-
         } catch (Exception e) {
-
             return false;
-
         }
     }
 
+    // Added overload
+    public static boolean validateToken(
+            String token,
+            UserDetails userDetails) {
+
+        String username = extractUsername(token);
+
+        return username.equals(userDetails.getUsername())
+                && !isTokenExpired(token);
+    }
+
+    private static boolean isTokenExpired(String token) {
+
+        return extractAllClaims(token)
+                .getExpiration()
+                .before(new Date());
+    }
 }
