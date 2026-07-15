@@ -35,7 +35,10 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
+    // -----------------------------
     // Register User
+    // -----------------------------
+
     public SystemUser register(RegisterDto dto) {
 
         if (repository.findByUsername(dto.getUsername()).isPresent()) {
@@ -56,7 +59,10 @@ public class AuthService {
         return repository.save(user);
     }
 
+    // -----------------------------
     // Login User
+    // -----------------------------
+
     public AuthResponseDto login(AuthRequestDto dto) {
 
         authenticationManager.authenticate(
@@ -64,10 +70,11 @@ public class AuthService {
                         dto.getUsername(),
                         dto.getPassword()));
 
-        String token = jwtService.generateToken(dto.getUsername());
-
         SystemUser user = repository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Generate JWT using UserDetails
+        String token = jwtService.generateToken(user);
 
         return new AuthResponseDto(
                 token,
@@ -75,28 +82,35 @@ public class AuthService {
                 user.getRole().name());
     }
 
+    // -----------------------------
     // Get All Users
+    // -----------------------------
+
     @Transactional(readOnly = true)
     public List<SystemUser> getAllUsers() {
         return repository.findAll();
     }
 
+    // -----------------------------
     // Get User By Id
+    // -----------------------------
+
     @Transactional(readOnly = true)
     public SystemUser getUserById(Long id) {
 
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
     }
 
+    // -----------------------------
     // Delete User
+    // -----------------------------
+
     public void deleteUser(Long id) {
 
         SystemUser user = getUserById(id);
 
         repository.delete(user);
-
     }
 
 }
