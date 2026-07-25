@@ -27,7 +27,6 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Generate token using username
     public static String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -37,7 +36,6 @@ public class JwtUtils {
                 .compact();
     }
 
-    // Generate token using UserDetails
     public static String generateToken(UserDetails userDetails) {
         return generateToken(userDetails.getUsername());
     }
@@ -46,16 +44,13 @@ public class JwtUtils {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public static <T> T extractClaim(
-            String token,
-            Function<Claims, T> claimsResolver) {
-
-        final Claims claims = extractAllClaims(token);
+    public static <T> T extractClaim(String token,
+                                     Function<Claims, T> claimsResolver) {
+        Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     public static Claims extractAllClaims(String token) {
-
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -63,7 +58,6 @@ public class JwtUtils {
                 .getBody();
     }
 
-    // Existing validation method
     public static boolean validateToken(String token) {
         try {
             extractAllClaims(token);
@@ -73,32 +67,20 @@ public class JwtUtils {
         }
     }
 
-    // Existing validation method
-    public static boolean validateToken(
-            String token,
-            UserDetails userDetails) {
-
+    public static boolean validateToken(String token,
+                                        UserDetails userDetails) {
         String username = extractUsername(token);
-
         return username.equals(userDetails.getUsername())
                 && !isTokenExpired(token);
     }
 
-    // ===== Methods required by hidden tests =====
-
-    public static boolean isTokenValid(String token) {
-        return validateToken(token);
-    }
-
-    public static boolean isTokenValid(
-            String token,
-            UserDetails userDetails) {
-
+    // Keep ONLY this method
+    public static boolean isTokenValid(String token,
+                                       UserDetails userDetails) {
         return validateToken(token, userDetails);
     }
 
     private static boolean isTokenExpired(String token) {
-
         return extractAllClaims(token)
                 .getExpiration()
                 .before(new Date());
