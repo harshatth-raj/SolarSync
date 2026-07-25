@@ -17,7 +17,7 @@ public class JwtUtils {
     private static String SECRET_KEY =
             "VGhpc0lzQVNlY3VyZVNvbGFyU3luY0pXVFNlY3JldEtleUZvclNwcmluZ0Jvb3Qz";
 
-    private static final long JWT_EXPIRATION = 1000 * 60 * 60 * 24;
+    private static long JWT_EXPIRATION = 1000 * 60 * 60 * 24;
 
     public JwtUtils() {
     }
