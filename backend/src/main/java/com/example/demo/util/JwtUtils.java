@@ -19,7 +19,7 @@ public class JwtUtils {
 
     private static final long JWT_EXPIRATION = 1000 * 60 * 60 * 24;
 
-    private JwtUtils() {
+    public JwtUtils() {
     }
 
     private static Key getSigningKey() {
