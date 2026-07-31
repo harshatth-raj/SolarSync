@@ -157,5 +157,13 @@ public class SolarPanel {
         this.tickets = tickets;
     }
 
+    public Object getCapacity() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getCapacity'");
+    }
 
+    public void setCapacity(Object capacity) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setCapacity'");
+    }
 }   

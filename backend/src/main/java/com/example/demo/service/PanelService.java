@@ -37,7 +37,7 @@ public class PanelService implements PanelServiceInterface {
     public SolarPanel updatePanel(Long id, SolarPanel panel) {
         SolarPanel existing = getPanelById(id);
         existing.setSerialNumber(panel.getSerialNumber());
-     
+        existing.setCapacity(panel.getCapacity());
         existing.setStatus(panel.getStatus());
         return repository.save(existing);
     }
