@@ -65,7 +65,6 @@ public class SolarPanel {
                       int usageCount,
                       List<EnergyMetric> metrics,
                       List<MaintenanceTicket> tickets) {
-
         this.id = id;
         this.site = site;
         this.serialNumber = serialNumber;
@@ -77,9 +76,7 @@ public class SolarPanel {
         this.tickets = tickets;
     }
 
-    // --------------------
     // Getters
-    // --------------------
 
     public Long getId() {
         return id;
@@ -117,9 +114,7 @@ public class SolarPanel {
         return tickets;
     }
 
-    // --------------------
     // Setters
-    // --------------------
 
     public void setId(Long id) {
         this.id = id;
@@ -155,15 +150,5 @@ public class SolarPanel {
 
     public void setTickets(List<MaintenanceTicket> tickets) {
         this.tickets = tickets;
-    }
-
-    public Object getCapacity() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCapacity'");
-    }
-
-    public void setCapacity(Object capacity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCapacity'");
     }
 }
