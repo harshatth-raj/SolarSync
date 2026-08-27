@@ -1,25 +1,120 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    Navigate
+} from "react-router-dom";
+
+import { useDispatch } from "react-redux";
+
+import Login from "./pages/Login";
+
+import Navbar from "./components/layout/Navbar";
+
+import SolarSiteList
+    from "./components/sites/SolarSiteList";
+
+import MaintenanceTicketList
+    from "./components/tickets/MaintenanceTicketList";
+
+import {
+    fetchAnalytics,
+    fetchRecentMetrics
+} from "./store/slices/metricSlice";
+
+function Dashboard() {
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+
+        dispatch(fetchAnalytics());
+        dispatch(fetchRecentMetrics());
+
+    }, [dispatch]);
+
+    return (
+        <div className="container">
+
+            <h1>
+                SolarSync Dashboard
+            </h1>
+
+            <p>
+                Solar Energy Consumption
+                & Maintenance Tracker
+            </p>
+
+        </div>
+    );
+}
+
+function ProtectedRoute({ children }) {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("user")
+        );
+
+    if (!user) {
+        return (
+            <Navigate
+                to="/login"
+                replace
+            />
+        );
+    }
+
+    return children;
+}
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    return (
+        <BrowserRouter>
+
+            <Navbar />
+
+            <Routes>
+
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
+
+                <Route
+                    path="/"
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/sites"
+                    element={
+                        <ProtectedRoute>
+                            <SolarSiteList />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/tickets"
+                    element={
+                        <ProtectedRoute>
+                            <MaintenanceTicketList />
+                        </ProtectedRoute>
+                    }
+                />
+
+            </Routes>
+
+        </BrowserRouter>
+    );
 }
 
 export default App;
