@@ -9,7 +9,7 @@ import {
 
 import { useDispatch } from "react-redux";
 
-import Login from "./pages/Login";
+import Login from "./Login";
 
 import Navbar from "./components/layout/Navbar";
 
@@ -23,6 +23,7 @@ import {
     fetchAnalytics,
     fetchRecentMetrics
 } from "./store/slices/metricSlice";
+
 
 function Dashboard() {
 
@@ -51,12 +52,12 @@ function Dashboard() {
     );
 }
 
+
 function ProtectedRoute({ children }) {
 
-    const user =
-        JSON.parse(
-            localStorage.getItem("user")
-        );
+    const user = JSON.parse(
+        localStorage.getItem("user")
+    );
 
     if (!user) {
         return (
@@ -70,6 +71,7 @@ function ProtectedRoute({ children }) {
     return children;
 }
 
+
 function App() {
 
     return (
@@ -79,11 +81,13 @@ function App() {
 
             <Routes>
 
+                {/* LOGIN */}
                 <Route
                     path="/login"
                     element={<Login />}
                 />
 
+                {/* DASHBOARD */}
                 <Route
                     path="/"
                     element={
@@ -93,6 +97,7 @@ function App() {
                     }
                 />
 
+                {/* SOLAR SITES */}
                 <Route
                     path="/sites"
                     element={
@@ -102,6 +107,7 @@ function App() {
                     }
                 />
 
+                {/* MAINTENANCE TICKETS */}
                 <Route
                     path="/tickets"
                     element={
