@@ -14,43 +14,133 @@ import io.jsonwebtoken.security.Keys;
 
 public class JwtUtils {
 
-    private static String SECRET_KEY =
+    private static final String SECRET_KEY =
             "VGhpc0lzQVNlY3VyZVNvbGFyU3luY0pXVFNlY3JldEtleUZvclNwcmluZ0Jvb3Qz";
 
-    private static long JWT_EXPIRATION = 1000 * 60 * 60 * 24;
+    private static final long JWT_EXPIRATION =
+            1000 * 60 * 60 * 24;
 
-    public JwtUtils() {
+    private JwtUtils() {
     }
 
     private static Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+
+        byte[] keyBytes =
+                Decoders.BASE64.decode(SECRET_KEY);
+
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    // --------------------------------------------------
+    // Generate JWT using username
+    // --------------------------------------------------
+
     public static String generateToken(String username) {
+
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setExpiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + JWT_EXPIRATION
+                        )
+                )
+                .signWith(
+                        getSigningKey(),
+                        SignatureAlgorithm.HS256
+                )
                 .compact();
     }
 
-    public static String generateToken(UserDetails userDetails) {
-        return generateToken(userDetails.getUsername());
+    // --------------------------------------------------
+    // Generate JWT using UserDetails
+    // --------------------------------------------------
+
+    public static String generateToken(
+            UserDetails userDetails) {
+
+        String role = userDetails
+                .getAuthorities()
+                .stream()
+                .findFirst()
+                .map(authority ->
+                        authority.getAuthority()
+                )
+                .orElse("");
+
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+
+                .claim("role", role)
+
+                .setIssuedAt(new Date())
+
+                .setExpiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + JWT_EXPIRATION
+                        )
+                )
+
+                .signWith(
+                        getSigningKey(),
+                        SignatureAlgorithm.HS256
+                )
+
+                .compact();
     }
 
-    public static String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    // --------------------------------------------------
+    // Extract username
+    // --------------------------------------------------
+
+    public static String extractUsername(
+            String token) {
+
+        return extractClaim(
+                token,
+                Claims::getSubject
+        );
     }
 
-    public static <T> T extractClaim(String token,
-                                     Function<Claims, T> claimsResolver) {
-        Claims claims = extractAllClaims(token);
+    // --------------------------------------------------
+    // Extract role
+    // --------------------------------------------------
+
+    public static String extractRole(
+            String token) {
+
+        return extractClaim(
+                token,
+                claims -> claims.get(
+                        "role",
+                        String.class
+                )
+        );
+    }
+
+    // --------------------------------------------------
+    // Extract any claim
+    // --------------------------------------------------
+
+    public static <T> T extractClaim(
+            String token,
+            Function<Claims, T> claimsResolver) {
+
+        Claims claims =
+                extractAllClaims(token);
+
         return claimsResolver.apply(claims);
     }
 
-    public static Claims extractAllClaims(String token) {
+    // --------------------------------------------------
+    // Extract all claims
+    // --------------------------------------------------
+
+    public static Claims extractAllClaims(
+            String token) {
+
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -58,29 +148,49 @@ public class JwtUtils {
                 .getBody();
     }
 
-    public static boolean validateToken(String token) {
+    // --------------------------------------------------
+    // Validate token
+    // --------------------------------------------------
+
+    public static boolean validateToken(
+            String token) {
+
         try {
+
             extractAllClaims(token);
+
             return true;
+
         } catch (Exception e) {
+
             return false;
         }
     }
 
-    public static boolean validateToken(String token,
-                                        UserDetails userDetails) {
-        String username = extractUsername(token);
-        return username.equals(userDetails.getUsername())
+    // --------------------------------------------------
+    // Validate token with UserDetails
+    // --------------------------------------------------
+
+    public static boolean validateToken(
+            String token,
+            UserDetails userDetails) {
+
+        String username =
+                extractUsername(token);
+
+        return username.equals(
+                userDetails.getUsername()
+        )
                 && !isTokenExpired(token);
     }
 
-    // Keep ONLY this method
-    public static boolean isTokenValid(String token,
-                                       UserDetails userDetails) {
-        return validateToken(token, userDetails);
-    }
+    // --------------------------------------------------
+    // Check expiration
+    // --------------------------------------------------
 
-    private static boolean isTokenExpired(String token) {
+    private static boolean isTokenExpired(
+            String token) {
+
         return extractAllClaims(token)
                 .getExpiration()
                 .before(new Date());

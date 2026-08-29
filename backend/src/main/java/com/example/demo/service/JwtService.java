@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -12,37 +13,108 @@ import com.example.demo.util.JwtUtils;
 @Service
 public class JwtService {
 
-    // Existing method
+    // --------------------------------------------------
+    // Generate token using username
+    // --------------------------------------------------
+
     public String generateToken(String username) {
+
         return JwtUtils.generateToken(username);
     }
 
-    // Added overload
-    public String generateToken(UserDetails userDetails) {
-        return JwtUtils.generateToken(userDetails);
+    // --------------------------------------------------
+    // Generate token using UserDetails
+    // --------------------------------------------------
+
+    public String generateToken(
+            UserDetails userDetails) {
+
+        return JwtUtils.generateToken(
+                userDetails
+        );
     }
 
-    public String extractUsername(String token) {
+    // --------------------------------------------------
+    // Extract username
+    // --------------------------------------------------
+
+    public String extractUsername(
+            String token) {
+
         return JwtUtils.extractUsername(token);
     }
 
-    // Existing method
-    public boolean isTokenValid(String token) {
+    // --------------------------------------------------
+    // Validate token
+    // --------------------------------------------------
+
+    public boolean isTokenValid(
+            String token) {
+
         return JwtUtils.validateToken(token);
     }
 
-    // Added overload
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        return JwtUtils.validateToken(token, userDetails);
+    // --------------------------------------------------
+    // Validate token using UserDetails
+    // --------------------------------------------------
+
+    public boolean isTokenValid(
+            String token,
+            UserDetails userDetails) {
+
+        return JwtUtils.validateToken(
+                token,
+                userDetails
+        );
     }
 
-    public Authentication getAuthentication(String token) {
+    // --------------------------------------------------
+    // Get Authentication from JWT
+    // --------------------------------------------------
 
-        String username = extractUsername(token);
+    public Authentication getAuthentication(
+            String token) {
+
+        String username =
+                JwtUtils.extractUsername(token);
+
+        String role =
+                JwtUtils.extractRole(token);
+
+        /*
+         * If the JWT contains:
+         *
+         * ROLE_SYSTEM_ADMINISTRATOR
+         *
+         * use it directly.
+         *
+         * If it contains:
+         *
+         * SYSTEM_ADMINISTRATOR
+         *
+         * add ROLE_ prefix.
+         */
+
+        String authorityName = role;
+
+        if (role != null
+                && !role.startsWith("ROLE_")) {
+
+            authorityName =
+                    "ROLE_" + role;
+        }
+
+        SimpleGrantedAuthority authority =
+                new SimpleGrantedAuthority(
+                        authorityName
+                );
 
         return new UsernamePasswordAuthenticationToken(
                 username,
                 null,
-                Collections.emptyList());
+                Collections.singletonList(
+                        authority
+                )
+        );
     }
 }
