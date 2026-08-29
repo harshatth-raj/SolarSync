@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.dto.TicketCreationDto;
+import com.example.demo.dto.TicketRequestDto;
 import com.example.demo.entity.MaintenanceTicket;
 import com.example.demo.service.TicketService;
 
@@ -38,7 +38,7 @@ public class TicketController {
 
     @PostMapping
     public ResponseEntity<MaintenanceTicket> createTicket(
-            @RequestBody TicketCreationDto dto) {
+            @RequestBody TicketRequestDto dto) {
 
         MaintenanceTicket ticket =
                 service.createTicket(dto);
