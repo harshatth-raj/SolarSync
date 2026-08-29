@@ -10,16 +10,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.EnergyMetric;
+import com.example.demo.enums.PanelStatus;
+import com.example.demo.enums.TicketStatus;
 import com.example.demo.repository.EnergyMetricRepository;
+import com.example.demo.repository.MaintenanceTicketRepository;
+import com.example.demo.repository.SolarPanelRepository;
 
 @Service
 @Transactional
 public class MetricService {
 
     private final EnergyMetricRepository repository;
+    private final SolarPanelRepository panelRepository;
+    private final MaintenanceTicketRepository ticketRepository;
 
-    public MetricService(EnergyMetricRepository repository) {
+    public MetricService(
+            EnergyMetricRepository repository,
+            SolarPanelRepository panelRepository,
+            MaintenanceTicketRepository ticketRepository) {
+
         this.repository = repository;
+        this.panelRepository = panelRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     // --------------------------------------------------
@@ -50,8 +62,8 @@ public class MetricService {
         List<EnergyMetric> metrics =
                 repository.findAll();
 
-        // Return the latest 10 records
         if (metrics.size() > 10) {
+
             return metrics.subList(
                     Math.max(0, metrics.size() - 10),
                     metrics.size()
@@ -71,8 +83,16 @@ public class MetricService {
         List<EnergyMetric> metrics =
                 repository.findAll();
 
+        // ----------------------------------------------
+        // Total Generation
+        // ----------------------------------------------
+
         BigDecimal totalGeneration =
                 BigDecimal.ZERO;
+
+        // ----------------------------------------------
+        // Average Efficiency
+        // ----------------------------------------------
 
         BigDecimal totalEfficiency =
                 BigDecimal.ZERO;
@@ -105,10 +125,42 @@ public class MetricService {
         if (efficiencyCount > 0) {
 
             averageEfficiency =
-                    totalEfficiency
-                            .doubleValue()
+                    totalEfficiency.doubleValue()
                     / efficiencyCount;
         }
+
+        // ----------------------------------------------
+        // Active Panels
+        // ----------------------------------------------
+
+        int totalActivePanels =
+                panelRepository
+                        .findByStatus(PanelStatus.ACTIVE)
+                        .size();
+
+        // ----------------------------------------------
+        // Open Tickets
+        // ----------------------------------------------
+
+        int openTickets =
+                ticketRepository
+                        .findByStatus(TicketStatus.OPEN)
+                        .size();
+
+        // ----------------------------------------------
+        // Panels Under Maintenance
+        // ----------------------------------------------
+
+        int maintenancePanels =
+                panelRepository
+                        .findByStatus(
+                                PanelStatus.UNDER_MAINTENANCE
+                        )
+                        .size();
+
+        // ----------------------------------------------
+        // Build Analytics Response
+        // ----------------------------------------------
 
         Map<String, Object> analytics =
                 new HashMap<>();
@@ -119,11 +171,8 @@ public class MetricService {
         );
 
         /*
-         * Your EnergyMetric entity currently does not
-         * contain an energy consumption field.
-         *
-         * Therefore we return 0 instead of inventing
-         * a consumption value.
+         * EnergyMetric currently does not contain
+         * an energy consumption field.
          */
         analytics.put(
                 "totalConsumption",
@@ -138,6 +187,21 @@ public class MetricService {
         analytics.put(
                 "totalMetrics",
                 metrics.size()
+        );
+
+        analytics.put(
+                "totalActivePanels",
+                totalActivePanels
+        );
+
+        analytics.put(
+                "openTickets",
+                openTickets
+        );
+
+        analytics.put(
+                "maintenancePanels",
+                maintenancePanels
         );
 
         return analytics;
