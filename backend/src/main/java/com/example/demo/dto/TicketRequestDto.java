@@ -16,6 +16,8 @@ public class TicketRequestDto {
     @NotNull(message = "Priority is required")
     private Priority priority;
 
+    private Long technicianId;
+
     public TicketRequestDto() {
     }
 
@@ -41,5 +43,13 @@ public class TicketRequestDto {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public Long getTechnicianId() {
+        return technicianId;
+    }
+
+    public void setTechnicianId(Long technicianId) {
+        this.technicianId = technicianId;
     }
 }
