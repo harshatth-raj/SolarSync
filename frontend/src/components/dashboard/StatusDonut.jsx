@@ -1,65 +1,72 @@
 import React from "react";
 
-function StatusDonut({ tickets = [] }) {
+function StatusDonut({ analytics }) {
 
-    const total = tickets.length;
+    const active =
+        analytics?.totalActivePanels || 0;
 
-    const resolved = tickets.filter(
-        ticket =>
-            String(ticket.status).toUpperCase() === "RESOLVED"
-    ).length;
+    const open =
+        analytics?.openTickets || 0;
 
-    const open = tickets.filter(
-        ticket =>
-            String(ticket.status).toUpperCase() === "OPEN"
-    ).length;
+    const maintenance =
+        analytics?.maintenancePanels || 0;
 
-    const other = total - resolved - open;
+    const total =
+        active + open + maintenance;
 
-    const resolvedPercentage =
-        total > 0 ? (resolved / total) * 100 : 0;
+    const getPercentage = (value) => {
 
-    const openPercentage =
-        total > 0 ? (open / total) * 100 : 0;
+        if (total === 0) {
+            return 0;
+        }
+
+        return (value / total) * 100;
+    };
 
     return (
-        <div className="status-donut">
+        <div className="dashboard-card">
 
-            <h3>Maintenance Distribution</h3>
+            <h2>
+                Maintenance Distribution
+            </h2>
 
-            <div
-                className="donut"
-                style={{
-                    background: `conic-gradient(
-                        #ef4444 0% ${openPercentage}%,
-                        #22c55e ${openPercentage}% ${openPercentage + resolvedPercentage}%,
-                        #f59e0b ${openPercentage + resolvedPercentage}% 100%
-                    )`
-                }}
-            >
+            <div className="donut-container">
 
-                <div className="donut-center">
-                    {total}
+                <div
+                    className="donut"
+                    style={{
+                        background: `conic-gradient(
+                            #ef4444 0% ${getPercentage(open)}%,
+                            #22c55e ${getPercentage(open)}% ${getPercentage(open) + getPercentage(active)}%,
+                            #f59e0b ${getPercentage(open) + getPercentage(active)}% 100%
+                        )`
+                    }}
+                >
+
+                    <div className="donut-center">
+                        {total}
+                    </div>
+
                 </div>
 
             </div>
 
             <div className="donut-legend">
 
-                <div>
-                    <span className="legend-dot open"></span>
+                <p>
+                    <span className="legend-dot red"></span>
                     Open: {open}
-                </div>
+                </p>
 
-                <div>
-                    <span className="legend-dot resolved"></span>
-                    Resolved: {resolved}
-                </div>
+                <p>
+                    <span className="legend-dot green"></span>
+                    Active: {active}
+                </p>
 
-                <div>
-                    <span className="legend-dot other"></span>
-                    Other: {other}
-                </div>
+                <p>
+                    <span className="legend-dot orange"></span>
+                    Maintenance: {maintenance}
+                </p>
 
             </div>
 
