@@ -9,6 +9,7 @@ import com.example.demo.entity.SolarPanel;
 import com.example.demo.repository.SolarPanelRepository;
 
 @Service
+@Transactional
 public class PanelService implements PanelServiceInterface {
 
     private final SolarPanelRepository repository;
@@ -17,33 +18,73 @@ public class PanelService implements PanelServiceInterface {
         this.repository = repository;
     }
 
-    @Transactional
+    @Override
     public SolarPanel createPanel(SolarPanel panel) {
         return repository.save(panel);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<SolarPanel> getAllPanels() {
         return repository.findAll();
     }
 
+    @Override
     @Transactional(readOnly = true)
     public SolarPanel getPanelById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Panel not found with id: " + id));
+                .orElseThrow(() ->
+                        new RuntimeException("Panel not found"));
     }
 
-    @Transactional
-    public SolarPanel updatePanel(Long id, SolarPanel panel) {
-        SolarPanel existing = getPanelById(id);
-        existing.setSerialNumber(panel.getSerialNumber());
-        existing.setCapacity(panel.getCapacity());
-        existing.setStatus(panel.getStatus());
-        return repository.save(existing);
+    // ⭐ NEW METHOD
+    @Override
+    @Transactional(readOnly = true)
+    public List<SolarPanel> getPanelsBySite(Long siteId) {
+        return repository.findBySiteId(siteId);
     }
 
-    @Transactional
+    @Override
+    public SolarPanel updatePanel(
+            Long id,
+            SolarPanel panel) {
+
+        SolarPanel existingPanel =
+                repository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Panel not found"));
+
+        existingPanel.setSerialNumber(
+                panel.getSerialNumber());
+
+        existingPanel.setModelType(
+                panel.getModelType());
+
+        existingPanel.setStatus(
+                panel.getStatus());
+
+        existingPanel.setInstallationDate(
+                panel.getInstallationDate());
+
+        existingPanel.setUsageCount(
+                panel.getUsageCount());
+
+        existingPanel.setCapacity(
+                panel.getCapacity());
+
+        return repository.save(existingPanel);
+    }
+
+    @Override
     public void deletePanel(Long id) {
-        repository.deleteById(id);
+
+        SolarPanel panel =
+                repository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Panel not found"));
+
+        repository.delete(panel);
     }
 }
