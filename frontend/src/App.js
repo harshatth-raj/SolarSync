@@ -15,10 +15,14 @@ import {
 
 import Login from "./Login";
 
-import Navbar from "./components/layout/Navbar";
+import Navbar
+    from "./components/layout/Navbar";
 
 import SolarSiteList
     from "./components/sites/SolarSiteList";
+
+import SolarSiteDetails
+    from "./components/sites/SolarSiteDetails";
 
 import MaintenanceTicketList
     from "./components/tickets/MaintenanceTicketList";
@@ -64,9 +68,13 @@ function Dashboard() {
 
     useEffect(() => {
 
-        dispatch(fetchAnalytics());
+        dispatch(
+            fetchAnalytics()
+        );
 
-        dispatch(fetchRecentMetrics());
+        dispatch(
+            fetchRecentMetrics()
+        );
 
     }, [dispatch]);
 
@@ -201,7 +209,9 @@ function App() {
 
         <BrowserRouter>
 
-            {/* Navbar */}
+            {/* =========================
+                NAVBAR
+            ========================= */}
 
             <Navbar />
 
@@ -249,6 +259,24 @@ function App() {
                         <ProtectedRoute>
 
                             <SolarSiteList />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+
+                {/* =========================
+                    SITE DETAILS
+                ========================= */}
+
+                <Route
+                    path="/sites/:id"
+                    element={
+
+                        <ProtectedRoute>
+
+                            <SolarSiteDetails />
 
                         </ProtectedRoute>
 
