@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,53 +19,104 @@ public class SolarPanel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // --------------------------------------------------
+    // Site
+    // --------------------------------------------------
+
     @ManyToOne
     @JoinColumn(name = "site_id", nullable = false)
     @JsonBackReference
     private SolarSite site;
 
-    @Column(name = "serial_number", unique = true, nullable = false)
+    // --------------------------------------------------
+    // Panel details
+    // --------------------------------------------------
+
+    @Column(
+            name = "serial_number",
+            unique = true,
+            nullable = false
+    )
     private String serialNumber;
 
-    @Column(name = "model_type", nullable = false)
+    @Column(
+            name = "model_type",
+            nullable = false
+    )
     private String modelType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PanelStatus status;
 
-    @Column(name = "installation_date", nullable = false)
+    @Column(
+            name = "installation_date",
+            nullable = false
+    )
     private LocalDate installationDate;
 
-    @Column(name = "usage_count", nullable = false)
+    @Column(
+            name = "usage_count",
+            nullable = false
+    )
     private int usageCount = 0;
 
-    @OneToMany(
-            mappedBy = "panel",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    @JsonIgnore
-    private List<EnergyMetric> metrics = new ArrayList<>();
+    // --------------------------------------------------
+    // Panel capacity
+    // --------------------------------------------------
+
+    @Column(
+            name = "capacity",
+            nullable = false,
+            precision = 10,
+            scale = 2
+    )
+    private BigDecimal capacity;
+
+    // --------------------------------------------------
+    // Energy metrics
+    // --------------------------------------------------
 
     @OneToMany(
             mappedBy = "panel",
             cascade = CascadeType.ALL,
-            orphanRemoval = true)
+            orphanRemoval = true
+    )
     @JsonIgnore
-    private List<MaintenanceTicket> tickets = new ArrayList<>();
+    private List<EnergyMetric> metrics =
+            new ArrayList<>();
+
+    // --------------------------------------------------
+    // Maintenance tickets
+    // --------------------------------------------------
+
+    @OneToMany(
+            mappedBy = "panel",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonIgnore
+    private List<MaintenanceTicket> tickets =
+            new ArrayList<>();
+
+    // --------------------------------------------------
+    // Constructors
+    // --------------------------------------------------
 
     public SolarPanel() {
     }
 
-    public SolarPanel(Long id,
-                      SolarSite site,
-                      String serialNumber,
-                      String modelType,
-                      PanelStatus status,
-                      LocalDate installationDate,
-                      int usageCount,
-                      List<EnergyMetric> metrics,
-                      List<MaintenanceTicket> tickets) {
+    public SolarPanel(
+            Long id,
+            SolarSite site,
+            String serialNumber,
+            String modelType,
+            PanelStatus status,
+            LocalDate installationDate,
+            int usageCount,
+            BigDecimal capacity,
+            List<EnergyMetric> metrics,
+            List<MaintenanceTicket> tickets) {
 
         this.id = id;
         this.site = site;
@@ -73,13 +125,14 @@ public class SolarPanel {
         this.status = status;
         this.installationDate = installationDate;
         this.usageCount = usageCount;
+        this.capacity = capacity;
         this.metrics = metrics;
         this.tickets = tickets;
     }
 
-    // --------------------
+    // --------------------------------------------------
     // Getters
-    // --------------------
+    // --------------------------------------------------
 
     public Long getId() {
         return id;
@@ -109,6 +162,10 @@ public class SolarPanel {
         return usageCount;
     }
 
+    public BigDecimal getCapacity() {
+        return capacity;
+    }
+
     public List<EnergyMetric> getMetrics() {
         return metrics;
     }
@@ -117,9 +174,9 @@ public class SolarPanel {
         return tickets;
     }
 
-    // --------------------
+    // --------------------------------------------------
     // Setters
-    // --------------------
+    // --------------------------------------------------
 
     public void setId(Long id) {
         this.id = id;
@@ -129,41 +186,52 @@ public class SolarPanel {
         this.site = site;
     }
 
-    public void setSerialNumber(String serialNumber) {
+    public void setSerialNumber(
+            String serialNumber) {
+
         this.serialNumber = serialNumber;
     }
 
-    public void setModelType(String modelType) {
+    public void setModelType(
+            String modelType) {
+
         this.modelType = modelType;
     }
 
-    public void setStatus(PanelStatus status) {
+    public void setStatus(
+            PanelStatus status) {
+
         this.status = status;
     }
 
-    public void setInstallationDate(LocalDate installationDate) {
-        this.installationDate = installationDate;
+    public void setInstallationDate(
+            LocalDate installationDate) {
+
+        this.installationDate =
+                installationDate;
     }
 
-    public void setUsageCount(int usageCount) {
+    public void setUsageCount(
+            int usageCount) {
+
         this.usageCount = usageCount;
     }
 
-    public void setMetrics(List<EnergyMetric> metrics) {
+    public void setCapacity(
+            BigDecimal capacity) {
+
+        this.capacity = capacity;
+    }
+
+    public void setMetrics(
+            List<EnergyMetric> metrics) {
+
         this.metrics = metrics;
     }
 
-    public void setTickets(List<MaintenanceTicket> tickets) {
+    public void setTickets(
+            List<MaintenanceTicket> tickets) {
+
         this.tickets = tickets;
     }
-
-    public Object getCapacity() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCapacity'");
-    }
-
-    public void setCapacity(Object capacity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCapacity'");
-    }
-}   
+}
