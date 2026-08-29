@@ -154,7 +154,7 @@ public class MetricService {
         int maintenancePanels =
                 panelRepository
                         .findByStatus(
-                                PanelStatus.UNDER_MAINTENANCE
+                                PanelStatus.MAINTENANCE
                         )
                         .size();
 
