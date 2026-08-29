@@ -1,7 +1,6 @@
 import React, {
     useEffect,
-    useMemo,
-    useState
+    useMemo
 } from "react";
 
 import {
@@ -10,27 +9,39 @@ import {
 } from "react-redux";
 
 import {
+    useNavigate
+} from "react-router-dom";
+
+import {
     fetchSites,
     setSearchQuery
 } from "../../store/slices/siteSlice";
 
-function SolarSiteList({ onSelect }) {
+
+function SolarSiteList() {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const {
         items,
         loading,
         searchQuery
-    } = useSelector(state => state.sites);
+    } = useSelector(
+        state => state.sites
+    );
 
     const user = useSelector(
         state => state.auth.user
     );
 
+
     useEffect(() => {
+
         dispatch(fetchSites());
+
     }, [dispatch]);
+
 
     const filteredSites = useMemo(() => {
 
@@ -44,23 +55,37 @@ function SolarSiteList({ onSelect }) {
 
     }, [items, searchQuery]);
 
+
+    const handleSiteClick = (siteId) => {
+
+        navigate(`/sites/${siteId}`);
+
+    };
+
+
     return (
         <div className="container">
 
             <div className="page-header">
 
-                <h1>Solar Sites</h1>
+                <h1>
+                    Solar Sites
+                </h1>
+
 
                 {user?.role ===
                     "SYSTEM_ADMINISTRATOR" && (
 
-                    <button className="btn-primary">
+                    <button
+                        className="btn-primary"
+                    >
                         + Add Site
                     </button>
 
                 )}
 
             </div>
+
 
             <input
                 type="text"
@@ -75,19 +100,27 @@ function SolarSiteList({ onSelect }) {
                 }
             />
 
+
             {loading ? (
-                <p>Loading sites...</p>
+
+                <p>
+                    Loading sites...
+                </p>
+
             ) : (
 
                 <div className="site-list">
 
-                    {filteredSites.map(site => (
+                    {filteredSites.map(
+                        site => (
 
                         <div
                             className="site-card"
                             key={site.id}
                             onClick={() =>
-                                onSelect(site.id)
+                                handleSiteClick(
+                                    site.id
+                                )
                             }
                         >
 
@@ -96,15 +129,24 @@ function SolarSiteList({ onSelect }) {
                             </h3>
 
                             <p>
-                                Location: {
+                                Location:{" "}
+                                {
                                     site.locationCoordinates
                                 }
                             </p>
 
                             <p>
-                                Capacity: {
+                                Capacity:{" "}
+                                {
                                     site.ratedCapacityKw
                                 } KW
+                            </p>
+
+                            <p>
+                                Commissioned:{" "}
+                                {
+                                    site.commissionDate
+                                }
                             </p>
 
                         </div>
@@ -118,5 +160,6 @@ function SolarSiteList({ onSelect }) {
         </div>
     );
 }
+
 
 export default SolarSiteList;
