@@ -7,7 +7,9 @@ function Register() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { loading, error } = useSelector((state) => state.auth);
+    const { loading, error } = useSelector(
+        state => state.auth
+    );
 
     const [formData, setFormData] = useState({
         username: "",
@@ -43,10 +45,14 @@ function Register() {
             role: formData.role
         };
 
-        const result = await dispatch(register(registerData));
+        const result = await dispatch(
+            register(registerData)
+        );
 
         if (register.fulfilled.match(result)) {
-            setSuccess("Registration successful! Redirecting to login...");
+            setSuccess(
+                "Registration successful! Redirecting to login..."
+            );
 
             setTimeout(() => {
                 navigate("/login");
@@ -55,19 +61,19 @@ function Register() {
     };
 
     return (
-        <div className="auth-page">
+        <div className="register-container">
 
-            <div className="auth-card">
+            <div className="register-card">
 
                 <h1>Register</h1>
-                <p className="auth-subtitle">
+
+                <p className="register-subtitle">
                     Create your SolarSync account
                 </p>
 
                 <form onSubmit={handleSubmit}>
 
-                    {/* Username */}
-                    <div className="form-group">
+                    <div className="register-form-group">
                         <label>Username</label>
 
                         <input
@@ -80,8 +86,8 @@ function Register() {
                         />
                     </div>
 
-                    {/* Email */}
-                    <div className="form-group">
+
+                    <div className="register-form-group">
                         <label>Email</label>
 
                         <input
@@ -94,8 +100,8 @@ function Register() {
                         />
                     </div>
 
-                    {/* Password */}
-                    <div className="form-group">
+
+                    <div className="register-form-group">
                         <label>Password</label>
 
                         <input
@@ -108,8 +114,8 @@ function Register() {
                         />
                     </div>
 
-                    {/* Confirm Password */}
-                    <div className="form-group">
+
+                    <div className="register-form-group">
                         <label>Confirm Password</label>
 
                         <input
@@ -122,8 +128,8 @@ function Register() {
                         />
                     </div>
 
-                    {/* Role */}
-                    <div className="form-group">
+
+                    <div className="register-form-group">
                         <label>Role</label>
 
                         <select
@@ -146,29 +152,35 @@ function Register() {
                         </select>
                     </div>
 
+
                     <button
                         type="submit"
+                        className="register-button"
                         disabled={loading}
-                        className="auth-button"
                     >
-                        {loading ? "Registering..." : "Register"}
+                        {loading
+                            ? "Registering..."
+                            : "Register"}
                     </button>
 
                 </form>
 
+
                 {error && (
-                    <p className="auth-error">
+                    <div className="register-error">
                         {error}
-                    </p>
+                    </div>
                 )}
+
 
                 {success && (
-                    <p className="auth-success">
+                    <div className="register-success">
                         {success}
-                    </p>
+                    </div>
                 )}
 
-                <p className="auth-switch">
+
+                <p className="register-switch">
                     Already have an account?{" "}
 
                     <button

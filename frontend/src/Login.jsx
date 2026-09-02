@@ -29,81 +29,70 @@ function Login() {
     };
 
     return (
-        <div
-            style={{
-                width: "400px",
-                margin: "80px auto",
-                padding: "30px",
-                border: "1px solid #ccc",
-                borderRadius: "10px",
-                fontFamily: "Arial"
-            }}
-        >
-            <h2>Login</h2>
+        <div className="login-container">
 
-            <form onSubmit={handleSubmit}>
+            <div className="login-card">
 
-                <div style={{ marginBottom: "15px" }}>
-                    <label>Username</label>
+                <h1>Login</h1>
 
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Enter username"
-                        required
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginTop: "5px"
-                        }}
-                    />
-                </div>
+                <form onSubmit={handleSubmit}>
 
-                <div style={{ marginBottom: "15px" }}>
-                    <label>Password</label>
+                    <div className="login-form-group">
 
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter password"
-                        required
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginTop: "5px"
-                        }}
-                    />
-                </div>
+                        <label>Username</label>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                        cursor: "pointer"
-                    }}
-                >
-                    {loading ? "Logging in..." : "Login"}
-                </button>
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Enter username"
+                            required
+                        />
 
-                {error && (
-                    <p style={{ color: "red" }}>
-                        {error}
-                    </p>
-                )}
+                    </div>
 
-            </form>
+                    <div className="login-form-group">
 
-            <p style={{ marginTop: "20px" }}>
-                Don't have an account?{" "}
+                        <label>Password</label>
 
-                <button onClick={() => navigate("/register")}>
-                    Register
-                </button>
-            </p>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter password"
+                            required
+                        />
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading ? "Logging in..." : "Login"}
+                    </button>
+
+                    {error && (
+                        <p className="error-msg">
+                            {error}
+                        </p>
+                    )}
+
+                </form>
+
+                <p className="register-link">
+                    Don't have an account?{" "}
+
+                    <button
+                        type="button"
+                        onClick={() => navigate("/register")}
+                    >
+                        Register
+                    </button>
+                </p>
+
+            </div>
+
         </div>
     );
 }
