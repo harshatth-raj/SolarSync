@@ -1,10 +1,6 @@
 package com.example.demo.service;
 
-import java.util.Collections;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,108 +9,69 @@ import com.example.demo.util.JwtUtils;
 @Service
 public class JwtService {
 
-    // --------------------------------------------------
+    private final JwtUtils jwtUtils;
+
+    public JwtService(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
+    }
+
     // Generate token using username
-    // --------------------------------------------------
-
     public String generateToken(String username) {
+        return jwtUtils.generateTokenFromUsername(username);
+    }
 
-        return JwtUtils.generateTokenFromUsername(username);
+    // Generate token using UserDetails
+    public String generateToken(UserDetails userDetails) {
+        return jwtUtils.generateToken(userDetails);
+    }
+
+    // Extract username
+    public String extractUsername(String token) {
+        return jwtUtils.extractUsername(token);
     }
 
     // --------------------------------------------------
-    // Generate token using UserDetails
+    // Required by JwtAuthenticationFilter
     // --------------------------------------------------
 
-    public String generateToken(
-            UserDetails userDetails) {
+    public boolean isTokenValid(String token) {
 
-        return JwtUtils.generateToken(
-                userDetails
+        try {
+            jwtUtils.extractAllClaims(token);
+            return true;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // --------------------------------------------------
+    // Required by JwtAuthenticationFilter
+    // --------------------------------------------------
+
+    public Authentication getAuthentication(String token) {
+
+        String username =
+                jwtUtils.extractUsername(token);
+
+        return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                username,
+                null,
+                java.util.Collections.emptyList()
         );
     }
 
     // --------------------------------------------------
-    // Extract username
-    // --------------------------------------------------
-
-    public String extractUsername(
-            String token) {
-
-        return JwtUtils.extractUsername(token);
-    }
-
-    // --------------------------------------------------
-    // Validate token
-    // --------------------------------------------------
-
-    public boolean isTokenValid(
-            String token) {
-
-        return JwtUtils.validateToken(token);
-    }
-
-    // --------------------------------------------------
-    // Validate token using UserDetails
+    // UserDetails validation
     // --------------------------------------------------
 
     public boolean isTokenValid(
             String token,
             UserDetails userDetails) {
 
-        return JwtUtils.validateToken(
+        return jwtUtils.isTokenValid(
                 token,
                 userDetails
-        );
-    }
-
-    // --------------------------------------------------
-    // Get Authentication from JWT
-    // --------------------------------------------------
-
-    public Authentication getAuthentication(
-            String token) {
-
-        String username =
-                JwtUtils.extractUsername(token);
-
-        String role =
-                JwtUtils.extractRole(token);
-
-        /*
-         * If the JWT contains:
-         *
-         * ROLE_SYSTEM_ADMINISTRATOR
-         *
-         * use it directly.
-         *
-         * If it contains:
-         *
-         * SYSTEM_ADMINISTRATOR
-         *
-         * add ROLE_ prefix.
-         */
-
-        String authorityName = role;
-
-        if (role != null
-                && !role.startsWith("ROLE_")) {
-
-            authorityName =
-                    "ROLE_" + role;
-        }
-
-        SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority(
-                        authorityName
-                );
-
-        return new UsernamePasswordAuthenticationToken(
-                username,
-                null,
-                Collections.singletonList(
-                        authority
-                )
         );
     }
 }
