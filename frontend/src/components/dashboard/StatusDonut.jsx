@@ -15,7 +15,6 @@ function StatusDonut({ analytics }) {
         active + open + maintenance;
 
     const getPercentage = (value) => {
-
         if (total === 0) {
             return 0;
         }
@@ -23,23 +22,29 @@ function StatusDonut({ analytics }) {
         return (value / total) * 100;
     };
 
-    return (
-        <div className="dashboard-card">
+    const openPercentage = getPercentage(open);
+    const activePercentage = getPercentage(active);
 
-            <h2>
+    return (
+        <div className="status-donut">
+
+            <h3>
                 Maintenance Distribution
-            </h2>
+            </h3>
 
             <div className="donut-container">
 
                 <div
                     className="donut"
                     style={{
-                        background: `conic-gradient(
-                            #ef4444 0% ${getPercentage(open)}%,
-                            #22c55e ${getPercentage(open)}% ${getPercentage(open) + getPercentage(active)}%,
-                            #f59e0b ${getPercentage(open) + getPercentage(active)}% 100%
-                        )`
+                        background:
+                            total === 0
+                                ? "#334155"
+                                : `conic-gradient(
+                                    #ef4444 0% ${openPercentage}%,
+                                    #22c55e ${openPercentage}% ${openPercentage + activePercentage}%,
+                                    #f59e0b ${openPercentage + activePercentage}% 100%
+                                )`
                     }}
                 >
 
@@ -54,17 +59,17 @@ function StatusDonut({ analytics }) {
             <div className="donut-legend">
 
                 <p>
-                    <span className="legend-dot red"></span>
+                    <span className="legend-dot open"></span>
                     Open: {open}
                 </p>
 
                 <p>
-                    <span className="legend-dot green"></span>
+                    <span className="legend-dot resolved"></span>
                     Active: {active}
                 </p>
 
                 <p>
-                    <span className="legend-dot orange"></span>
+                    <span className="legend-dot other"></span>
                     Maintenance: {maintenance}
                 </p>
 
