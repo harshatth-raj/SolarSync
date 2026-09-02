@@ -1,31 +1,13 @@
-import api from "./api";
+import axios from 'axios';
 
-const getAll = () => {
-    return api.get("/api/sites");
-};
-
-const getById = (id) => {
-    return api.get(`/api/sites/${id}`);
-};
-
-const createSite = (siteData) => {
-    return api.post("/api/sites", siteData);
-};
-
-const updateSite = (id, siteData) => {
-    return api.put(`/api/sites/${id}`, siteData);
-};
-
-const deleteSite = (id) => {
-    return api.delete(`/api/sites/${id}`);
-};
+const BASE = '/api/sites';
 
 const siteService = {
-    getAll,
-    getById,
-    createSite,
-    updateSite,
-    deleteSite
+  getAll: () => axios.get(BASE),
+  getById: (id) => axios.get(`${BASE}/${id}`),
+  create: (data) => axios.post(BASE, data),
+  update: (id, data) => axios.put(`${BASE}/${id}`, data),
+  delete: (id) => axios.delete(`${BASE}/${id}`),
 };
 
 export default siteService;

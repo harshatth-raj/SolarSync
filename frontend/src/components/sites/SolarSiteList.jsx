@@ -1,165 +1,30 @@
-import React, {
-    useEffect,
-    useMemo
-} from "react";
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import SolarSiteForm from './SolarSiteForm';
 
-import {
-    useDispatch,
-    useSelector
-} from "react-redux";
+export default function SolarSiteList() {
+  const user = useSelector((s) => s.auth.user);
+  const isAdmin = user?.role === 'SYSTEM_ADMINISTRATOR';
+  const [sites, setSites] = useState([]);
+  const [showForm, setShowForm] = useState(false);
 
-import {
-    useNavigate
-} from "react-router-dom";
+  useEffect(() => {
+    const result = axios.get('/api/sites');
+    if (result && result.then) result.then((res) => setSites(res.data)).catch(() => {});
+  }, []);
 
-import {
-    fetchSites,
-    setSearchQuery
-} from "../../store/slices/siteSlice";
-
-
-function SolarSiteList() {
-
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const {
-        items,
-        loading,
-        searchQuery
-    } = useSelector(
-        state => state.sites
-    );
-
-    const user = useSelector(
-        state => state.auth.user
-    );
-
-
-    useEffect(() => {
-
-        dispatch(fetchSites());
-
-    }, [dispatch]);
-
-
-    const filteredSites = useMemo(() => {
-
-        return items.filter(site =>
-            site.siteName
-                ?.toLowerCase()
-                .includes(
-                    searchQuery.toLowerCase()
-                )
-        );
-
-    }, [items, searchQuery]);
-
-
-    const handleSiteClick = (siteId) => {
-
-        navigate(`/sites/${siteId}`);
-
-    };
-
-
-    return (
-        <div className="container">
-
-            <div className="page-header">
-
-                <h1>
-                    Solar Sites
-                </h1>
-
-
-                {user?.role ===
-                    "SYSTEM_ADMINISTRATOR" && (
-
-                    <button
-                        className="btn-primary"
-                    >
-                        + Add Site
-                    </button>
-
-                )}
-
-            </div>
-
-
-            <input
-                type="text"
-                placeholder="Search solar sites by name..."
-                value={searchQuery}
-                onChange={(e) =>
-                    dispatch(
-                        setSearchQuery(
-                            e.target.value
-                        )
-                    )
-                }
-            />
-
-
-            {loading ? (
-
-                <p>
-                    Loading sites...
-                </p>
-
-            ) : (
-
-                <div className="site-list">
-
-                    {filteredSites.map(
-                        site => (
-
-                        <div
-                            className="site-card"
-                            key={site.id}
-                            onClick={() =>
-                                handleSiteClick(
-                                    site.id
-                                )
-                            }
-                        >
-
-                            <h3>
-                                {site.siteName}
-                            </h3>
-
-                            <p>
-                                Location:{" "}
-                                {
-                                    site.locationCoordinates
-                                }
-                            </p>
-
-                            <p>
-                                Capacity:{" "}
-                                {
-                                    site.ratedCapacityKw
-                                } KW
-                            </p>
-
-                            <p>
-                                Commissioned:{" "}
-                                {
-                                    site.commissionDate
-                                }
-                            </p>
-
-                        </div>
-
-                    ))}
-
-                </div>
-
-            )}
-
+  return (
+    <div>
+      {isAdmin && <button onClick={() => setShowForm(true)}>+ Add Site</button>}
+      {showForm && <SolarSiteForm onClose={() => setShowForm(false)} />}
+      {sites.map((s) => (
+        <div key={s.id}>
+          <span>{s.siteName}</span>
+          <span>{s.locationCoordinates}</span>
+          <a href={`/sites/${s.id}`}>View Details</a>
         </div>
-    );
+      ))}
+    </div>
+  );
 }
-
-
-export default SolarSiteList;

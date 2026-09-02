@@ -1,118 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
-import {
-    useDispatch,
-    useSelector
-} from "react-redux";
+export default function MaintenanceTicketList() {
+  const { user } = useSelector((s) => s.auth);
+  const isOperator = user?.role === 'SOLAR_OPERATOR';
+  const [tickets, setTickets] = useState([]);
 
-import {
-    fetchTickets,
-    resolveTicket
-} from "../../store/slices/ticketSlice";
+  useEffect(() => {
+    axios.get('/api/tickets').then((res) => setTickets(res.data)).catch(() => {});
+  }, []);
 
-function MaintenanceTicketList() {
-
-    const dispatch = useDispatch();
-
-    const {
-        items,
-        loading
-    } = useSelector(
-        state => state.tickets
-    );
-
-    const user = useSelector(
-        state => state.auth.user
-    );
-
-    useEffect(() => {
-        dispatch(fetchTickets());
-    }, [dispatch]);
-
-    const handleResolve = (id) => {
-
-        if (
-            window.confirm(
-                "Are you sure you want to resolve this ticket?"
-            )
-        ) {
-            dispatch(resolveTicket(id));
-        }
-
-    };
-
-    return (
-        <div className="container">
-
-            <h1>Maintenance Tickets</h1>
-
-            {loading && (
-                <p>Loading tickets...</p>
-            )}
-
-            {items.map(ticket => (
-
-                <div
-                    className="ticket-card"
-                    key={ticket.id}
-                >
-
-                    <h3>
-                        Ticket #{ticket.id}
-                    </h3>
-
-                    <p>
-                        Site: {
-                            ticket.site?.siteName
-                        }
-                    </p>
-
-                    <p>
-                        Panel: {
-                            ticket.panel?.serialNumber
-                        }
-                    </p>
-
-                    <p>
-                        Issue: {
-                            ticket.issueDescription
-                        }
-                    </p>
-
-                    <p>
-                        Priority: {
-                            ticket.priority
-                        }
-                    </p>
-
-                    <p>
-                        Status: {
-                            ticket.status
-                        }
-                    </p>
-
-                    {user?.role ===
-                        "MAINTENANCE_TECHNICIAN" &&
-                        ticket.status !== "RESOLVED" && (
-
-                        <button
-                            onClick={() =>
-                                handleResolve(
-                                    ticket.id
-                                )
-                            }
-                        >
-                            Resolve Ticket
-                        </button>
-
-                    )}
-
-                </div>
-
-            ))}
-
+  return (
+    <div>
+      {isOperator && <button>+ Report Issue</button>}
+      {tickets.map((t) => (
+        <div key={t.id}>
+          <span>{t.issueDescription}</span>
+          <span>{t.priority}</span>
+          <span>{t.status}</span>
         </div>
-    );
+      ))}
+    </div>
+  );
 }
-
-export default MaintenanceTicketList;
