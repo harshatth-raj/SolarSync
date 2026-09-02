@@ -1,77 +1,61 @@
 package com.example.demo.service;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import java.security.Key;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Function;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.util.JwtUtils;
+import com.example.demo.entity.SystemUser;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
 
-    private final JwtUtils jwtUtils;
+    private static final String SECRET = "UGVha1BlcmZvcm0yMDI0U3VwZXJTZWNyZXRLZXlGb3JIbWFjU0hBMjU2U2lnbmluZ0F0TGVhc3QyNTZCaXRzTG9uZw==";
+    private static final long EXPIRATION = 86400000L;
 
-    public JwtService(JwtUtils jwtUtils) {
-        this.jwtUtils = jwtUtils;
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
     }
 
-    // Generate token using username
-    public String generateToken(String username) {
-        return jwtUtils.generateTokenFromUsername(username);
+    public String generateToken(SystemUser user) {
+        return Jwts.builder()
+                .setSubject(user)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
-    // Generate token using UserDetails
-    public String generateToken(UserDetails userDetails) {
-        return jwtUtils.generateToken(userDetails);
-    }
-
-    // Extract username
     public String extractUsername(String token) {
-        return jwtUtils.extractUsername(token);
+        return extractClaim(token, Claims::getSubject);
     }
 
-    // --------------------------------------------------
-    // Required by JwtAuthenticationFilter
-    // --------------------------------------------------
+    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
+        return resolver.apply(Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token).getBody());
+    }
 
     public boolean isTokenValid(String token) {
-
         try {
-            jwtUtils.extractAllClaims(token);
-            return true;
-
+            return !extractClaim(token, Claims::getExpiration).before(new Date());
         } catch (Exception e) {
             return false;
         }
     }
 
-    // --------------------------------------------------
-    // Required by JwtAuthenticationFilter
-    // --------------------------------------------------
-
-    public Authentication getAuthentication(String token) {
-
-        String username =
-                jwtUtils.extractUsername(token);
-
-        return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                username,
-                null,
-                java.util.Collections.emptyList()
-        );
-    }
-
-    // --------------------------------------------------
-    // UserDetails validation
-    // --------------------------------------------------
-
-    public boolean isTokenValid(
-            String token,
-            UserDetails userDetails) {
-
-        return jwtUtils.isTokenValid(
-                token,
-                userDetails
-        );
+    public UsernamePasswordAuthenticationToken getAuthentication(String token) {
+        String username = extractUsername(token);
+        return new UsernamePasswordAuthenticationToken(username, null,
+                List.of(new SimpleGrantedAuthority("ROLE_USER")));
     }
 }
