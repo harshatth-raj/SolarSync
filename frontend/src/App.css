@@ -298,13 +298,8 @@ h3 {
 
     padding: 40px 20px;
 
-    background:
-        radial-gradient(
-            circle at 80% 15%,
-            rgba(34, 197, 94, 0.08),
-            transparent 30%
-        ),
-        #08111f;
+    /* LIGHT BACKGROUND */
+    background: #ffffff;
 }
 
 
@@ -315,16 +310,16 @@ h3 {
 
     max-width: 500px;
 
-    background: #0d1728;
+    background: #ffffff;
 
-    border: 1px solid #2a3b53;
+    border: 1px solid #d1d5db;
 
     border-radius: 14px;
 
     padding: 48px 55px;
 
     box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.4);
+        0 20px 50px rgba(0, 0, 0, 0.12);
 }
 
 
@@ -333,7 +328,7 @@ h3 {
 .login-card h1 {
     text-align: center;
 
-    color: #22c55e;
+    color: #166534;
 
     font-size: 38px;
 
@@ -361,13 +356,13 @@ h3 {
 
     padding: 0 15px;
 
-    background: #08111f;
+    background: #ffffff;
 
-    border: 1px solid #334155;
+    border: 1px solid #cbd5e1;
 
     border-radius: 8px;
 
-    color: #f8fafc;
+    color: #1f2937;
 
     font-size: 15px;
 
@@ -377,14 +372,14 @@ h3 {
 }
 
 .login-card input::placeholder {
-    color: #64748b;
+    color: #94a3b8;
 }
 
 .login-card input:focus {
     border-color: #22c55e;
 
     box-shadow:
-        0 0 0 2px rgba(34, 197, 94, 0.1);
+        0 0 0 2px rgba(34, 197, 94, 0.12);
 }
 
 
@@ -420,7 +415,7 @@ h3 {
 .register-link {
     text-align: center;
 
-    color: #94a3b8;
+    color: #64748b;
 
     font-size: 14px;
 
@@ -433,7 +428,7 @@ h3 {
 
     border: none;
 
-    color: #22c55e;
+    color: #16a34a;
 
     font-size: 14px;
 
@@ -459,11 +454,11 @@ h3 {
 
     border-radius: 7px;
 
-    background: #35151a;
+    background: #fef2f2;
 
-    border: 1px solid #7f1d1d;
+    border: 1px solid #fecaca;
 
-    color: #f87171;
+    color: #dc2626;
 
     font-size: 14px;
 }
@@ -484,13 +479,8 @@ h3 {
 
     padding: 40px 20px;
 
-    background:
-        radial-gradient(
-            circle at 80% 15%,
-            rgba(34, 197, 94, 0.08),
-            transparent 30%
-        ),
-        #08111f;
+    /* LIGHT BACKGROUND */
+    background: #ffffff;
 }
 
 
@@ -501,16 +491,16 @@ h3 {
 
     max-width: 500px;
 
-    background: #0d1728;
+    background: #ffffff;
 
-    border: 1px solid #2a3b53;
+    border: 1px solid #d1d5db;
 
     border-radius: 14px;
 
     padding: 42px 55px;
 
     box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.4);
+        0 20px 50px rgba(0, 0, 0, 0.12);
 }
 
 
@@ -519,7 +509,7 @@ h3 {
 .register-card h1 {
     text-align: center;
 
-    color: #22c55e;
+    color: #166534;
 
     font-size: 36px;
 
@@ -532,7 +522,7 @@ h3 {
 .register-subtitle {
     text-align: center;
 
-    color: #94a3b8;
+    color: #64748b;
 
     font-size: 14px;
 
@@ -565,7 +555,7 @@ h3 {
 /* Labels */
 
 .register-card label {
-    color: #f1f5f9;
+    color: #374151;
 
     font-size: 14px;
 
@@ -583,13 +573,13 @@ h3 {
 
     padding: 0 14px;
 
-    background: #08111f;
+    background: #ffffff;
 
-    border: 1px solid #334155;
+    border: 1px solid #cbd5e1;
 
     border-radius: 8px;
 
-    color: #f8fafc;
+    color: #1f2937;
 
     font-size: 14px;
 
@@ -602,7 +592,7 @@ h3 {
 /* Placeholder */
 
 .register-card input::placeholder {
-    color: #64748b;
+    color: #94a3b8;
 }
 
 
@@ -613,7 +603,7 @@ h3 {
     border-color: #22c55e;
 
     box-shadow:
-        0 0 0 2px rgba(34, 197, 94, 0.1);
+        0 0 0 2px rgba(34, 197, 94, 0.12);
 }
 
 
@@ -674,11 +664,11 @@ h3 {
 
     border-radius: 7px;
 
-    background: #35151a;
+    background: #fef2f2;
 
-    border: 1px solid #7f1d1d;
+    border: 1px solid #fecaca;
 
-    color: #f87171;
+    color: #dc2626;
 
     font-size: 13px;
 }
@@ -695,11 +685,11 @@ h3 {
 
     border-radius: 7px;
 
-    background: rgba(34, 197, 94, 0.1);
+    background: #f0fdf4;
 
-    border: 1px solid rgba(34, 197, 94, 0.3);
+    border: 1px solid #bbf7d0;
 
-    color: #22c55e;
+    color: #15803d;
 
     font-size: 13px;
 }
@@ -710,7 +700,7 @@ h3 {
 .register-switch {
     text-align: center;
 
-    color: #94a3b8;
+    color: #64748b;
 
     font-size: 14px;
 
@@ -722,7 +712,7 @@ h3 {
 
     border: none;
 
-    color: #22c55e;
+    color: #16a34a;
 
     font-size: 14px;
 
