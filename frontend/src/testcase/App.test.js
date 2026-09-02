@@ -1,64 +1,33 @@
-import React from "react";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { Provider } from 'react-redux';
+import { store } from '../store';
+import { login, logout } from '../store/slices/authSlice';
+import axios from 'axios';
+import { BrowserRouter } from 'react-router-dom';
 
-import {
-    render,
-    screen,
-    fireEvent,
-    waitFor
-} from "@testing-library/react";
+jest.mock('axios');
 
-import "@testing-library/jest-dom";
+const DOMAIN_FIELD_1 = 'siteName';
+const DOMAIN_FIELD_2 = 'locationCoordinates';
+const DOMAIN_VALUE_1 = 'Phoenix Solar Array';
+const DOMAIN_VALUE_2 = '33.4484, -112.0740';
+const CRUD_DELETE_MSG = 'SolarSite deleted successfully.';
+const CRUD_CREATE_MSG = 'SolarSite created successfully.';
+const CRUD_UPDATE_MSG = 'SolarSite updated successfully.';
 
-import { Provider } from "react-redux";
-import { store } from "../store";
+const renderWithProviders = (ui) => {
+  return render(
+    <Provider store={store}>
+      <BrowserRouter>
+        {ui}
+      </BrowserRouter>
+    </Provider>
+  );
+};
 
-import {
-    login,
-    logout
-} from "../store/slices/authSlice";
-
-import axios from "axios";
-
-import { BrowserRouter } from "react-router-dom";
-
-
-// ============================================================
-// AXIOS MOCK
-// ============================================================
-
-jest.mock("axios", () => {
-
-    const mockApi = {
-        get: jest.fn(),
-        post: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-
-        interceptors: {
-            request: {
-                use: jest.fn()
-            },
-            response: {
-                use: jest.fn()
-            }
-        }
-    };
-
-    return {
-        __esModule: true,
-
-        default: {
-            get: mockApi.get,
-            post: mockApi.post,
-            put: mockApi.put,
-            patch: mockApi.patch,
-            delete: mockApi.delete,
-
-            create: jest.fn(() => mockApi)
-        }
-    };
-});
+// DAY-1 | Sprint: Architecture Setup & Role-Based Rendering
 
 test('T01 - Folder structure: Login component exists', async () => {
     const response = await import('../components/Login');
@@ -352,3 +321,4 @@ test('T30 - Login: placeholder matches implementation', async () => {
   renderWithProviders(<Login />);
   const userI = screen.getByPlaceholderText(/Enter your username/i);
   expect(userI).toBeInTheDocument();
+});
