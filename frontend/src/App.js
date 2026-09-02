@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import "./App.css";
-import Register from "./Register";
 
 import {
     BrowserRouter,
@@ -15,9 +14,9 @@ import {
 } from "react-redux";
 
 import Login from "./Login";
+import Register from "./Register";
 
-import Navbar
-    from "./components/layout/Navbar";
+import Navbar from "./components/layout/Navbar";
 
 import SolarSiteList
     from "./components/sites/SolarSiteList";
@@ -64,8 +63,6 @@ function Dashboard() {
         state => state.auth.user
     );
 
-
-    /* Fetch dashboard data */
 
     useEffect(() => {
 
@@ -123,14 +120,9 @@ function Dashboard() {
 
             <div className="dashboard-grid">
 
-                {/* Maintenance Distribution */}
-
                 <StatusDonut
                     analytics={analytics}
                 />
-
-
-                {/* Recent Activity */}
 
                 <RecentActivity
                     metrics={recent}
@@ -180,23 +172,18 @@ function ProtectedRoute({ children }) {
         localStorage.getItem("user")
     );
 
-
     if (!user) {
 
         return (
-
             <Navigate
                 to="/login"
                 replace
             />
-
         );
 
     }
 
-
     return children;
-
 }
 
 
@@ -227,6 +214,18 @@ function App() {
                     path="/login"
                     element={
                         <Login />
+                    }
+                />
+
+
+                {/* =========================
+                    REGISTER
+                ========================= */}
+
+                <Route
+                    path="/register"
+                    element={
+                        <Register />
                     }
                 />
 
