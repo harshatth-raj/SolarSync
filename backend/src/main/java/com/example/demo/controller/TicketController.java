@@ -21,12 +21,8 @@ public class TicketController {
         this.service = service;
     }
 
-    // --------------------------------------------------
-    // GET ALL TICKETS
-    // --------------------------------------------------
-
     @GetMapping
-    @PreAuthorize("hasAnyRole('SOLAR_OPERATOR', 'MAINTENANCE_TECHNICIAN', 'SYSTEM_ADMINISTRATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SOLAR_OPERATOR', 'ROLE_MAINTENANCE_TECHNICIAN', 'ROLE_SYSTEM_ADMINISTRATOR')")
     public ResponseEntity<List<MaintenanceTicket>> getTickets() {
 
         return ResponseEntity.ok(
@@ -34,12 +30,8 @@ public class TicketController {
         );
     }
 
-    // --------------------------------------------------
-    // CREATE TICKET
-    // --------------------------------------------------
-
     @PostMapping
-    @PreAuthorize("hasAnyRole('SOLAR_OPERATOR', 'MAINTENANCE_TECHNICIAN', 'SYSTEM_ADMINISTRATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SOLAR_OPERATOR', 'ROLE_MAINTENANCE_TECHNICIAN', 'ROLE_SYSTEM_ADMINISTRATOR')")
     public ResponseEntity<MaintenanceTicket> createTicket(
             @RequestBody TicketRequestDto dto) {
 
@@ -51,12 +43,8 @@ public class TicketController {
                 .body(ticket);
     }
 
-    // --------------------------------------------------
-    // ASSIGN TICKET
-    // --------------------------------------------------
-
     @PutMapping("/{ticketId}/assign")
-    @PreAuthorize("hasAnyRole('MAINTENANCE_TECHNICIAN', 'SYSTEM_ADMINISTRATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_MAINTENANCE_TECHNICIAN', 'ROLE_SYSTEM_ADMINISTRATOR')")
     public ResponseEntity<MaintenanceTicket> assignTicket(
             @PathVariable Long ticketId,
             @RequestParam Long technicianId) {
@@ -69,12 +57,8 @@ public class TicketController {
         );
     }
 
-    // --------------------------------------------------
-    // RESOLVE TICKET
-    // --------------------------------------------------
-
     @PatchMapping("/{ticketId}/resolve")
-    @PreAuthorize("hasAnyRole('MAINTENANCE_TECHNICIAN', 'SYSTEM_ADMINISTRATOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_MAINTENANCE_TECHNICIAN', 'ROLE_SYSTEM_ADMINISTRATOR')")
     public ResponseEntity<MaintenanceTicket> resolveTicket(
             @PathVariable Long ticketId) {
 
