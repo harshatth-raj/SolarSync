@@ -3,6 +3,7 @@
    GLOBAL APPLICATION STYLES
    ========================================================= */
 
+
 /* ---------------------------------------------------------
    RESET
 --------------------------------------------------------- */
@@ -414,6 +415,41 @@ h3 {
 }
 
 
+/* Login register link */
+
+.register-link {
+    text-align: center;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+
+    margin-top: 22px;
+}
+
+.register-link button,
+.register-link span {
+    background: transparent;
+
+    border: none;
+
+    color: #22c55e;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    padding: 0;
+
+    cursor: pointer;
+}
+
+.register-link button:hover,
+.register-link span:hover {
+    text-decoration: underline;
+}
+
+
 /* Error */
 
 .error-msg {
@@ -430,6 +466,275 @@ h3 {
     color: #f87171;
 
     font-size: 14px;
+}
+
+
+/* =========================================================
+   REGISTER
+   ========================================================= */
+
+.register-container {
+    min-height: calc(100vh - 68px);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 40px 20px;
+
+    background:
+        radial-gradient(
+            circle at 80% 15%,
+            rgba(34, 197, 94, 0.08),
+            transparent 30%
+        ),
+        #08111f;
+}
+
+
+/* Register card */
+
+.register-card {
+    width: 100%;
+
+    max-width: 500px;
+
+    background: #0d1728;
+
+    border: 1px solid #2a3b53;
+
+    border-radius: 14px;
+
+    padding: 42px 55px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.4);
+}
+
+
+/* Register title */
+
+.register-card h1 {
+    text-align: center;
+
+    color: #22c55e;
+
+    font-size: 36px;
+
+    margin-bottom: 8px;
+}
+
+
+/* Subtitle */
+
+.register-subtitle {
+    text-align: center;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+
+    margin-bottom: 28px;
+}
+
+
+/* Register form */
+
+.register-card form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+/* Form group */
+
+.register-card .form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+/* Labels */
+
+.register-card label {
+    color: #f1f5f9;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+/* Inputs and select */
+
+.register-card input,
+.register-card select {
+    width: 100%;
+
+    height: 48px;
+
+    padding: 0 14px;
+
+    background: #08111f;
+
+    border: 1px solid #334155;
+
+    border-radius: 8px;
+
+    color: #f8fafc;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+
+/* Placeholder */
+
+.register-card input::placeholder {
+    color: #64748b;
+}
+
+
+/* Focus */
+
+.register-card input:focus,
+.register-card select:focus {
+    border-color: #22c55e;
+
+    box-shadow:
+        0 0 0 2px rgba(34, 197, 94, 0.1);
+}
+
+
+/* Select */
+
+.register-card select {
+    cursor: pointer;
+}
+
+
+/* Register button */
+
+.register-card .register-button {
+    width: 100%;
+
+    height: 46px;
+
+    margin-top: 5px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #22c55e;
+
+    color: #06120b;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    transition: 0.2s ease;
+}
+
+.register-card .register-button:hover {
+    background: #16a34a;
+
+    transform: translateY(-1px);
+}
+
+.register-card .register-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* Register error */
+
+.register-error {
+    width: 100%;
+
+    padding: 11px 13px;
+
+    margin-top: 14px;
+
+    border-radius: 7px;
+
+    background: #35151a;
+
+    border: 1px solid #7f1d1d;
+
+    color: #f87171;
+
+    font-size: 13px;
+}
+
+
+/* Register success */
+
+.register-success {
+    width: 100%;
+
+    padding: 11px 13px;
+
+    margin-top: 14px;
+
+    border-radius: 7px;
+
+    background: rgba(34, 197, 94, 0.1);
+
+    border: 1px solid rgba(34, 197, 94, 0.3);
+
+    color: #22c55e;
+
+    font-size: 13px;
+}
+
+
+/* Switch to login */
+
+.register-switch {
+    text-align: center;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+
+    margin-top: 22px;
+}
+
+.register-switch button {
+    background: transparent;
+
+    border: none;
+
+    color: #22c55e;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    padding: 0;
+
+    cursor: pointer;
+}
+
+.register-switch button:hover {
+    text-decoration: underline;
 }
 
 
@@ -553,7 +858,7 @@ h3 {
 }
 
 
-/* Give cards different accent borders */
+/* Different accent borders */
 
 .stat-card:nth-child(1) {
     border-left: 3px solid #2563eb;
@@ -1005,7 +1310,7 @@ h3 {
 }
 
 
-/* Inputs */
+/* Modal inputs */
 
 .modal-card input,
 .modal-card select,
@@ -1318,7 +1623,7 @@ h3 {
 
 /* =========================================================
    RESPONSIVE - MOBILE
-   ========================================================= */
+========================================================= */
 
 @media (max-width: 550px) {
 
@@ -1380,12 +1685,20 @@ h3 {
         font-size: 30px;
     }
 
+    .register-card {
+        padding: 35px 25px;
+    }
+
+    .register-card h1 {
+        font-size: 30px;
+    }
+
 }
 
 
 /* =========================================================
    RESPONSIVE - VERY SMALL MOBILE
-   ========================================================= */
+========================================================= */
 
 @media (max-width: 380px) {
 
