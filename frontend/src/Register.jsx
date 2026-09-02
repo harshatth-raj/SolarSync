@@ -20,23 +20,96 @@ function Register() {
     });
 
     const [success, setSuccess] = useState("");
+    const [validationError, setValidationError] = useState("");
 
     const handleChange = (e) => {
+        const { name, value } = e.target;
+
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: value
         });
+
+        setValidationError("");
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         setSuccess("");
+        setValidationError("");
 
-        if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match.");
+        /* =================================================
+           USERNAME VALIDATION
+           Only A-Z and a-z are allowed
+        ================================================= */
+
+        const usernameRegex = /^[A-Za-z]+$/;
+
+        if (!usernameRegex.test(formData.username)) {
+            setValidationError(
+                "Username must contain only letters (A-Z and a-z)."
+            );
             return;
         }
+
+
+        /* =================================================
+           PASSWORD VALIDATION
+        ================================================= */
+
+        const uppercaseRegex = /[A-Z]/;
+        const lowercaseRegex = /[a-z]/;
+        const numberRegex = /[0-9]/;
+        const specialCharacterRegex = /[#@$!*]/;
+
+        if (!uppercaseRegex.test(formData.password)) {
+            setValidationError(
+                "Password must contain at least one uppercase letter."
+            );
+            return;
+        }
+
+        if (!lowercaseRegex.test(formData.password)) {
+            setValidationError(
+                "Password must contain at least one lowercase letter."
+            );
+            return;
+        }
+
+        if (!numberRegex.test(formData.password)) {
+            setValidationError(
+                "Password must contain at least one number."
+            );
+            return;
+        }
+
+        if (!specialCharacterRegex.test(formData.password)) {
+            setValidationError(
+                "Password must contain at least one special character (#, $, @, !, *)."
+            );
+            return;
+        }
+
+
+        /* =================================================
+           CONFIRM PASSWORD
+        ================================================= */
+
+        if (
+            formData.password !==
+            formData.confirmPassword
+        ) {
+            setValidationError(
+                "Passwords do not match."
+            );
+            return;
+        }
+
+
+        /* =================================================
+           DATA SENT TO BACKEND
+        ================================================= */
 
         const registerData = {
             username: formData.username,
@@ -45,11 +118,17 @@ function Register() {
             role: formData.role
         };
 
+
+        /* =================================================
+           REGISTER
+        ================================================= */
+
         const result = await dispatch(
             register(registerData)
         );
 
         if (register.fulfilled.match(result)) {
+
             setSuccess(
                 "Registration successful! Redirecting to login..."
             );
@@ -73,7 +152,10 @@ function Register() {
 
                 <form onSubmit={handleSubmit}>
 
+                    {/* USERNAME */}
+
                     <div className="register-form-group">
+
                         <label>Username</label>
 
                         <input
@@ -82,12 +164,18 @@ function Register() {
                             placeholder="Enter username"
                             value={formData.username}
                             onChange={handleChange}
+                            pattern="[A-Za-z]+"
+                            title="Username can contain only letters (A-Z and a-z)"
                             required
                         />
+
                     </div>
 
 
+                    {/* EMAIL */}
+
                     <div className="register-form-group">
+
                         <label>Email</label>
 
                         <input
@@ -98,10 +186,14 @@ function Register() {
                             onChange={handleChange}
                             required
                         />
+
                     </div>
 
 
+                    {/* PASSWORD */}
+
                     <div className="register-form-group">
+
                         <label>Password</label>
 
                         <input
@@ -112,10 +204,26 @@ function Register() {
                             onChange={handleChange}
                             required
                         />
+
+                        <small className="password-requirements">
+                            Password must contain:
+                            <br />
+                            • One uppercase letter
+                            <br />
+                            • One lowercase letter
+                            <br />
+                            • One number
+                            <br />
+                            • One special character (#, $, @, !, *)
+                        </small>
+
                     </div>
 
 
+                    {/* CONFIRM PASSWORD */}
+
                     <div className="register-form-group">
+
                         <label>Confirm Password</label>
 
                         <input
@@ -126,10 +234,14 @@ function Register() {
                             onChange={handleChange}
                             required
                         />
+
                     </div>
 
 
+                    {/* ROLE */}
+
                     <div className="register-form-group">
+
                         <label>Role</label>
 
                         <select
@@ -138,6 +250,7 @@ function Register() {
                             onChange={handleChange}
                             required
                         >
+
                             <option value="SOLAR_OPERATOR">
                                 Solar Operator
                             </option>
@@ -149,9 +262,22 @@ function Register() {
                             <option value="SYSTEM_ADMINISTRATOR">
                                 System Administrator
                             </option>
+
                         </select>
+
                     </div>
 
+
+                    {/* VALIDATION ERROR */}
+
+                    {validationError && (
+                        <div className="register-error">
+                            {validationError}
+                        </div>
+                    )}
+
+
+                    {/* REGISTER BUTTON */}
 
                     <button
                         type="submit"
@@ -166,12 +292,16 @@ function Register() {
                 </form>
 
 
+                {/* BACKEND ERROR */}
+
                 {error && (
                     <div className="register-error">
                         {error}
                     </div>
                 )}
 
+
+                {/* SUCCESS */}
 
                 {success && (
                     <div className="register-success">
@@ -180,7 +310,10 @@ function Register() {
                 )}
 
 
+                {/* LOGIN */}
+
                 <p className="register-switch">
+
                     Already have an account?{" "}
 
                     <button
@@ -189,6 +322,7 @@ function Register() {
                     >
                         Login
                     </button>
+
                 </p>
 
             </div>

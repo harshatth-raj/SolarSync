@@ -241,7 +241,7 @@ h3 {
 }
 
 
-/* Green */
+/* Green button */
 
 .btn-success {
     background: #22c55e;
@@ -264,7 +264,7 @@ h3 {
 }
 
 
-/* Red */
+/* Red button */
 
 .btn-danger {
     background: #ef4444;
@@ -300,11 +300,11 @@ h3 {
 
     padding: 40px 20px;
 
-    background: #ffffff;
+    background: #ffffff !important;
 }
 
 
-/* Login card */
+/* Login Card */
 
 .login-card {
     width: 100%;
@@ -313,7 +313,7 @@ h3 {
 
     padding: 42px 50px;
 
-    background: #ffffff;
+    background: #ffffff !important;
 
     border: 1px solid #d1d5db;
 
@@ -324,12 +324,12 @@ h3 {
 }
 
 
-/* Login heading */
+/* Login Heading */
 
 .login-card h1 {
     text-align: center;
 
-    color: #222222;
+    color: #222222 !important;
 
     font-size: 34px;
 
@@ -339,7 +339,7 @@ h3 {
 }
 
 
-/* Login form */
+/* Login Form */
 
 .login-card form {
     display: flex;
@@ -348,7 +348,7 @@ h3 {
 }
 
 
-/* Login form group */
+/* Login Form Group */
 
 .login-form-group {
     display: flex;
@@ -361,10 +361,10 @@ h3 {
 }
 
 
-/* Login labels */
+/* Login Labels */
 
 .login-form-group label {
-    color: #374151;
+    color: #374151 !important;
 
     font-size: 14px;
 
@@ -372,7 +372,7 @@ h3 {
 }
 
 
-/* Login inputs */
+/* Login Inputs */
 
 .login-form-group input {
     width: 100%;
@@ -381,13 +381,13 @@ h3 {
 
     padding: 0 14px;
 
-    background: #ffffff;
+    background: #ffffff !important;
 
     border: 1px solid #cbd5e1;
 
     border-radius: 8px;
 
-    color: #222222;
+    color: #222222 !important;
 
     font-size: 14px;
 
@@ -397,7 +397,7 @@ h3 {
 }
 
 .login-form-group input::placeholder {
-    color: #6b7280;
+    color: #6b7280 !important;
 }
 
 .login-form-group input:focus {
@@ -408,7 +408,7 @@ h3 {
 }
 
 
-/* Login button */
+/* Login Button */
 
 .login-card button[type="submit"] {
     width: 100%;
@@ -421,9 +421,9 @@ h3 {
 
     border-radius: 7px;
 
-    background: #22c55e;
+    background: #22c55e !important;
 
-    color: #06120b;
+    color: #06120b !important;
 
     font-size: 15px;
 
@@ -433,7 +433,7 @@ h3 {
 }
 
 .login-card button[type="submit"]:hover {
-    background: #16a34a;
+    background: #16a34a !important;
 
     transform: translateY(-1px);
 }
@@ -447,7 +447,7 @@ h3 {
 }
 
 
-/* Login error */
+/* Login Error */
 
 .login-card .error-msg {
     width: 100%;
@@ -462,18 +462,18 @@ h3 {
 
     border: 1px solid #fecaca;
 
-    color: #dc2626;
+    color: #dc2626 !important;
 
     font-size: 13px;
 }
 
 
-/* Register link */
+/* Register Link */
 
 .login-card .register-link {
     text-align: center;
 
-    color: #64748b;
+    color: #64748b !important;
 
     font-size: 14px;
 
@@ -481,7 +481,7 @@ h3 {
 }
 
 
-/* Register link button */
+/* Register Button */
 
 .login-card .register-link button {
     width: auto;
@@ -492,11 +492,11 @@ h3 {
 
     padding: 0;
 
-    background: transparent;
+    background: transparent !important;
 
     border: none;
 
-    color: #16a34a;
+    color: #16a34a !important;
 
     font-size: 14px;
 
@@ -506,7 +506,7 @@ h3 {
 .login-card .register-link button:hover {
     text-decoration: underline;
 
-    background: transparent;
+    background: transparent !important;
 }
 
 
@@ -527,11 +527,11 @@ h3 {
 
     padding: 40px 20px;
 
-    background: #ffffff;
+    background: #ffffff !important;
 }
 
 
-/* Register card */
+/* Register Card */
 
 .register-card {
     width: 100%;
@@ -540,7 +540,7 @@ h3 {
 
     padding: 42px 50px;
 
-    background: #ffffff;
+    background: #ffffff !important;
 
     border: 1px solid #d1d5db;
 
@@ -551,12 +551,12 @@ h3 {
 }
 
 
-/* Register heading */
+/* Register Heading */
 
 .register-card h1 {
     text-align: center;
 
-    color: #222222;
+    color: #222222 !important;
 
     font-size: 34px;
 
@@ -566,12 +566,12 @@ h3 {
 }
 
 
-/* Register subtitle */
+/* Register Subtitle */
 
 .register-subtitle {
     text-align: center;
 
-    color: #64748b;
+    color: #64748b !important;
 
     font-size: 14px;
 
@@ -579,7 +579,7 @@ h3 {
 }
 
 
-/* Register form */
+/* Register Form */
 
 .register-card form {
     display: flex;
@@ -588,7 +588,7 @@ h3 {
 }
 
 
-/* Register form group */
+/* Register Form Group */
 
 .register-form-group {
     display: flex;
@@ -601,10 +601,10 @@ h3 {
 }
 
 
-/* Register labels */
+/* Register Labels */
 
 .register-form-group label {
-    color: #374151;
+    color: #374151 !important;
 
     font-size: 14px;
 
@@ -612,7 +612,7 @@ h3 {
 }
 
 
-/* Register inputs */
+/* Register Inputs */
 
 .register-form-group input,
 .register-form-group select {
@@ -622,13 +622,13 @@ h3 {
 
     padding: 0 14px;
 
-    background: #ffffff;
+    background: #ffffff !important;
 
     border: 1px solid #cbd5e1;
 
     border-radius: 8px;
 
-    color: #222222;
+    color: #222222 !important;
 
     font-size: 14px;
 
@@ -638,14 +638,14 @@ h3 {
 }
 
 
-/* Register placeholder */
+/* Placeholder */
 
 .register-form-group input::placeholder {
-    color: #6b7280;
+    color: #6b7280 !important;
 }
 
 
-/* Register focus */
+/* Focus */
 
 .register-form-group input:focus,
 .register-form-group select:focus {
@@ -656,14 +656,14 @@ h3 {
 }
 
 
-/* Register select */
+/* Select */
 
 .register-form-group select {
     cursor: pointer;
 }
 
 
-/* Register button */
+/* Register Button */
 
 .register-card .register-button {
     width: 100%;
@@ -676,9 +676,9 @@ h3 {
 
     border-radius: 7px;
 
-    background: #22c55e;
+    background: #22c55e !important;
 
-    color: #06120b;
+    color: #06120b !important;
 
     font-size: 15px;
 
@@ -688,7 +688,7 @@ h3 {
 }
 
 .register-card .register-button:hover {
-    background: #16a34a;
+    background: #16a34a !important;
 
     transform: translateY(-1px);
 }
@@ -702,7 +702,7 @@ h3 {
 }
 
 
-/* Register error */
+/* Register Error */
 
 .register-card .register-error {
     width: 100%;
@@ -713,17 +713,17 @@ h3 {
 
     border-radius: 7px;
 
-    background: #fef2f2;
+    background: #fef2f2 !important;
 
-    border: 1px solid #fecaca;
+    border: 1px solid #fecaca !important;
 
-    color: #dc2626;
+    color: #dc2626 !important;
 
     font-size: 13px;
 }
 
 
-/* Register success */
+/* Register Success */
 
 .register-card .register-success {
     width: 100%;
@@ -734,11 +734,11 @@ h3 {
 
     border-radius: 7px;
 
-    background: #f0fdf4;
+    background: #f0fdf4 !important;
 
-    border: 1px solid #bbf7d0;
+    border: 1px solid #bbf7d0 !important;
 
-    color: #15803d;
+    color: #15803d !important;
 
     font-size: 13px;
 }
@@ -749,7 +749,7 @@ h3 {
 .register-card .register-switch {
     text-align: center;
 
-    color: #64748b;
+    color: #64748b !important;
 
     font-size: 14px;
 
@@ -757,7 +757,7 @@ h3 {
 }
 
 
-/* Login button inside switch */
+/* Login Button */
 
 .register-card .register-switch button {
     width: auto;
@@ -768,11 +768,11 @@ h3 {
 
     padding: 0;
 
-    background: transparent;
+    background: transparent !important;
 
     border: none;
 
-    color: #16a34a;
+    color: #16a34a !important;
 
     font-size: 14px;
 
@@ -782,7 +782,22 @@ h3 {
 .register-card .register-switch button:hover {
     text-decoration: underline;
 
-    background: transparent;
+    background: transparent !important;
+}
+
+
+/* =========================================================
+   PASSWORD REQUIREMENTS
+   ========================================================= */
+
+.password-requirements {
+    color: #64748b;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    margin-top: 2px;
 }
 
 
@@ -795,7 +810,7 @@ h3 {
 }
 
 
-/* Welcome card */
+/* Welcome Card */
 
 .welcome-card {
     background: #0d1728;
@@ -841,13 +856,6 @@ h3 {
 }
 
 
-/* Error message */
-
-.error-msg {
-    border-radius: 7px;
-}
-
-
 /* =========================================================
    STAT CARDS
    ========================================================= */
@@ -864,7 +872,7 @@ h3 {
 }
 
 
-/* Individual card */
+/* Individual Card */
 
 .stat-card {
     min-height: 112px;
@@ -887,7 +895,7 @@ h3 {
 }
 
 
-/* Card title */
+/* Card Title */
 
 .stat-card h3 {
     color: #7f8da1;
@@ -902,7 +910,7 @@ h3 {
 }
 
 
-/* Card value */
+/* Card Value */
 
 .stat-card p {
     color: #f8fafc;
@@ -913,7 +921,7 @@ h3 {
 }
 
 
-/* Accent borders */
+/* Accent Borders */
 
 .stat-card:nth-child(1) {
     border-left: 3px solid #2563eb;
@@ -996,7 +1004,7 @@ h3 {
 }
 
 
-/* Donut center */
+/* Donut Center */
 
 .donut-center {
     width: 102px;
@@ -1120,7 +1128,7 @@ h3 {
 }
 
 
-/* No activity */
+/* No Activity */
 
 .recent-activity > p {
     color: #64748b;
@@ -1203,7 +1211,7 @@ h3 {
 }
 
 
-/* Site card */
+/* Site Card */
 
 .site-card {
     background: #0d1728;
@@ -1281,7 +1289,7 @@ h3 {
 }
 
 
-/* Resolve button */
+/* Resolve Button */
 
 .ticket-card button {
     margin-top: 10px;
@@ -1329,7 +1337,7 @@ h3 {
 }
 
 
-/* Modal */
+/* Modal Card */
 
 .modal-card {
     width: 100%;
@@ -1367,7 +1375,7 @@ h3 {
 }
 
 
-/* Modal inputs */
+/* Modal Inputs */
 
 .modal-card input,
 .modal-card select,
@@ -1411,7 +1419,7 @@ h3 {
 }
 
 
-/* Modal buttons */
+/* Modal Buttons */
 
 .modal-card button {
     padding: 10px 15px;
@@ -1478,7 +1486,7 @@ h3 {
 
 
 /* =========================================================
-   TABLE
+   TABLE STYLE
    ========================================================= */
 
 .data-table {
@@ -1735,7 +1743,7 @@ h3 {
     }
 
 
-    /* Login mobile */
+    /* Login */
 
     .login-container {
         min-height: calc(100vh - 68px);
@@ -1752,7 +1760,7 @@ h3 {
     }
 
 
-    /* Register mobile */
+    /* Register */
 
     .register-container {
         min-height: calc(100vh - 68px);
