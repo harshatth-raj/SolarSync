@@ -14,16 +14,16 @@ import io.jsonwebtoken.security.Keys;
 
 public class JwtUtils {
 
-    private static final String SECRET_KEY =
+    private String SECRET_KEY =
             "VGhpc0lzQVNlY3VyZVNvbGFyU3luY0pXVFNlY3JldEtleUZvclNwcmluZ0Jvb3Qz";
 
-    private static final long JWT_EXPIRATION =
+    private long JWT_EXPIRATION =
             1000 * 60 * 60 * 24;
 
-    private JwtUtils() {
+    public JwtUtils() {
     }
 
-    private static Key getSigningKey() {
+    private Key getSigningKey() {
 
         byte[] keyBytes =
                 Decoders.BASE64.decode(SECRET_KEY);
@@ -35,7 +35,8 @@ public class JwtUtils {
     // Generate JWT using username
     // --------------------------------------------------
 
-    public static String generateToken(String username) {
+    public static String generateTokenFromUsername(
+            String username) {
 
         return Jwts.builder()
                 .setSubject(username)
@@ -71,23 +72,18 @@ public class JwtUtils {
 
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-
                 .claim("role", role)
-
                 .setIssuedAt(new Date())
-
                 .setExpiration(
                         new Date(
                                 System.currentTimeMillis()
                                         + JWT_EXPIRATION
                         )
                 )
-
                 .signWith(
                         getSigningKey(),
                         SignatureAlgorithm.HS256
                 )
-
                 .compact();
     }
 
@@ -149,7 +145,24 @@ public class JwtUtils {
     }
 
     // --------------------------------------------------
-    // Validate token
+    // isTokenValid - required by validation
+    // --------------------------------------------------
+
+    public boolean isTokenValid(
+            String token,
+            UserDetails userDetails) {
+
+        String username =
+                extractUsername(token);
+
+        return username.equals(
+                userDetails.getUsername()
+        )
+                && !isTokenExpired(token);
+    }
+
+    // --------------------------------------------------
+    // Existing validation
     // --------------------------------------------------
 
     public static boolean validateToken(
@@ -167,11 +180,17 @@ public class JwtUtils {
         }
     }
 
-    // --------------------------------------------------
-    // Validate token with UserDetails
-    // --------------------------------------------------
-
     public static boolean validateToken(
+            String token,
+            UserDetails userDetails) {
+
+        return usernameMatches(
+                token,
+                userDetails
+        );
+    }
+
+    private static boolean usernameMatches(
             String token,
             UserDetails userDetails) {
 
