@@ -19,7 +19,7 @@ public class JwtService {
 
     public String generateToken(String username) {
 
-        return JwtUtils.generateToken(username);
+        return JwtUtils.generateTokenFromUsername(username);
     }
 
     // --------------------------------------------------

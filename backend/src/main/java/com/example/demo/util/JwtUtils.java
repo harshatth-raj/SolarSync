@@ -31,12 +31,8 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // --------------------------------------------------
     // Generate JWT using username
-    // --------------------------------------------------
-
-    public static String generateTokenFromUsername(
-            String username) {
+    public String generateTokenFromUsername(String username) {
 
         return Jwts.builder()
                 .setSubject(username)
@@ -54,12 +50,8 @@ public class JwtUtils {
                 .compact();
     }
 
-    // --------------------------------------------------
     // Generate JWT using UserDetails
-    // --------------------------------------------------
-
-    public static String generateToken(
-            UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
 
         String role = userDetails
                 .getAuthorities()
@@ -87,12 +79,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    // --------------------------------------------------
-    // Extract username
-    // --------------------------------------------------
-
-    public static String extractUsername(
-            String token) {
+    public String extractUsername(String token) {
 
         return extractClaim(
                 token,
@@ -100,12 +87,7 @@ public class JwtUtils {
         );
     }
 
-    // --------------------------------------------------
-    // Extract role
-    // --------------------------------------------------
-
-    public static String extractRole(
-            String token) {
+    public String extractRole(String token) {
 
         return extractClaim(
                 token,
@@ -116,11 +98,7 @@ public class JwtUtils {
         );
     }
 
-    // --------------------------------------------------
-    // Extract any claim
-    // --------------------------------------------------
-
-    public static <T> T extractClaim(
+    public <T> T extractClaim(
             String token,
             Function<Claims, T> claimsResolver) {
 
@@ -130,12 +108,7 @@ public class JwtUtils {
         return claimsResolver.apply(claims);
     }
 
-    // --------------------------------------------------
-    // Extract all claims
-    // --------------------------------------------------
-
-    public static Claims extractAllClaims(
-            String token) {
+    public Claims extractAllClaims(String token) {
 
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -143,10 +116,6 @@ public class JwtUtils {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
-    // --------------------------------------------------
-    // isTokenValid - required by validation
-    // --------------------------------------------------
 
     public boolean isTokenValid(
             String token,
@@ -161,54 +130,27 @@ public class JwtUtils {
                 && !isTokenExpired(token);
     }
 
-    // --------------------------------------------------
-    // Existing validation
-    // --------------------------------------------------
-
-    public static boolean validateToken(
-            String token) {
+    public boolean validateToken(String token) {
 
         try {
-
             extractAllClaims(token);
-
             return true;
-
         } catch (Exception e) {
-
             return false;
         }
     }
 
-    public static boolean validateToken(
+    public boolean validateToken(
             String token,
             UserDetails userDetails) {
 
-        return usernameMatches(
+        return isTokenValid(
                 token,
                 userDetails
         );
     }
 
-    private static boolean usernameMatches(
-            String token,
-            UserDetails userDetails) {
-
-        String username =
-                extractUsername(token);
-
-        return username.equals(
-                userDetails.getUsername()
-        )
-                && !isTokenExpired(token);
-    }
-
-    // --------------------------------------------------
-    // Check expiration
-    // --------------------------------------------------
-
-    private static boolean isTokenExpired(
-            String token) {
+    private boolean isTokenExpired(String token) {
 
         return extractAllClaims(token)
                 .getExpiration()
