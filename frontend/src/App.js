@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate
+  Navigate,
+  Link,
+  useNavigate
 } from 'react-router-dom';
 import axios from 'axios';
 
@@ -16,7 +18,10 @@ import StatusDonut from './components/dashboard/StatusDonut';
 import RecentActivity from './components/dashboard/RecentActivity';
 
 export function Dashboard() {
+
   const user = useSelector((s) => s.auth.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [stats, setStats] = useState({
     totalGeneration: 0,
@@ -31,7 +36,7 @@ export function Dashboard() {
   const [metrics, setMetrics] = useState([]);
 
   useEffect(() => {
-    // Dashboard analytics
+
     axios
       .get('http://localhost:8081/api/metrics/analytics')
       .then((res) => {
@@ -39,16 +44,28 @@ export function Dashboard() {
       })
       .catch(() => {});
 
-    // Recent energy activity
     axios
       .get('http://localhost:8081/api/metrics/recent')
       .then((res) => {
-        setMetrics(Array.isArray(res.data) ? res.data : []);
+        setMetrics(
+          Array.isArray(res.data)
+            ? res.data
+            : []
+        );
       })
       .catch(() => {});
+
   }, []);
 
-  const statusData = [
+  const handleLogout = () => {
+    dispatch({
+      type: 'auth/logout'
+    });
+
+    navigate('/login');
+  };
+
+  const donutData = [
     {
       label: 'Open',
       value: stats.openTickets || 0,
@@ -67,75 +84,107 @@ export function Dashboard() {
   ];
 
   return (
+
     <div className="dashboard-page">
 
-      {/* HEADER */}
+      {/* ================= NAVBAR ================= */}
 
-      <div className="dashboard-header">
+      <nav className="dashboard-navbar">
 
-        <div>
-          <h1>Welcome back, {user?.username}!</h1>
-
-          <p>
-            Monitor your SolarSync energy system
-          </p>
+        <div className="dashboard-logo">
+          SolarSync
         </div>
 
-        <div className="dashboard-role">
-          {user?.role}
+        <div className="dashboard-nav-links">
+
+          <Link to="/">
+            Home
+          </Link>
+
+          <Link to="/sites">
+            Sites
+          </Link>
+
+          <Link to="/tickets">
+            Tickets
+          </Link>
+
         </div>
 
-      </div>
+        <div className="dashboard-user">
+
+          <span>
+            Welcome back, {user?.username}
+          </span>
+
+          <button onClick={handleLogout}>
+            Logout
+          </button>
+
+        </div>
+
+      </nav>
 
 
-      {/* STATISTICS */}
+      {/* ================= MAIN CONTENT ================= */}
 
-      <StatCards stats={stats} />
+      <main className="dashboard-content">
 
 
-      {/* DASHBOARD MIDDLE SECTION */}
+        {/* ================= WELCOME ================= */}
 
-      <div className="dashboard-grid">
+        <section className="dashboard-welcome">
 
-        <StatusDonut data={statusData} />
+          <div>
 
-        <div className="dashboard-panel">
+            <h1>
+              Welcome back, {user?.username}!
+            </h1>
 
-          <h3>Ticket Summary</h3>
+            <p className="dashboard-role">
+              You are {user?.role}
+            </p>
 
-          <div className="ticket-summary">
-
-            <div>
-              <strong>{stats.openTickets || 0}</strong>
-              <span>Open</span>
-            </div>
-
-            <div>
-              <strong>{stats.inProgressTickets || 0}</strong>
-              <span>In Progress</span>
-            </div>
-
-            <div>
-              <strong>{stats.resolvedTickets || 0}</strong>
-              <span>Resolved</span>
-            </div>
+            <p className="dashboard-status">
+              System is currently operating at optimal efficiency.
+            </p>
 
           </div>
 
+        </section>
+
+
+        {/* ================= STAT CARDS ================= */}
+
+        <StatCards stats={stats} />
+
+
+        {/* ================= LOWER GRID ================= */}
+
+        <div className="dashboard-lower-grid">
+
+          {/* MAINTENANCE DISTRIBUTION */}
+
+          <StatusDonut data={donutData} />
+
+
+          {/* RECENT ACTIVITY */}
+
+          <section className="recent-activity-panel">
+
+            <h3>
+              Recent Activity
+            </h3>
+
+            <RecentActivity
+              metrics={metrics}
+            />
+
+          </section>
+
         </div>
 
-      </div>
-
-
-      {/* RECENT ACTIVITY */}
-
-      <div className="dashboard-panel recent-panel">
-
-        <h3>Recent Activity</h3>
-
-        <RecentActivity metrics={metrics} />
-
-      </div>
+      </main>
 
     </div>
   );
@@ -143,9 +192,13 @@ export function Dashboard() {
 
 
 function AppContent() {
-  const user = useSelector((s) => s.auth.user);
+
+  const user = useSelector(
+    (s) => s.auth.user
+  );
 
   return (
+
     <Routes>
 
       <Route
@@ -181,9 +234,14 @@ function AppContent() {
 
 
 export default function App() {
+
   return (
+
     <BrowserRouter>
+
       <AppContent />
+
     </BrowserRouter>
+
   );
 }

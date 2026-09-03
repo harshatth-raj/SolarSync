@@ -1,76 +1,77 @@
 import React from 'react';
 
-export default function RecentActivity({ metrics = [] }) {
+export default function RecentActivity({
+    metrics = []
+}) {
 
     if (metrics.length === 0) {
+
         return (
-            <div className="empty-activity">
+            <div className="activity-empty">
                 No recent activity
             </div>
         );
     }
 
     return (
-        <div className="recent-activity">
+
+        <div className="recent-activity-list">
 
             {metrics.map((m, index) => (
 
                 <div
-                    className="activity-item"
+                    className="activity-row"
                     key={m.id || index}
                 >
 
-                    <div className="activity-time">
+                    <div className="activity-info">
 
-                        {m.timestamp
-                            ? new Date(
-                                m.timestamp
-                            ).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })
-                            : '--:--'
-                        }
+                        <span className="activity-time">
 
-                    </div>
+                            {m.timestamp
+                                ? new Date(
+                                    m.timestamp
+                                ).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })
+                                : '--:--'
+                            }
 
-
-                    <div className="activity-panel">
-
-                        <strong>
-                            Panel #
-                            {m.panel?.id || m.panelId || "N/A"}
-                        </strong>
-
-                    </div>
-
-
-                    <div className="activity-value">
-
-                        <span>
-                            Generation
                         </span>
 
-                        <strong>
+                        <span className="activity-panel">
+
+                            Panel #
+                            {m.panel?.id ||
+                                m.panelId ||
+                                "N/A"}
+
+                        </span>
+
+                    </div>
+
+
+                    <div className="activity-values">
+
+                        <span className="generation-value">
+
+                            ⚡
                             {Number(
                                 m.generationKwh || 0
                             ).toFixed(2)} KWh
-                        </strong>
 
-                    </div>
-
-
-                    <div className="activity-value">
-
-                        <span>
-                            Grid Consumption
                         </span>
 
-                        <strong>
+
+                        <span className="consumption-value">
+
+                            ▼
                             {Number(
                                 m.gridConsumptionKwh || 0
                             ).toFixed(2)} KWh
-                        </strong>
+
+                        </span>
 
                     </div>
 

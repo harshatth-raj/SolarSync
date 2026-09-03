@@ -3,52 +3,60 @@ import React from "react";
 function StatusDonut({ data = [] }) {
 
     const total = data.reduce(
-        (sum, item) => sum + Number(item.value || 0),
+        (sum, item) =>
+            sum + Number(item.value || 0),
         0
     );
 
     if (total === 0) {
-        return (
-            <div className="status-donut">
 
-                <h3>Maintenance Ticket Status</h3>
+        return (
+
+            <section className="status-donut">
+
+                <h3>
+                    Maintenance Distribution
+                </h3>
 
                 <div className="donut-empty">
                     No Ticket Data
                 </div>
 
-            </div>
+            </section>
+
         );
     }
 
-    let currentPercentage = 0;
+    let current = 0;
 
-    const gradientParts = data.map((item) => {
+    const gradient = data.map((item) => {
 
         const percentage =
             (Number(item.value || 0) / total) * 100;
 
-        const start = currentPercentage;
+        const start = current;
 
-        currentPercentage += percentage;
+        current += percentage;
 
-        return `${item.color} ${start}% ${currentPercentage}%`;
+        return `${item.color} ${start}% ${current}%`;
 
-    });
+    }).join(", ");
 
     return (
-        <div className="status-donut">
 
-            <h3>Maintenance Ticket Status</h3>
+        <section className="status-donut">
+
+            <h3>
+                Maintenance Distribution
+            </h3>
 
             <div className="donut-container">
 
                 <div
                     className="donut"
                     style={{
-                        background: `conic-gradient(
-                            ${gradientParts.join(", ")}
-                        )`
+                        background:
+                            `conic-gradient(${gradient})`
                     }}
                 >
 
@@ -60,28 +68,35 @@ function StatusDonut({ data = [] }) {
 
             </div>
 
+
             <div className="donut-legend">
 
                 {data.map((item) => (
 
-                    <p key={item.label}>
+                    <div
+                        className="donut-legend-item"
+                        key={item.label}
+                    >
 
                         <span
                             className="legend-dot"
                             style={{
-                                backgroundColor: item.color
+                                backgroundColor:
+                                    item.color
                             }}
-                        ></span>
+                        />
 
-                        {item.label}: {item.value}
+                        <span>
+                            {item.label}: {item.value}
+                        </span>
 
-                    </p>
+                    </div>
 
                 ))}
 
             </div>
 
-        </div>
+        </section>
     );
 }
 
