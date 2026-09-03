@@ -8,3 +8,4 @@ export const store = configureStore({
     sites: siteReducer,
   },
 });
+export default store;
