@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
+
 import Login from './components/Login';
+import Register from './components/Register';
 
 export function Dashboard() {
   const user = useSelector((s) => s.auth.user);
@@ -25,9 +28,7 @@ export function Dashboard() {
       <p>Role: {user?.role}</p>
 
       <p>Open Tickets: {stats.openTickets}</p>
-
       <p>Resolved: {stats.resolvedTickets}</p>
-
       <p>In Progress: {stats.inProgressTickets}</p>
     </div>
   );
@@ -36,9 +37,30 @@ export function Dashboard() {
 function AppContent() {
   const user = useSelector((s) => s.auth.user);
 
-  return user ? <Dashboard /> : <Login />;
+  return (
+    <Routes>
+      <Route
+        path="/login"
+        element={user ? <Navigate to="/" /> : <Login />}
+      />
+
+      <Route
+        path="/register"
+        element={user ? <Navigate to="/" /> : <Register />}
+      />
+
+      <Route
+        path="/"
+        element={user ? <Dashboard /> : <Navigate to="/login" />}
+      />
+    </Routes>
+  );
 }
 
 export default function App() {
-  return <AppContent />;
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
 }
