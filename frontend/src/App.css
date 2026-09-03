@@ -76,7 +76,6 @@ a {
 
 .navbar-brand {
     font-size: 23px;
-
     font-weight: 750;
 
     color: #22c55e;
@@ -88,7 +87,6 @@ a {
 
 .nav-links {
     display: flex;
-
     align-items: center;
 
     gap: 26px;
@@ -100,7 +98,6 @@ a {
     color: #aeb9c8;
 
     font-size: 14px;
-
     font-weight: 500;
 
     transition:
@@ -114,7 +111,6 @@ a {
 
 .navbar-user {
     display: flex;
-
     align-items: center;
 
     gap: 16px;
@@ -157,7 +153,6 @@ a {
 
 .dashboard-navbar {
     width: 100%;
-
     min-height: 68px;
 
     background: #0d1728;
@@ -165,7 +160,6 @@ a {
     border-bottom: 1px solid #243247;
 
     display: flex;
-
     align-items: center;
 
     padding: 0 34px;
@@ -173,7 +167,6 @@ a {
     gap: 35px;
 
     position: sticky;
-
     top: 0;
 
     z-index: 1000;
@@ -193,7 +186,6 @@ a {
 
 .dashboard-nav-links {
     display: flex;
-
     align-items: center;
 
     gap: 27px;
@@ -208,7 +200,7 @@ a {
 
     font-weight: 500;
 
-    transition: 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .dashboard-nav-links a:hover {
@@ -217,7 +209,6 @@ a {
 
 .dashboard-user {
     display: flex;
-
     align-items: center;
 
     gap: 15px;
@@ -267,6 +258,103 @@ a {
     margin: 0 auto;
 
     padding: 34px 30px;
+}
+
+
+/* =========================================================
+   HEADINGS
+   ========================================================= */
+
+h1,
+h2,
+h3 {
+    color: #f8fafc;
+}
+
+h1 {
+    font-size: 30px;
+    font-weight: 750;
+}
+
+h2 {
+    font-size: 23px;
+}
+
+h3 {
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   COMMON BUTTONS
+   ========================================================= */
+
+.btn-primary {
+    background: #2563eb;
+
+    border: none;
+
+    color: white;
+
+    padding: 10px 17px;
+
+    border-radius: 6px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+.btn-success {
+    background: #22c55e;
+
+    border: none;
+
+    color: #06120b;
+
+    padding: 10px 17px;
+
+    border-radius: 6px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.btn-success:hover {
+    background: #16a34a;
+}
+
+.btn-danger {
+    background: #ef4444;
+
+    border: none;
+
+    color: white;
+
+    padding: 9px 15px;
+
+    border-radius: 6px;
+
+    font-size: 13px;
+
+    font-weight: 600;
 }
 
 
@@ -363,6 +451,8 @@ a {
 }
 
 .login-card button[type="submit"] {
+    width: 100%;
+
     height: 46px;
 
     margin-top: 5px;
@@ -384,7 +474,14 @@ a {
 
 .login-card button[type="submit"]:hover {
     background: #16a34a;
+
+    transform: translateY(-1px);
 }
+
+
+/* =========================================================
+   LOGIN REGISTER LINK
+   ========================================================= */
 
 .register-link {
     text-align: center;
@@ -408,16 +505,25 @@ a {
     font-weight: 600;
 
     padding: 0;
+
+    cursor: pointer;
 }
 
 .register-link button:hover {
     text-decoration: underline;
 }
 
+
+/* =========================================================
+   LOGIN ERROR
+   ========================================================= */
+
 .error-msg {
     width: 100%;
 
     padding: 12px 14px;
+
+    margin-bottom: 15px;
 
     border-radius: 7px;
 
@@ -740,7 +846,7 @@ a {
 
 
 /* =========================================================
-   STAT CARDS
+   DASHBOARD STAT CARDS
    ========================================================= */
 
 .stat-cards {
@@ -1103,6 +1209,121 @@ a {
 
 
 /* =========================================================
+   DASHBOARD QUICK ACCESS
+   ========================================================= */
+
+.dashboard-quick-access {
+    margin-top: 24px;
+}
+
+.dashboard-quick-access > h2 {
+    color: #f8fafc;
+
+    font-size: 18px;
+
+    font-weight: 650;
+
+    margin-bottom: 14px;
+}
+
+.quick-access-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+}
+
+.quick-access-card {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 10px;
+
+    padding: 20px;
+
+    color: #f8fafc;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.quick-access-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #22c55e;
+
+    background: #101d30;
+}
+
+.quick-access-icon {
+    width: 48px;
+
+    height: 48px;
+
+    min-width: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: rgba(34, 197, 94, 0.1);
+
+    font-size: 22px;
+}
+
+.quick-access-card h3 {
+    color: #f8fafc;
+
+    font-size: 15px;
+
+    margin-bottom: 6px;
+}
+
+.quick-access-card p {
+    color: #7f8da1;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    padding-right: 25px;
+}
+
+.quick-access-arrow {
+    position: absolute;
+
+    right: 20px;
+
+    color: #22c55e;
+
+    font-size: 20px;
+
+    transition: transform 0.2s ease;
+}
+
+.quick-access-card:hover .quick-access-arrow {
+    transform: translateX(4px);
+}
+
+
+/* =========================================================
    OLD RECENT ACTIVITY SUPPORT
    ========================================================= */
 
@@ -1173,79 +1394,6 @@ a {
 
 
 /* =========================================================
-   BUTTONS
-   ========================================================= */
-
-.btn-primary {
-    background: #2563eb;
-
-    border: none;
-
-    color: white;
-
-    padding: 10px 17px;
-
-    border-radius: 6px;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    transition: 0.2s ease;
-}
-
-.btn-primary:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
-}
-
-.btn-primary:disabled {
-    opacity: 0.6;
-
-    cursor: not-allowed;
-
-    transform: none;
-}
-
-.btn-success {
-    background: #22c55e;
-
-    border: none;
-
-    color: #06120b;
-
-    padding: 10px 17px;
-
-    border-radius: 6px;
-
-    font-size: 13px;
-
-    font-weight: 700;
-}
-
-.btn-success:hover {
-    background: #16a34a;
-}
-
-.btn-danger {
-    background: #ef4444;
-
-    border: none;
-
-    color: white;
-
-    padding: 9px 15px;
-
-    border-radius: 6px;
-
-    font-size: 13px;
-
-    font-weight: 600;
-}
-
-
-/* =========================================================
    SEARCH
    ========================================================= */
 
@@ -1253,8 +1401,6 @@ a {
     display: block;
 
     width: 100%;
-
-    max-width: none;
 
     height: 46px;
 
@@ -1753,15 +1899,6 @@ a {
         display: none;
     }
 
-    .container,
-    .dashboard-container {
-        padding: 25px 20px;
-    }
-
-    .dashboard-content {
-        padding: 25px 20px 40px;
-    }
-
     .dashboard-navbar {
         padding: 0 20px;
 
@@ -1774,6 +1911,15 @@ a {
 
     .dashboard-user span {
         display: none;
+    }
+
+    .container,
+    .dashboard-container {
+        padding: 25px 20px;
+    }
+
+    .dashboard-content {
+        padding: 25px 20px 40px;
     }
 
     .stat-cards {
@@ -1795,9 +1941,19 @@ a {
    RESPONSIVE - MOBILE
    ========================================================= */
 
+@media (max-width: 650px) {
+
+    .quick-access-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 @media (max-width: 550px) {
 
-    /* Existing navbar */
+    /* -------------------------
+       Existing Navbar
+       ------------------------- */
 
     .navbar {
         height: auto;
@@ -1830,7 +1986,9 @@ a {
     }
 
 
-    /* Dashboard navbar */
+    /* -------------------------
+       Dashboard Navbar
+       ------------------------- */
 
     .dashboard-navbar {
         min-height: 68px;
@@ -1861,7 +2019,9 @@ a {
     }
 
 
-    /* Dashboard */
+    /* -------------------------
+       Dashboard
+       ------------------------- */
 
     .dashboard-content {
         padding: 20px 14px 35px;
@@ -1881,6 +2041,11 @@ a {
         line-height: 1.5;
     }
 
+
+    /* -------------------------
+       Statistics
+       ------------------------- */
+
     .stat-cards {
         grid-template-columns: 1fr;
 
@@ -1895,6 +2060,11 @@ a {
         font-size: 22px;
     }
 
+
+    /* -------------------------
+       Dashboard Lower Section
+       ------------------------- */
+
     .dashboard-lower-grid {
         grid-template-columns: 1fr;
 
@@ -1907,6 +2077,11 @@ a {
 
         padding: 20px;
     }
+
+
+    /* -------------------------
+       Donut
+       ------------------------- */
 
     .donut {
         width: 145px;
@@ -1923,7 +2098,59 @@ a {
     }
 
 
-    /* Existing pages */
+    /* -------------------------
+       Quick Access
+       ------------------------- */
+
+    .dashboard-quick-access {
+        margin-top: 20px;
+    }
+
+    .quick-access-card {
+        padding: 17px;
+
+        gap: 13px;
+    }
+
+    .quick-access-icon {
+        width: 43px;
+
+        height: 43px;
+
+        min-width: 43px;
+
+        font-size: 20px;
+    }
+
+    .quick-access-card h3 {
+        font-size: 14px;
+    }
+
+    .quick-access-card p {
+        font-size: 11px;
+    }
+
+
+    /* -------------------------
+       Recent Activity
+       ------------------------- */
+
+    .activity-row {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+    .activity-values {
+        align-items: flex-start;
+    }
+
+
+    /* -------------------------
+       Existing Pages
+       ------------------------- */
 
     .page-header {
         align-items: flex-start;
@@ -1951,18 +2178,6 @@ a {
 
     .register-card h1 {
         font-size: 30px;
-    }
-
-    .activity-row {
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        gap: 10px;
-    }
-
-    .activity-values {
-        align-items: flex-start;
     }
 }
 
@@ -2007,5 +2222,13 @@ a {
     .status-donut,
     .recent-activity-panel {
         padding: 17px;
+    }
+
+    .quick-access-card {
+        padding: 14px;
+    }
+
+    .quick-access-arrow {
+        right: 14px;
     }
 }
