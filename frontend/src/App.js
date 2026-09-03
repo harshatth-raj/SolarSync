@@ -1,24 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, Provider } from 'react-redux';
-import { store } from './store';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import Login from './components/Login';
 
 export function Dashboard() {
   const user = useSelector((s) => s.auth.user);
-  const [stats, setStats] = useState({ openTickets: 0, resolvedTickets: 0, inProgressTickets: 0 });
+
+  const [stats, setStats] = useState({
+    openTickets: 0,
+    resolvedTickets: 0,
+    inProgressTickets: 0
+  });
 
   useEffect(() => {
-    const r = axios.get('/api/dashboard/stats');
-    if (r && r.then) r.then((res) => setStats(res.data)).catch(() => {});
+    axios.get('/api/dashboard/stats')
+      .then((res) => setStats(res.data))
+      .catch(() => {});
   }, []);
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <h1>Welcome back, {user?.username}!</h1>
+
       <p>Role: {user?.role}</p>
+
       <p>Open Tickets: {stats.openTickets}</p>
+
       <p>Resolved: {stats.resolvedTickets}</p>
+
       <p>In Progress: {stats.inProgressTickets}</p>
     </div>
   );
@@ -26,13 +35,10 @@ export function Dashboard() {
 
 function AppContent() {
   const user = useSelector((s) => s.auth.user);
+
   return user ? <Dashboard /> : <Login />;
 }
 
 export default function App() {
-  return (
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
-  );
+  return <AppContent />;
 }
