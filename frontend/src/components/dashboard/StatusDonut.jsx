@@ -1,50 +1,54 @@
 import React from "react";
 
-function StatusDonut({ analytics }) {
+function StatusDonut({ data = [] }) {
 
-    const active =
-        analytics?.totalActivePanels || 0;
+    const total = data.reduce(
+        (sum, item) => sum + Number(item.value || 0),
+        0
+    );
 
-    const open =
-        analytics?.openTickets || 0;
+    if (total === 0) {
+        return (
+            <div className="status-donut">
 
-    const maintenance =
-        analytics?.maintenancePanels || 0;
+                <h3>Maintenance Ticket Status</h3>
 
-    const total =
-        active + open + maintenance;
+                <div className="donut-empty">
+                    No Ticket Data
+                </div>
 
-    const getPercentage = (value) => {
-        if (total === 0) {
-            return 0;
-        }
+            </div>
+        );
+    }
 
-        return (value / total) * 100;
-    };
+    let currentPercentage = 0;
 
-    const openPercentage = getPercentage(open);
-    const activePercentage = getPercentage(active);
+    const gradientParts = data.map((item) => {
+
+        const percentage =
+            (Number(item.value || 0) / total) * 100;
+
+        const start = currentPercentage;
+
+        currentPercentage += percentage;
+
+        return `${item.color} ${start}% ${currentPercentage}%`;
+
+    });
 
     return (
         <div className="status-donut">
 
-            <h3>
-                Maintenance Distribution
-            </h3>
+            <h3>Maintenance Ticket Status</h3>
 
             <div className="donut-container">
 
                 <div
                     className="donut"
                     style={{
-                        background:
-                            total === 0
-                                ? "#334155"
-                                : `conic-gradient(
-                                    #ef4444 0% ${openPercentage}%,
-                                    #22c55e ${openPercentage}% ${openPercentage + activePercentage}%,
-                                    #f59e0b ${openPercentage + activePercentage}% 100%
-                                )`
+                        background: `conic-gradient(
+                            ${gradientParts.join(", ")}
+                        )`
                     }}
                 >
 
@@ -58,20 +62,22 @@ function StatusDonut({ analytics }) {
 
             <div className="donut-legend">
 
-                <p>
-                    <span className="legend-dot open"></span>
-                    Open: {open}
-                </p>
+                {data.map((item) => (
 
-                <p>
-                    <span className="legend-dot resolved"></span>
-                    Active: {active}
-                </p>
+                    <p key={item.label}>
 
-                <p>
-                    <span className="legend-dot other"></span>
-                    Maintenance: {maintenance}
-                </p>
+                        <span
+                            className="legend-dot"
+                            style={{
+                                backgroundColor: item.color
+                            }}
+                        ></span>
+
+                        {item.label}: {item.value}
+
+                    </p>
+
+                ))}
 
             </div>
 

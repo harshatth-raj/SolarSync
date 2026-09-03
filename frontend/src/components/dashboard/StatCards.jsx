@@ -21,8 +21,8 @@ function StatCards({ stats }) {
         },
         {
             title: "System Efficiency",
-            value: `${Number(
-                stats.efficiencyRatio || 0
+            value: `${(
+                Number(stats.efficiencyRatio || 0) * 100
             ).toFixed(2)}%`
         },
         {
@@ -39,7 +39,6 @@ function StatCards({ stats }) {
         <div className="stat-cards">
 
             {cards.map((card) => (
-
                 <div
                     className="stat-card"
                     key={card.title}
@@ -50,7 +49,6 @@ function StatCards({ stats }) {
                     <p>{card.value}</p>
 
                 </div>
-
             ))}
 
         </div>
