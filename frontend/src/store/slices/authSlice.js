@@ -25,18 +25,62 @@ export const register = createAsyncThunk(
 );
 
 const authSlice = createSlice({
+
   name: 'auth',
-  initialState: { user: null, error: null, loading: false },
-  reducers: {
-    logout(state) { state.user = null; state.error = null; },
+
+  initialState: {
+    user: null,
+    error: null,
+    loading: false
   },
+
+  reducers: {
+
+    logout(state) {
+      state.user = null;
+      state.error = null;
+    },
+
+  },
+
   extraReducers: (builder) => {
     builder
-      .addCase(login.pending, (state) => { state.loading = true; state.error = null; })
-      .addCase(login.fulfilled, (state, action) => { state.loading = false; state.user = action.payload; })
-      .addCase(login.rejected, (state, action) => { state.loading = false; state.error = action.payload; state.user = null; });
+
+      .addCase(login.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(login.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+
+      .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.user = null;
+      })
+
+      // REGISTER
+      .addCase(register.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(register.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+
+      .addCase(register.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
+
 });
 
 export const { logout } = authSlice.actions;
+
 export default authSlice.reducer;
