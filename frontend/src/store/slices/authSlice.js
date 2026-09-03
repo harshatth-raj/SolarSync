@@ -10,6 +10,20 @@ export const login = createAsyncThunk('auth/login', async (credentials, { reject
   }
 });
 
+export const register = createAsyncThunk(
+  'auth/register',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await authService.register(userData);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Registration failed'
+      );
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: { user: null, error: null, loading: false },
