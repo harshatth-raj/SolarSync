@@ -1,54 +1,122 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { login } from '../store/slices/authSlice';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { login } from "../store/slices/authSlice";
 
 export default function Login() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-  const { error } = useSelector((s) => s.auth);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+    const { loading, error } = useSelector(
+        (state) => state.auth
+    );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(login({ username, password }));
-  };
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
-  return (
-    <div className="glass-container">
-      <h1>SolarSync Login</h1>
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-      {error && <p>{error}</p>}
+        dispatch(
+            login({
+                username,
+                password
+            })
+        );
+    };
 
-      <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Enter your username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+    return (
+        <div className="register-container">
 
-        <input
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+            <div className="register-card">
 
-        <button type="submit">Login</button>
-      </form>
+                <h1>SolarSync Login</h1>
 
-      {/* Register option */}
-      <p>
-        Don't have an account?{' '}
-        <button
-          type="button"
-          onClick={() => navigate('/register')}
-        >
-          Register
-        </button>
-      </p>
-    </div>
-  );
+                <p className="register-subtitle">
+                    Welcome back to SolarSync
+                </p>
+
+                <form onSubmit={handleSubmit}>
+
+                    {/* USERNAME */}
+
+                    <div className="register-form-group">
+
+                        <label>Username</label>
+
+                        <input
+                            type="text"
+                            placeholder="Enter your username"
+                            value={username}
+                            onChange={(e) =>
+                                setUsername(e.target.value)
+                            }
+                            required
+                        />
+
+                    </div>
+
+
+                    {/* PASSWORD */}
+
+                    <div className="register-form-group">
+
+                        <label>Password</label>
+
+                        <input
+                            type="password"
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) =>
+                                setPassword(e.target.value)
+                            }
+                            required
+                        />
+
+                    </div>
+
+
+                    {/* BACKEND ERROR */}
+
+                    {error && (
+                        <div className="register-error">
+                            {error}
+                        </div>
+                    )}
+
+
+                    {/* LOGIN BUTTON */}
+
+                    <button
+                        type="submit"
+                        className="register-button"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? "Logging in..."
+                            : "Login"}
+                    </button>
+
+                </form>
+
+
+                {/* REGISTER */}
+
+                <p className="register-switch">
+
+                    Don't have an account?{" "}
+
+                    <button
+                        type="button"
+                        onClick={() => navigate("/register")}
+                    >
+                        Register
+                    </button>
+
+                </p>
+
+            </div>
+
+        </div>
+    );
 }
