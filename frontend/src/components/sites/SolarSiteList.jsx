@@ -55,10 +55,7 @@ export default function SolarSiteList() {
   return (
     <div className="sites-page">
 
-      {/* =========================
-          SITES HEADER
-         ========================= */}
-
+      {/* SITES HEADER */}
       <div className="sites-header">
 
         <div className="sites-title-section">
@@ -82,10 +79,7 @@ export default function SolarSiteList() {
       </div>
 
 
-      {/* =========================
-          SEARCH
-         ========================= */}
-
+      {/* SEARCH */}
       <input
         type="text"
         className="site-search"
@@ -97,10 +91,7 @@ export default function SolarSiteList() {
       />
 
 
-      {/* =========================
-          SITES
-         ========================= */}
-
+      {/* SITES */}
       {loading ? (
         <div className="sites-loading">
           Loading solar sites...
@@ -116,6 +107,7 @@ export default function SolarSiteList() {
 
             <thead>
               <tr>
+                <th>Site ID</th>
                 <th>Site Name</th>
                 <th>Coordinates</th>
                 <th>Rated Capacity</th>
@@ -130,6 +122,12 @@ export default function SolarSiteList() {
               {filteredSites.map((site) => (
                 <tr key={site.id}>
 
+                  {/* YOUR BACKEND SITE ID */}
+                  <td>
+                    {site.id}
+                  </td>
+
+                  {/* YOUR BACKEND SITE NAME */}
                   <td>
                     <strong>
                       {site.siteName}
@@ -176,10 +174,7 @@ export default function SolarSiteList() {
       )}
 
 
-      {/* =========================
-          EXISTING ADD SITE FORM
-         ========================= */}
-
+      {/* EXISTING ADD SITE FORM */}
       {showForm && (
         <SolarSiteForm
           onClose={() => {
