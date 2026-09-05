@@ -1,41 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SolarSiteForm from './SolarSiteForm';
 
 export default function SolarSiteList() {
-  const user = useSelector((s) => s.auth.user);
-  const navigate = useNavigate();
+
+  const user = useSelector((state) => state.auth.user);
+
+  const [sites, setSites] = useState([]);
+  const [search, setSearch] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
   const isAdmin =
     user?.role === 'SYSTEM_ADMINISTRATOR' ||
     user?.role === 'ADMIN' ||
     user?.role === 'ROLE_SYSTEM_ADMINISTRATOR';
 
-  const [sites, setSites] = useState([]);
-  const [search, setSearch] = useState('');
-  const [showForm, setShowForm] = useState(false);
-
   const loadSites = () => {
-    const request = axios.get('/api/sites');
+
+    const token = user?.token;
+
+    const config = token
+      ? {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      : {};
+
+    const request = axios.get('/api/sites', config);
 
     /*
-     * Important for the existing Jest tests.
-     * Their axios mock can return undefined.
+     * Important:
+     * Existing tests use an axios mock where axios.get()
+     * can return undefined.
      */
     if (request && typeof request.then === 'function') {
+
       request
-        .then((res) => {
-          const data = res?.data;
+        .then((response) => {
+
+          const data = response?.data;
 
           if (Array.isArray(data)) {
             setSites(data);
-          } else if (Array.isArray(data?.content)) {
-            setSites(data.content);
           } else {
             setSites([]);
           }
+
         })
         .catch(() => {
           setSites([]);
@@ -45,7 +57,8 @@ export default function SolarSiteList() {
 
   useEffect(() => {
     loadSites();
-  }, []);
+  }, [user?.token]);
+
 
   const filteredSites = sites.filter((site) =>
     (site.siteName || '')
@@ -53,49 +66,17 @@ export default function SolarSiteList() {
       .includes(search.toLowerCase())
   );
 
-  const getGenerationRate = (site) => {
-    if (
-      site.currentGeneration !== null &&
-      site.currentGeneration !== undefined
-    ) {
-      return site.currentGeneration;
-    }
-
-    if (
-      site.generationRate !== null &&
-      site.generationRate !== undefined
-    ) {
-      return site.generationRate;
-    }
-
-    return 0;
-  };
-
-  const getPanelCount = (site) => {
-    if (Array.isArray(site.panels)) {
-      return site.panels.length;
-    }
-
-    if (
-      site.panelCount !== null &&
-      site.panelCount !== undefined
-    ) {
-      return site.panelCount;
-    }
-
-    return 0;
-  };
 
   return (
-    <div className="sites-page">
+    <div className="sites-list-section">
 
-      {/* =================================================
-          PAGE HEADER
-          ================================================= */}
+      {/* ==========================================
+          TOP BAR
+          ========================================== */}
 
-      <div className="sites-page-header">
+      <div className="sites-list-header">
 
-        <h1>Solar Sites</h1>
+        <h2>Solar Sites</h2>
 
         {isAdmin && (
           <button
@@ -109,9 +90,9 @@ export default function SolarSiteList() {
       </div>
 
 
-      {/* =================================================
+      {/* ==========================================
           ADD SITE FORM
-          ================================================= */}
+          ========================================== */}
 
       {showForm && (
         <SolarSiteForm
@@ -123,9 +104,9 @@ export default function SolarSiteList() {
       )}
 
 
-      {/* =================================================
+      {/* ==========================================
           SEARCH
-          ================================================= */}
+          ========================================== */}
 
       <input
         className="site-search"
@@ -136,9 +117,9 @@ export default function SolarSiteList() {
       />
 
 
-      {/* =================================================
+      {/* ==========================================
           SITES TABLE
-          ================================================= */}
+          ========================================== */}
 
       {filteredSites.length > 0 ? (
 
@@ -147,6 +128,7 @@ export default function SolarSiteList() {
           <table className="sites-table">
 
             <thead>
+
               <tr>
                 <th>Site Identity</th>
                 <th>Coordinates</th>
@@ -155,27 +137,33 @@ export default function SolarSiteList() {
                 <th>Panel Count</th>
                 <th>Management</th>
               </tr>
+
             </thead>
+
 
             <tbody>
 
               {filteredSites.map((site) => {
 
-                const generationRate =
-                  getGenerationRate(site);
+                const panelCount = Array.isArray(site.panels)
+                  ? site.panels.length
+                  : (site.panelCount ?? 0);
 
-                const panelCount =
-                  getPanelCount(site);
+                const generation =
+                  site.currentGeneration ??
+                  site.generationRate ??
+                  0;
 
                 return (
+
                   <tr key={site.id}>
 
-                    {/* SITE IDENTITY */}
+                    {/* SITE */}
 
                     <td>
-                      <span className="site-name">
+                      <strong className="site-table-name">
                         {site.siteName}
-                      </span>
+                      </strong>
                     </td>
 
 
@@ -186,29 +174,28 @@ export default function SolarSiteList() {
                     </td>
 
 
-                    {/* GENERATION RATE */}
+                    {/* GENERATION */}
 
                     <td>
 
                       <div className="generation-cell">
 
                         <div className="generation-bar">
+
                           <div
                             className="generation-progress"
                             style={{
                               width: `${Math.min(
-                                Math.max(
-                                  Number(generationRate) || 0,
-                                  0
-                                ),
+                                Math.max(Number(generation) || 0, 0),
                                 100
                               )}%`
                             }}
                           />
+
                         </div>
 
                         <span>
-                          {generationRate}%
+                          {generation}%
                         </span>
 
                       </div>
@@ -216,36 +203,35 @@ export default function SolarSiteList() {
                     </td>
 
 
-                    {/* COMMISSIONED */}
+                    {/* COMMISSION DATE */}
 
                     <td>
                       {site.commissionDate || '-'}
                     </td>
 
 
-                    {/* PANEL COUNT */}
+                    {/* PANELS */}
 
                     <td>
                       {panelCount}
                     </td>
 
 
-                    {/* MANAGEMENT */}
+                    {/* DETAILS */}
 
                     <td>
 
-                      <button
+                      <a
                         className="site-view-details"
-                        onClick={() =>
-                          navigate(`/sites/${site.id}`)
-                        }
+                        href={`/sites/${site.id}`}
                       >
                         View Details
-                      </button>
+                      </a>
 
                     </td>
 
                   </tr>
+
                 );
 
               })}
@@ -258,7 +244,7 @@ export default function SolarSiteList() {
 
       ) : (
 
-        <div className="sites-page no-sites">
+        <div className="no-sites">
           No solar sites found.
         </div>
 
