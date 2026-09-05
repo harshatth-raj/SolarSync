@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.example.demo.enums.Priority;
 import com.example.demo.enums.TicketStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
@@ -40,11 +41,8 @@ public class MaintenanceTicket {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private SystemUser assignedTechnician;
-
-    // -------------------------
-    // Constructors
-    // -------------------------
 
     public MaintenanceTicket() {
     }
@@ -69,9 +67,9 @@ public class MaintenanceTicket {
         this.assignedTechnician = assignedTechnician;
     }
 
-    // -------------------------
+    // --------------------
     // Getters
-    // -------------------------
+    // --------------------
 
     public Long getId() {
         return id;
@@ -105,9 +103,9 @@ public class MaintenanceTicket {
         return assignedTechnician;
     }
 
-    // -------------------------
+    // --------------------
     // Setters
-    // -------------------------
+    // --------------------
 
     public void setId(Long id) {
         this.id = id;
