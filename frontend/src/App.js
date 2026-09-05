@@ -10,8 +10,8 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 
-import Login from "./components/auth/Login";
-import Register from "./components/auth/Register";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 import SolarSiteList from "./components/sites/SolarSiteList";
 import SolarSiteDetails from "./components/sites/SolarSiteDetails";
