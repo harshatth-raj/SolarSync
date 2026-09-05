@@ -15,8 +15,7 @@ export default function SolarSiteList() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    axios
-      .get('http://localhost:8081/api/sites')
+    axios.get('/api/sites')
       .then((res) => {
         setSites(Array.isArray(res.data) ? res.data : []);
       })
@@ -28,18 +27,11 @@ export default function SolarSiteList() {
   return (
     <div className="site-list">
 
-      <div className="page-header">
-        <div>
-          <h1>Solar Sites</h1>
-          <p>View and manage your solar energy sites.</p>
-        </div>
-
-        {isAdmin && (
-          <button onClick={() => setShowForm(true)}>
-            + Add Site
-          </button>
-        )}
-      </div>
+      {isAdmin && (
+        <button onClick={() => setShowForm(true)}>
+          + Add Site
+        </button>
+      )}
 
       {showForm && (
         <SolarSiteForm
@@ -47,38 +39,21 @@ export default function SolarSiteList() {
         />
       )}
 
-      {sites.length === 0 ? (
-        <div className="empty-state">
-          <h2>No Solar Sites Found</h2>
-          <p>
-            There are currently no solar sites available.
-          </p>
+      {sites.map((s) => (
+        <div className="site-card" key={s.id}>
+
+          <span>{s.siteName}</span>
+
+          <span>{s.locationCoordinates}</span>
+
+          <span>{s.ratedCapacityKw} kW</span>
+
+          <a href={`/sites/${s.id}`}>
+            View Details
+          </a>
+
         </div>
-      ) : (
-        <div className="site-grid">
-          {sites.map((s) => (
-            <div className="site-card" key={s.id}>
-
-              <h2>{s.siteName}</h2>
-
-              <p>
-                <strong>Location:</strong>{' '}
-                {s.locationCoordinates}
-              </p>
-
-              <p>
-                <strong>Rated Capacity:</strong>{' '}
-                {s.ratedCapacityKw} kW
-              </p>
-
-              <a href={`/sites/${s.id}`}>
-                View Details
-              </a>
-
-            </div>
-          ))}
-        </div>
-      )}
+      ))}
 
     </div>
   );
