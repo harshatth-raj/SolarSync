@@ -12,11 +12,24 @@ export default function SolarSiteList() {
 
   const user = useSelector((state) => state.auth.user);
 
-  const role = user?.role;
+  /*
+   * Normalize the role so values such as:
+   * SYSTEM_ADMINISTRATOR
+   * SYSTEM ADMINISTRATOR
+   * system_administrator
+   * ADMIN
+   * admin
+   * are handled correctly.
+   */
+  const role = String(user?.role || "")
+    .trim()
+    .replace(/\s+/g, "_")
+    .toUpperCase();
 
   const canAddSite =
     role === "SYSTEM_ADMINISTRATOR" ||
-    role === "ADMIN";
+    role === "ADMIN" ||
+    role === "SYSTEM_ADMIN";
 
   useEffect(() => {
     loadSites();
@@ -28,11 +41,11 @@ export default function SolarSiteList() {
         "http://localhost:8081/api/sites"
       );
 
-      if (Array.isArray(response?.data)) {
-        setSites(response.data);
-      } else {
-        setSites([]);
-      }
+      const data = Array.isArray(response?.data)
+        ? response.data
+        : [];
+
+      setSites(data);
     } catch (error) {
       console.error("Failed to load solar sites:", error);
       setSites([]);
@@ -45,8 +58,13 @@ export default function SolarSiteList() {
     const search = searchTerm.toLowerCase();
 
     return (
-      site.siteName?.toLowerCase().includes(search) ||
-      site.locationCoordinates
+      String(site?.id || "")
+        .toLowerCase()
+        .includes(search) ||
+      site?.siteName
+        ?.toLowerCase()
+        .includes(search) ||
+      site?.locationCoordinates
         ?.toLowerCase()
         .includes(search)
     );
@@ -55,7 +73,10 @@ export default function SolarSiteList() {
   return (
     <div className="sites-page">
 
-      {/* SITES HEADER */}
+      {/* =========================
+          SITES HEADER
+         ========================= */}
+
       <div className="sites-header">
 
         <div className="sites-title-section">
@@ -79,7 +100,10 @@ export default function SolarSiteList() {
       </div>
 
 
-      {/* SEARCH */}
+      {/* =========================
+          SEARCH
+         ========================= */}
+
       <input
         type="text"
         className="site-search"
@@ -91,16 +115,24 @@ export default function SolarSiteList() {
       />
 
 
-      {/* SITES */}
+      {/* =========================
+          SITES LIST
+         ========================= */}
+
       {loading ? (
+
         <div className="sites-loading">
           Loading solar sites...
         </div>
+
       ) : filteredSites.length === 0 ? (
+
         <div className="no-sites">
           No solar sites found.
         </div>
+
       ) : (
+
         <div className="sites-table-container">
 
           <table className="sites-table">
@@ -120,40 +152,46 @@ export default function SolarSiteList() {
             <tbody>
 
               {filteredSites.map((site) => (
+
                 <tr key={site.id}>
 
-                  {/* YOUR BACKEND SITE ID */}
+                  {/* SITE ID FROM BACKEND */}
                   <td>
                     {site.id}
                   </td>
 
-                  {/* YOUR BACKEND SITE NAME */}
+                  {/* SITE NAME FROM BACKEND */}
                   <td>
                     <strong>
-                      {site.siteName}
+                      {site.siteName || "-"}
                     </strong>
                   </td>
 
+                  {/* COORDINATES FROM BACKEND */}
                   <td>
                     {site.locationCoordinates || "-"}
                   </td>
 
+                  {/* CAPACITY FROM BACKEND */}
                   <td>
                     {site.ratedCapacityKw != null
                       ? `${site.ratedCapacityKw} kW`
                       : "-"}
                   </td>
 
+                  {/* COMMISSION DATE FROM BACKEND */}
                   <td>
                     {site.commissionDate || "-"}
                   </td>
 
+                  {/* PANEL COUNT */}
                   <td>
                     {site.panels?.length ??
                       site.panelCount ??
                       0}
                   </td>
 
+                  {/* DETAILS */}
                   <td>
                     <Link
                       to={`/sites/${site.id}`}
@@ -164,6 +202,7 @@ export default function SolarSiteList() {
                   </td>
 
                 </tr>
+
               ))}
 
             </tbody>
@@ -171,14 +210,19 @@ export default function SolarSiteList() {
           </table>
 
         </div>
+
       )}
 
 
-      {/* EXISTING ADD SITE FORM */}
+      {/* =========================
+          EXISTING ADD SITE FORM
+         ========================= */}
+
       {showForm && (
         <SolarSiteForm
           onClose={() => {
             setShowForm(false);
+            setLoading(true);
             loadSites();
           }}
         />
