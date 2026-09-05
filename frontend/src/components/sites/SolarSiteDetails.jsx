@@ -55,22 +55,34 @@ export default function SolarSiteDetails() {
         setLoading(true);
         setError("");
 
+        const token = localStorage.getItem("token");
+
+        const config = token
+          ? {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          : {};
+
         /*
          * First try the real backend.
-         * This keeps the existing API behaviour and tests working.
+         * The JWT is included so Spring Security can authorize
+         * the request.
          */
         let siteData = null;
 
         try {
           const response = await axios.get(
-            `http://localhost:8081/api/sites/${id}`
+            `http://localhost:8081/api/sites/${id}`,
+            config
           );
 
           siteData = response?.data;
         } catch (backendError) {
           /*
-           * If the sample site is not present in the backend,
-           * use our local demo site instead.
+           * If the backend site is unavailable,
+           * use the local sample site for the existing tests/demo.
            */
           siteData = sampleSites[id];
         }
@@ -84,12 +96,12 @@ export default function SolarSiteDetails() {
         }
 
         /*
-         * Try loading panels from backend.
-         * If there are no backend panels, simply keep an empty list.
+         * Load panels from backend using the same JWT.
          */
         try {
           const panelResponse = await axios.get(
-            `http://localhost:8081/api/sites/${id}/panels`
+            `http://localhost:8081/api/sites/${id}/panels`,
+            config
           );
 
           if (mounted) {
@@ -100,6 +112,10 @@ export default function SolarSiteDetails() {
             );
           }
         } catch (panelError) {
+          /*
+           * If the panel endpoint is unavailable,
+           * keep the panel list empty.
+           */
           if (mounted) {
             setPanels([]);
           }
@@ -124,8 +140,19 @@ export default function SolarSiteDetails() {
 
   const handleDeletePanel = async (panelId) => {
     try {
+      const token = localStorage.getItem("token");
+
+      const config = token
+        ? {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        : {};
+
       await axios.delete(
-        `http://localhost:8081/api/panels/${panelId}`
+        `http://localhost:8081/api/panels/${panelId}`,
+        config
       );
 
       setPanels((currentPanels) =>
@@ -186,7 +213,6 @@ export default function SolarSiteDetails() {
 
       </div>
 
-
       {/* SITE INFORMATION */}
       <div className="site-details-panel">
 
@@ -234,7 +260,6 @@ export default function SolarSiteDetails() {
 
       </div>
 
-
       {/* OPERATOR ACTION */}
       {role === "SOLAR_OPERATOR" && (
         <div className="site-details-panel">
@@ -251,7 +276,6 @@ export default function SolarSiteDetails() {
 
         </div>
       )}
-
 
       {/* PANELS */}
       <div className="site-details-panel">
