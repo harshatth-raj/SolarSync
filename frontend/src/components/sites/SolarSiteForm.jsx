@@ -4,8 +4,7 @@ import axios from 'axios';
 export default function SolarSiteForm({
   onClose,
 }) {
-  const [siteName, setSiteName] =
-    useState('');
+  const [siteName, setSiteName] = useState('');
 
   const [locationCoordinates, setLocationCoordinates] =
     useState('');
@@ -16,8 +15,7 @@ export default function SolarSiteForm({
   const [commissionedDate, setCommissionedDate] =
     useState('');
 
-  const [error, setError] =
-    useState('');
+  const [error, setError] = useState('');
 
   const getAuthHeaders = () => {
     const token =
@@ -37,15 +35,22 @@ export default function SolarSiteForm({
 
     setError('');
 
+    // Coordinate validation
+    const coordinatePattern =
+      /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+
+    if (!coordinatePattern.test(locationCoordinates)) {
+      setError('Invalid coordinates');
+      return;
+    }
+
     try {
       await axios.post(
         '/api/sites',
         {
           siteName,
           locationCoordinates,
-          ratedCapacityKw: Number(
-            ratedCapacityKw
-          ),
+          ratedCapacityKw: Number(ratedCapacityKw),
           commissionedDate,
         },
         {
@@ -62,25 +67,25 @@ export default function SolarSiteForm({
 
       setError(
         err.response?.data?.message ||
-        'Unable to create site.'
+          'Unable to create site.'
       );
     }
   };
 
   return (
     <div className="modal-overlay">
-
       <div className="modal-card">
 
         <h2>
-          Add Solar Site
+          Register New Solar Site
         </h2>
 
         <form onSubmit={handleSubmit}>
 
+          {/* Site Name */}
           <input
             type="text"
-            placeholder="Site Name"
+            placeholder="Desert Oasis Alpha"
             value={siteName}
             onChange={(e) =>
               setSiteName(e.target.value)
@@ -88,9 +93,10 @@ export default function SolarSiteForm({
             required
           />
 
+          {/* Coordinates */}
           <input
             type="text"
-            placeholder="Coordinates e.g. 11.0168,76.9558"
+            placeholder="34.05, -118.24"
             value={locationCoordinates}
             onChange={(e) =>
               setLocationCoordinates(
@@ -100,9 +106,10 @@ export default function SolarSiteForm({
             required
           />
 
+          {/* Rated Capacity */}
           <input
             type="number"
-            placeholder="Rated Capacity (kW)"
+            placeholder="500.0"
             value={ratedCapacityKw}
             onChange={(e) =>
               setRatedCapacityKw(
@@ -112,6 +119,7 @@ export default function SolarSiteForm({
             required
           />
 
+          {/* Commissioned Date */}
           <input
             type="date"
             value={commissionedDate}
@@ -123,16 +131,18 @@ export default function SolarSiteForm({
             required
           />
 
+          {/* Error */}
           {error && (
             <div className="register-error">
               {error}
             </div>
           )}
 
+          {/* Buttons */}
           <div className="modal-actions">
 
             <button type="submit">
-              Add Site
+              Commission Site
             </button>
 
             <button
@@ -147,7 +157,6 @@ export default function SolarSiteForm({
         </form>
 
       </div>
-
     </div>
   );
 }
