@@ -3,7 +3,7 @@ package com.example.demo.service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import org.springframework.stereotype.Service;
 
 import com.example.demo.util.JwtUtils;
@@ -48,16 +48,18 @@ public class JwtService {
 
     public Authentication getAuthentication(String token) {
 
-        String username = jwtUtils.extractUsername(token);
+        String username =
+                jwtUtils.extractUsername(token);
 
         UserDetails userDetails =
                 userDetailsService.loadUserByUsername(username);
 
-        return new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities()
-        );
+        return new org.springframework.security.authentication
+                .UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
     }
 
     public boolean isTokenValid(
