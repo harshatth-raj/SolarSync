@@ -392,9 +392,11 @@ export function Dashboard() {
             <div className="donut-wrapper">
 
               <div className="donut-chart">
+
                 <div className="donut-hole">
                   3
                 </div>
+
               </div>
 
             </div>
@@ -434,6 +436,7 @@ export function Dashboard() {
               <div className="activity-item">
 
                 <div>
+
                   <small>
                     2026-08-25
                   </small>
@@ -449,6 +452,7 @@ export function Dashboard() {
                   <span className="negative">
                     ↓ 1.90 kWh
                   </span>
+
                 </div>
 
                 <span className="activity-status">
@@ -461,6 +465,7 @@ export function Dashboard() {
               <div className="activity-item">
 
                 <div>
+
                   <small>
                     2026-08-24
                   </small>
@@ -476,6 +481,7 @@ export function Dashboard() {
                   <span className="negative">
                     ↓ 4.20 kWh
                   </span>
+
                 </div>
 
                 <span className="activity-status">
@@ -488,6 +494,7 @@ export function Dashboard() {
               <div className="activity-item">
 
                 <div>
+
                   <small>
                     2026-08-23
                   </small>
@@ -503,6 +510,7 @@ export function Dashboard() {
                   <span className="negative">
                     ↓ 2.10 kWh
                   </span>
+
                 </div>
 
                 <span className="activity-status">
@@ -641,20 +649,7 @@ function App() {
           element={
             user ? (
               <PageLayout>
-                <div className="tickets-page">
-
-                  <h1>
-                    Maintenance Tickets
-                  </h1>
-
-                  <p className="tickets-subtitle">
-                    View and manage your
-                    maintenance issues.
-                  </p>
-
-                  <MaintenanceTicketList />
-
-                </div>
+                <MaintenanceTicketList />
               </PageLayout>
             ) : (
               <Navigate
