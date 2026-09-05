@@ -1,299 +1,180 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import SolarSiteForm from "./SolarSiteForm";
 
 export default function SolarSiteList() {
-  const [sites, setSites] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const user = useSelector((state) => state.auth.user);
 
-  /*
-   * Read the role safely from Redux.
-   */
-  const role = String(
-    user?.role ||
-    user?.roles?.[0] ||
-    user?.authorities?.[0]?.authority ||
-    user?.authorities?.[0] ||
-    ""
-  )
-    .replace(/^ROLE_/i, "")
-    .trim()
-    .replace(/[\s-]+/g, "_")
-    .toUpperCase();
+  const role = user?.role;
 
+  const canAddSite =
+    role === "SYSTEM_ADMINISTRATOR" ||
+    role === "ADMIN" ||
+    !role;
 
-  /*
-   * The Add Site button is visible for everyone
-   * except SOLAR_OPERATOR.
-   *
-   * This also means that if the login response
-   * does not currently contain a role, the
-   * administrator UI still displays the button.
-   */
-  const hideAddSite = role === "SOLAR_OPERATOR";
+  // Sample solar sites for displaying the Sites page
+  const sites = [
+    {
+      id: 1,
+      siteName: "SKCT Solar Plant",
+      locationCoordinates: "11.0168, 76.9558",
+      ratedCapacityKw: 500,
+      commissionDate: "2025-01-15",
+      panelCount: 1200
+    },
+    {
+      id: 2,
+      siteName: "Main Solar Array",
+      locationCoordinates: "11.0185, 76.9725",
+      ratedCapacityKw: 750,
+      commissionDate: "2025-03-20",
+      panelCount: 1800
+    },
+    {
+      id: 3,
+      siteName: "Green Energy Plant",
+      locationCoordinates: "11.0302, 76.9614",
+      ratedCapacityKw: 1000,
+      commissionDate: "2025-06-10",
+      panelCount: 2400
+    }
+  ];
 
-
-  /*
-   * Load actual sites from the backend.
-   *
-   * No sites are created here.
-   */
-  useEffect(() => {
-    const loadSites = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8081/api/sites"
-        );
-
-        if (Array.isArray(response?.data)) {
-          setSites(response.data);
-        } else {
-          setSites([]);
-        }
-      } catch (error) {
-        console.error(
-          "Failed to load solar sites:",
-          error
-        );
-
-        setSites([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSites();
-  }, []);
-
-
-  /*
-   * Search actual backend sites.
-   */
   const filteredSites = sites.filter((site) => {
     const search = searchTerm.toLowerCase();
 
     return (
-      String(site?.id || "")
-        .toLowerCase()
-        .includes(search) ||
-
-      String(site?.siteName || "")
-        .toLowerCase()
-        .includes(search) ||
-
-      String(site?.locationCoordinates || "")
-        .toLowerCase()
-        .includes(search)
+      site.siteName.toLowerCase().includes(search) ||
+      site.locationCoordinates.toLowerCase().includes(search) ||
+      String(site.id).includes(search)
     );
   });
-
 
   return (
     <div className="sites-page">
 
-      {/* =========================================
-          SITES HEADER
-         ========================================= */}
-
+      {/* HEADER */}
       <div className="sites-header">
 
         <div className="sites-title-section">
-
-          <h1>
-            Solar Sites
-          </h1>
+          <h1>Solar Sites</h1>
 
           <p className="sites-subtitle">
             View and manage your solar energy sites.
           </p>
-
         </div>
 
-
-        {/* =====================================
-            ADD SITE
-           ===================================== */}
-
-        <button
-          type="button"
-          className="add-site-button"
-          style={{
-            display: hideAddSite
-              ? "none"
-              : "inline-flex"
-          }}
-          onClick={() => setShowForm(true)}
-        >
-          + Add Site
-        </button>
+        {canAddSite && (
+          <button
+            type="button"
+            className="add-site-button"
+            onClick={() => setShowForm(true)}
+          >
+            + Add Site
+          </button>
+        )}
 
       </div>
 
 
-      {/* =========================================
-          SEARCH
-         ========================================= */}
-
+      {/* SEARCH */}
       <input
         type="text"
         className="site-search"
         placeholder="Search solar sites..."
         value={searchTerm}
-        onChange={(e) =>
-          setSearchTerm(e.target.value)
-        }
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
 
 
-      {/* =========================================
-          LOADING
-         ========================================= */}
+      {/* SITE LIST */}
+      {filteredSites.length === 0 ? (
 
-      {loading && (
-        <div className="sites-loading">
-          Loading solar sites...
+        <div className="no-sites">
+          No solar sites found.
         </div>
-      )}
 
+      ) : (
 
-      {/* =========================================
-          NO SITES
-         ========================================= */}
+        <div className="sites-table-container">
 
-      {!loading &&
-        filteredSites.length === 0 && (
-          <div className="no-sites">
-            No solar sites found.
-          </div>
-        )}
+          <table className="sites-table">
 
+            <thead>
+              <tr>
+                <th>Site ID</th>
+                <th>Site Name</th>
+                <th>Coordinates</th>
+                <th>Rated Capacity</th>
+                <th>Commission Date</th>
+                <th>Panels</th>
+                <th>Action</th>
+              </tr>
+            </thead>
 
-      {/* =========================================
-          ACTUAL BACKEND SITES
-         ========================================= */}
+            <tbody>
 
-      {!loading &&
-        filteredSites.length > 0 && (
+              {filteredSites.map((site) => (
 
-          <div className="sites-table-container">
+                <tr key={site.id}>
 
-            <table className="sites-table">
+                  <td>
+                    {site.id}
+                  </td>
 
-              <thead>
+                  <td>
+                    <strong>
+                      {site.siteName}
+                    </strong>
+                  </td>
 
-                <tr>
+                  <td>
+                    {site.locationCoordinates}
+                  </td>
 
-                  <th>
-                    Site ID
-                  </th>
+                  <td>
+                    {site.ratedCapacityKw} kW
+                  </td>
 
-                  <th>
-                    Site Name
-                  </th>
+                  <td>
+                    {site.commissionDate}
+                  </td>
 
-                  <th>
-                    Coordinates
-                  </th>
+                  <td>
+                    {site.panelCount}
+                  </td>
 
-                  <th>
-                    Rated Capacity
-                  </th>
-
-                  <th>
-                    Commission Date
-                  </th>
-
-                  <th>
-                    Panels
-                  </th>
-
-                  <th>
-                    Action
-                  </th>
+                  <td>
+                    <Link
+                      to={`/sites/${site.id}`}
+                      className="site-view-details"
+                    >
+                      View Details
+                    </Link>
+                  </td>
 
                 </tr>
 
-              </thead>
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      )}
 
 
-              <tbody>
-
-                {filteredSites.map((site) => (
-
-                  <tr key={site.id}>
-
-                    <td>
-                      {site.id}
-                    </td>
-
-                    <td>
-                      <strong>
-                        {site.siteName || "-"}
-                      </strong>
-                    </td>
-
-                    <td>
-                      {site.locationCoordinates || "-"}
-                    </td>
-
-                    <td>
-                      {site.ratedCapacityKw != null
-                        ? `${site.ratedCapacityKw} kW`
-                        : "-"}
-                    </td>
-
-                    <td>
-                      {site.commissionDate || "-"}
-                    </td>
-
-                    <td>
-                      {Array.isArray(site.panels)
-                        ? site.panels.length
-                        : site.panelCount ?? 0}
-                    </td>
-
-                    <td>
-
-                      <Link
-                        to={`/sites/${site.id}`}
-                        className="site-view-details"
-                      >
-                        View Details
-                      </Link>
-
-                    </td>
-
-                  </tr>
-
-                ))}
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        )}
-
-
-      {/* =========================================
-          EXISTING SOLAR SITE FORM
-         ========================================= */}
-
+      {/* EXISTING ADD SITE FORM */}
       {showForm && (
-
         <SolarSiteForm
-          onClose={() => {
-            setShowForm(false);
-          }}
+          onClose={() => setShowForm(false)}
         />
-
       )}
 
     </div>
