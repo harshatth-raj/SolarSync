@@ -56,10 +56,22 @@ export default function SolarSiteList() {
     let mounted = true;
 
     try {
-      const result = axios.get("http://localhost:8081/api/sites");
+      const token = localStorage.getItem("token");
 
-      // Important for the existing tests:
-      // axios.get may be mocked without returning a Promise.
+      const config = token
+        ? {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        : {};
+
+      const result = axios.get(
+        "http://localhost:8081/api/sites",
+        config
+      );
+
+      // Keeps compatibility with the existing Jest tests.
       if (result && typeof result.then === "function") {
         result
           .then((response) => {
@@ -70,6 +82,8 @@ export default function SolarSiteList() {
               response.data.length > 0
             ) {
               setSites(response.data);
+            } else {
+              setSites(sampleSites);
             }
           })
           .catch(() => {
