@@ -15,13 +15,21 @@ export default function SolarSiteList() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    axios.get('/api/sites')
-      .then((res) => {
-        setSites(Array.isArray(res.data) ? res.data : []);
-      })
-      .catch(() => {
-        setSites([]);
-      });
+    const request = axios.get('/api/sites');
+
+    if (request && typeof request.then === 'function') {
+      request
+        .then((res) => {
+          setSites(
+            Array.isArray(res.data)
+              ? res.data
+              : []
+          );
+        })
+        .catch(() => {
+          setSites([]);
+        });
+    }
   }, []);
 
   return (
@@ -40,18 +48,21 @@ export default function SolarSiteList() {
       )}
 
       {sites.map((s) => (
-        <div className="site-card" key={s.id}>
-
+        <div
+          className="site-card"
+          key={s.id}
+        >
           <span>{s.siteName}</span>
 
           <span>{s.locationCoordinates}</span>
 
-          <span>{s.ratedCapacityKw} kW</span>
+          <span>
+            {s.ratedCapacityKw} kW
+          </span>
 
           <a href={`/sites/${s.id}`}>
             View Details
           </a>
-
         </div>
       ))}
 
