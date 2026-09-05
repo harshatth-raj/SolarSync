@@ -15,7 +15,13 @@ export default function SolarSiteList() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    const request = axios.get('/api/sites');
+    const request = axios.get('/api/sites', {
+      headers: user?.token
+        ? {
+            Authorization: `Bearer ${user.token}`
+          }
+        : {}
+    });
 
     if (request && typeof request.then === 'function') {
       request
@@ -30,7 +36,7 @@ export default function SolarSiteList() {
           setSites([]);
         });
     }
-  }, []);
+  }, [user]);
 
   return (
     <div className="site-list">
@@ -53,12 +59,8 @@ export default function SolarSiteList() {
           key={s.id}
         >
           <span>{s.siteName}</span>
-
           <span>{s.locationCoordinates}</span>
-
-          <span>
-            {s.ratedCapacityKw} kW
-          </span>
+          <span>{s.ratedCapacityKw} kW</span>
 
           <a href={`/sites/${s.id}`}>
             View Details
