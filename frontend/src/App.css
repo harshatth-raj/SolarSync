@@ -3,7 +3,6 @@
    GLOBAL APPLICATION STYLES
    ========================================================= */
 
-
 /* =========================================================
    RESET
    ========================================================= */
@@ -50,7 +49,7 @@ a {
 
 
 /* =========================================================
-   NAVBAR - EXISTING PAGES
+   NAVBAR
    ========================================================= */
 
 .navbar {
@@ -100,9 +99,7 @@ a {
     font-size: 14px;
     font-weight: 500;
 
-    transition:
-        color 0.2s ease,
-        background 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
@@ -286,7 +283,7 @@ h3 {
 
 
 /* =========================================================
-   COMMON BUTTONS
+   BUTTONS
    ========================================================= */
 
 .btn-primary {
@@ -505,8 +502,6 @@ h3 {
     font-weight: 600;
 
     padding: 0;
-
-    cursor: pointer;
 }
 
 .register-link button:hover {
@@ -515,7 +510,7 @@ h3 {
 
 
 /* =========================================================
-   LOGIN ERROR
+   ERROR
    ========================================================= */
 
 .error-msg {
@@ -765,8 +760,6 @@ h3 {
     font-weight: 600;
 
     padding: 0;
-
-    cursor: pointer;
 }
 
 .register-switch button:hover {
@@ -795,11 +788,6 @@ h3 {
 
     padding: 34px 30px 50px;
 }
-
-
-/* =========================================================
-   DASHBOARD WELCOME
-   ========================================================= */
 
 .dashboard-welcome {
     background: #0d1728;
@@ -846,7 +834,7 @@ h3 {
 
 
 /* =========================================================
-   DASHBOARD STAT CARDS
+   STAT CARDS
    ========================================================= */
 
 .stat-cards {
@@ -873,19 +861,13 @@ h3 {
 
     padding: 19px 20px;
 
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: 0.2s ease;
 }
 
 .stat-card:hover {
     transform: translateY(-2px);
 
     border-color: #334e68;
-
-    box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.18);
 }
 
 .stat-card h3 {
@@ -951,7 +933,7 @@ h3 {
 
 
 /* =========================================================
-   MAINTENANCE DISTRIBUTION
+   STATUS DONUT
    ========================================================= */
 
 .status-donut {
@@ -968,9 +950,6 @@ h3 {
     padding: 23px;
 
     text-align: center;
-
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .status-donut h3 {
@@ -1057,8 +1036,6 @@ h3 {
     align-items: center;
 
     gap: 8px;
-
-    color: #94a3b8;
 }
 
 .legend-dot {
@@ -1104,9 +1081,6 @@ h3 {
     border-radius: 10px;
 
     padding: 23px;
-
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .recent-activity-panel h3 {
@@ -1209,7 +1183,7 @@ h3 {
 
 
 /* =========================================================
-   DASHBOARD QUICK ACCESS
+   QUICK ACCESS
    ========================================================= */
 
 .dashboard-quick-access {
@@ -1254,10 +1228,7 @@ h3 {
 
     color: #f8fafc;
 
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease;
+    transition: 0.2s ease;
 }
 
 .quick-access-card:hover {
@@ -1314,63 +1285,6 @@ h3 {
     color: #22c55e;
 
     font-size: 20px;
-
-    transition: transform 0.2s ease;
-}
-
-.quick-access-card:hover .quick-access-arrow {
-    transform: translateX(4px);
-}
-
-
-/* =========================================================
-   OLD RECENT ACTIVITY SUPPORT
-   ========================================================= */
-
-.recent-activity {
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 10px;
-
-    padding: 22px;
-
-    min-height: 310px;
-}
-
-.recent-activity h3 {
-    color: #e2e8f0;
-
-    font-size: 16px;
-
-    margin-bottom: 10px;
-}
-
-.activity-item {
-    padding: 14px 0;
-
-    border-bottom: 1px solid #243247;
-}
-
-.activity-item:last-child {
-    border-bottom: none;
-}
-
-.activity-item p {
-    color: #8d9bad;
-
-    font-size: 12px;
-
-    margin-bottom: 5px;
-}
-
-.activity-item p:last-child {
-    color: #22c55e;
-
-    font-size: 13px;
-
-    font-weight: 600;
 }
 
 
@@ -1394,44 +1308,7 @@ h3 {
 
 
 /* =========================================================
-   SEARCH
-   ========================================================= */
-
-.container > input[type="text"] {
-    display: block;
-
-    width: 100%;
-
-    height: 46px;
-
-    padding: 0 15px;
-
-    margin-bottom: 22px;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 7px;
-
-    color: #f8fafc;
-
-    font-size: 13px;
-
-    outline: none;
-}
-
-.container > input[type="text"]::placeholder {
-    color: #64748b;
-}
-
-.container > input[type="text"]:focus {
-    border-color: #22c55e;
-}
-
-
-/* =========================================================
-   OLD SOLAR SITE LIST SUPPORT
+   OLD SITE LIST
    ========================================================= */
 
 .site-list {
@@ -1451,8 +1328,6 @@ h3 {
     border-radius: 9px;
 
     padding: 20px;
-
-    cursor: pointer;
 
     transition: 0.2s ease;
 }
@@ -1481,63 +1356,710 @@ h3 {
 
 
 /* =========================================================
-   TICKET LIST
+   =========================================================
+   NEW SOLAR SITES PAGE
+   =========================================================
    ========================================================= */
 
-.ticket-card {
+
+/* =========================================================
+   SITES PAGE SECTION
+   ========================================================= */
+
+.sites-list-section {
+    width: 100%;
+}
+
+
+/* =========================================================
+   SITES HEADER
+   ========================================================= */
+
+.sites-list-header {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.sites-list-header h2 {
+    color: #f8fafc;
+
+    font-size: 23px;
+
+    font-weight: 750;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   ADD SITE
+   ========================================================= */
+
+.add-site-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 5px;
+
+    padding: 9px 17px;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.add-site-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   SITE SEARCH
+   ========================================================= */
+
+.site-search {
+    display: block;
+
+    width: 100%;
+
+    height: 46px;
+
+    padding: 0 15px;
+
+    margin-bottom: 18px;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 6px;
+
+    color: #f8fafc;
+
+    font-size: 12px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.site-search::placeholder {
+    color: #64748b;
+}
+
+.site-search:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================================
+   SITES TABLE CONTAINER
+   ========================================================= */
+
+.sites-table-container {
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================================
+   SITES TABLE
+   ========================================================= */
+
+.sites-table {
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: collapse;
+
+    table-layout: auto;
+}
+
+
+/* =========================================================
+   TABLE HEADER
+   ========================================================= */
+
+.sites-table th {
+    text-align: left;
+
+    color: #7f8da1;
+
+    background: #101b2d;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    padding: 13px 14px;
+
+    border-bottom: 1px solid #243247;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   TABLE ROW
+   ========================================================= */
+
+.sites-table td {
+    color: #aeb9c8;
+
+    font-size: 11px;
+
+    padding: 15px 14px;
+
+    border-bottom: 1px solid #1e2b3d;
+
+    white-space: nowrap;
+
+    vertical-align: middle;
+}
+
+.sites-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.sites-table tbody tr:hover td {
+    background: #101d30;
+}
+
+
+/* =========================================================
+   SITE NAME
+   ========================================================= */
+
+.site-table-name {
+    color: #f1f5f9;
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   GENERATION CELL
+   ========================================================= */
+
+.generation-cell {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+.generation-bar {
+    width: 65px;
+
+    height: 5px;
+
+    background: #1e293b;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.generation-progress {
+    height: 100%;
+
+    background: #22c55e;
+
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
+
+.generation-cell span {
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    min-width: 25px;
+}
+
+
+/* =========================================================
+   VIEW DETAILS
+   ========================================================= */
+
+.site-view-details {
+    display: inline-block;
+
+    color: #2563eb;
+
+    font-size: 10px;
+
+    font-weight: 650;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: color 0.2s ease;
+}
+
+.site-view-details:hover {
+    color: #60a5fa;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   NO SITES
+   ========================================================= */
+
+.sites-list-section .no-sites {
+    width: 100%;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 8px;
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   OLD SITES SUPPORT
+   ========================================================= */
+
+.sites-page {
+    width: 100%;
+
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 5px 0 50px;
+}
+
+.sites-top-bar {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.back-link {
+    color: #3b82f6;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.back-link:hover {
+    color: #60a5fa;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   OLD SITE HEADER CARD SUPPORT
+   ========================================================= */
+
+.site-header-card {
+    display: grid;
+
+    grid-template-columns:
+        minmax(250px, 2fr)
+        minmax(100px, 0.8fr)
+        minmax(70px, 0.55fr)
+        minmax(120px, 0.9fr)
+        minmax(150px, 1fr);
+
+    align-items: center;
+
+    gap: 22px;
+
+    width: 100%;
+
     background: #0d1728;
 
     border: 1px solid #243247;
 
     border-radius: 9px;
 
-    padding: 19px 21px;
-
-    margin-bottom: 13px;
-
-    transition: 0.2s ease;
+    padding: 21px 22px;
 }
 
-.ticket-card:hover {
-    border-color: #334e68;
+.site-main-info {
+    min-width: 0;
 }
 
-.ticket-card h3 {
-    color: #22c55e;
+.site-main-info h2 {
+    color: #f8fafc;
 
-    font-size: 16px;
+    font-size: 21px;
 
-    margin-bottom: 13px;
-}
-
-.ticket-card p {
-    color: #94a3b8;
-
-    font-size: 13px;
+    font-weight: 650;
 
     margin-bottom: 7px;
 }
 
-.ticket-card button {
-    margin-top: 10px;
+.site-main-info p {
+    color: #94a3b8;
 
-    background: #22c55e;
+    font-size: 12px;
 
-    border: none;
+    line-height: 1.5;
+}
 
-    color: #06120b;
+.site-info-item {
+    display: flex;
 
-    padding: 8px 14px;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.site-info-item span {
+    color: #64748b;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.6px;
+}
+
+.site-info-item strong {
+    color: #f1f5f9;
+
+    font-size: 15px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   VIEW SITE DETAILS BUTTON
+   ========================================================= */
+
+.view-details-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 145px;
+
+    background: #16a34a;
+
+    color: white;
 
     border-radius: 6px;
 
-    font-size: 12px;
+    padding: 9px 13px;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    transition: 0.2s ease;
+}
+
+.view-details-button:hover {
+    background: #15803d;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   SOLAR PANELS
+   ========================================================= */
+
+.panels-section {
+    width: 100%;
+
+    margin-top: 28px;
+}
+
+.panels-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 13px;
+}
+
+.panels-header h2 {
+    color: #f8fafc;
+
+    font-size: 19px;
+
+    font-weight: 650;
+}
+
+.add-panel-button {
+    background: #2563eb;
+
+    border: none;
+
+    color: white;
+
+    padding: 8px 14px;
+
+    border-radius: 5px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+.add-panel-button:hover {
+    background: #1d4ed8;
+}
+
+
+/* =========================================================
+   PANEL TABLE
+   ========================================================= */
+
+.panel-table-container {
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 8px;
+}
+
+.panel-table {
+    width: 100%;
+
+    min-width: 850px;
+
+    border-collapse: collapse;
+}
+
+.panel-table th {
+    text-align: left;
+
+    color: #7f8da1;
+
+    background: #101b2d;
+
+    font-size: 9px;
+
+    font-weight: 650;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.45px;
+
+    padding: 12px 13px;
+
+    border-bottom: 1px solid #243247;
+}
+
+.panel-table td {
+    color: #aeb9c8;
+
+    font-size: 11px;
+
+    padding: 14px 13px;
+
+    border-bottom: 1px solid #1e2b3d;
+
+    white-space: nowrap;
+
+    vertical-align: middle;
+}
+
+.panel-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.panel-table tbody tr:hover td {
+    background: #101d30;
+}
+
+
+/* =========================================================
+   PANEL STATUS
+   ========================================================= */
+
+.panel-table .status-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+
+    font-size: 9px;
 
     font-weight: 700;
 }
 
-.ticket-card button:hover {
-    background: #16a34a;
+.panel-table .status-badge.active {
+    color: #22c55e;
+
+    background: rgba(34, 197, 94, 0.12);
+}
+
+.panel-table .status-badge.maintenance {
+    color: #f59e0b;
+
+    background: rgba(245, 158, 11, 0.12);
+}
+
+.panel-table .status-badge.inactive {
+    color: #ef4444;
+
+    background: rgba(239, 68, 68, 0.12);
+}
+
+.panel-table .status-badge.faulty {
+    color: #ef4444;
+
+    background: rgba(239, 68, 68, 0.12);
+}
+
+
+/* =========================================================
+   PANEL USAGE
+   ========================================================= */
+
+.usage-cell {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+.usage-bar {
+    width: 70px;
+
+    height: 5px;
+
+    background: #1e293b;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.usage-progress {
+    height: 100%;
+
+    background: #3b82f6;
+
+    border-radius: 10px;
+}
+
+.usage-cell > span {
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    min-width: 20px;
+}
+
+
+/* =========================================================
+   PANEL ACTIONS
+   ========================================================= */
+
+.action-button,
+.delete-button {
+    background: transparent;
+
+    border: none;
+
+    padding: 0;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+.action-button {
+    color: #3b82f6;
+
+    margin-right: 10px;
+}
+
+.delete-button {
+    color: #ef4444;
+}
+
+.action-button:hover,
+.delete-button:hover {
+    text-decoration: underline;
 }
 
 
@@ -1624,21 +2146,6 @@ h3 {
     border-color: #22c55e;
 }
 
-.modal-card input::placeholder,
-.modal-card textarea::placeholder {
-    color: #64748b;
-}
-
-.modal-card textarea {
-    min-height: 105px;
-
-    resize: vertical;
-}
-
-.modal-card select {
-    cursor: pointer;
-}
-
 .modal-card button {
     padding: 10px 15px;
 
@@ -1657,43 +2164,43 @@ h3 {
     color: #06120b;
 }
 
-.modal-card button[type="submit"]:hover {
-    background: #16a34a;
-}
-
 .modal-card button[type="button"] {
     background: #243247;
 
     color: #e2e8f0;
 }
 
-.modal-card button[type="button"]:hover {
-    background: #334155;
-}
-
 
 /* =========================================================
-   SITE DETAILS
+   TICKET LIST
    ========================================================= */
 
-.site-details {
-    width: 100%;
+.ticket-card {
+    background: #0d1728;
 
-    margin-bottom: 25px;
+    border: 1px solid #243247;
+
+    border-radius: 9px;
+
+    padding: 19px 21px;
+
+    margin-bottom: 13px;
 }
 
-.site-details h1 {
-    font-size: 25px;
+.ticket-card h3 {
+    color: #22c55e;
 
-    margin-bottom: 10px;
+    font-size: 16px;
+
+    margin-bottom: 13px;
 }
 
-.site-details p {
+.ticket-card p {
     color: #94a3b8;
 
     font-size: 13px;
 
-    margin-bottom: 6px;
+    margin-bottom: 7px;
 }
 
 
@@ -1741,10 +2248,6 @@ h3 {
 
 .data-table tr:last-child td {
     border-bottom: none;
-}
-
-.data-table tr:hover td {
-    background: #101d30;
 }
 
 
@@ -1852,724 +2355,7 @@ h3 {
 
 
 /* =========================================================
-   SOLAR SITES PAGE
-   ========================================================= */
-
-.sites-page {
-    width: 100%;
-
-    max-width: 1200px;
-
-    margin: 0 auto;
-
-    padding: 5px 0 50px;
-}
-
-
-/* =========================================================
-   SITES PAGE HEADER
-   ========================================================= */
-
-.sites-page-header {
-    width: 100%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 20px;
-}
-
-.sites-page-header h1 {
-    color: #f8fafc;
-
-    font-size: 28px;
-
-    font-weight: 750;
-}
-
-
-/* =========================================================
-   ADD SITE BUTTON
-   ========================================================= */
-
-.sites-page-header .add-site-button {
-    background: #2563eb;
-
-    border: none;
-
-    color: white;
-
-    padding: 9px 17px;
-
-    border-radius: 6px;
-
-    font-size: 12px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.sites-page-header .add-site-button:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   SEARCH BAR
-   ========================================================= */
-
-.site-search {
-    display: block;
-
-    width: 100%;
-
-    height: 45px;
-
-    padding: 0 15px;
-
-    margin-bottom: 18px;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 7px;
-
-    color: #f8fafc;
-
-    font-size: 13px;
-
-    outline: none;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.site-search::placeholder {
-    color: #64748b;
-}
-
-.site-search:focus {
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 2px rgba(37, 99, 235, 0.10);
-}
-
-
-/* =========================================================
-   SITES TABLE CONTAINER
-   ========================================================= */
-
-.sites-table-container {
-    width: 100%;
-
-    overflow-x: auto;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 9px;
-
-    box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.12);
-}
-
-
-/* =========================================================
-   SITES TABLE
-   ========================================================= */
-
-.sites-table {
-    width: 100%;
-
-    min-width: 950px;
-
-    border-collapse: collapse;
-
-    table-layout: auto;
-}
-
-
-/* =========================================================
-   SITES TABLE HEADER
-   ========================================================= */
-
-.sites-table th {
-    text-align: left;
-
-    color: #7f8da1;
-
-    background: #101b2d;
-
-    font-size: 10px;
-
-    font-weight: 650;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.45px;
-
-    padding: 14px 15px;
-
-    border-bottom: 1px solid #243247;
-
-    white-space: nowrap;
-}
-
-
-/* =========================================================
-   SITES TABLE BODY
-   ========================================================= */
-
-.sites-table td {
-    color: #aeb9c8;
-
-    font-size: 12px;
-
-    padding: 17px 15px;
-
-    border-bottom: 1px solid #1e2b3d;
-
-    white-space: nowrap;
-
-    vertical-align: middle;
-}
-
-.sites-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.sites-table tbody tr {
-    transition: background 0.2s ease;
-}
-
-.sites-table tbody tr:hover td {
-    background: #101d30;
-}
-
-
-/* =========================================================
-   SITE NAME
-   ========================================================= */
-
-.sites-table .site-name {
-    color: #e2e8f0;
-
-    font-size: 12px;
-
-    font-weight: 650;
-}
-
-
-/* =========================================================
-   GENERATION RATE
-   ========================================================= */
-
-.generation-cell {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-}
-
-.generation-bar {
-    width: 70px;
-
-    height: 5px;
-
-    background: #1e293b;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-}
-
-.generation-progress {
-    height: 100%;
-
-    background: #22c55e;
-
-    border-radius: 10px;
-
-    transition: width 0.3s ease;
-}
-
-.generation-cell span {
-    color: #94a3b8;
-
-    font-size: 11px;
-
-    min-width: 35px;
-}
-
-
-/* =========================================================
-   VIEW DETAILS
-   ========================================================= */
-
-.site-view-details {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    color: #3b82f6;
-
-    background: transparent;
-
-    border: none;
-
-    font-size: 11px;
-
-    font-weight: 600;
-
-    white-space: nowrap;
-
-    transition:
-        color 0.2s ease,
-        text-decoration 0.2s ease;
-}
-
-.site-view-details:hover {
-    color: #60a5fa;
-
-    text-decoration: underline;
-}
-
-
-/* =========================================================
-   NO SITES
-   ========================================================= */
-
-.sites-page .no-sites {
-    width: 100%;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 9px;
-
-    padding: 45px 20px;
-
-    text-align: center;
-
-    color: #64748b;
-
-    font-size: 13px;
-}
-
-
-/* =========================================================
-   OLD SITE DETAIL SUPPORT
-   ========================================================= */
-
-.site-header-card {
-    display: grid;
-
-    grid-template-columns:
-        minmax(250px, 2fr)
-        minmax(100px, 0.8fr)
-        minmax(70px, 0.55fr)
-        minmax(120px, 0.9fr)
-        minmax(150px, 1fr);
-
-    align-items: center;
-
-    gap: 22px;
-
-    width: 100%;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 9px;
-
-    padding: 21px 22px;
-
-    box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.12);
-}
-
-.site-main-info {
-    min-width: 0;
-}
-
-.site-main-info h2 {
-    color: #f8fafc;
-
-    font-size: 21px;
-
-    font-weight: 650;
-
-    margin-bottom: 7px;
-}
-
-.site-main-info p {
-    color: #94a3b8;
-
-    font-size: 12px;
-
-    line-height: 1.5;
-
-    margin: 0;
-}
-
-.site-info-item {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 5px;
-
-    min-width: 0;
-}
-
-.site-info-item span {
-    color: #64748b;
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    letter-spacing: 0.6px;
-
-    white-space: nowrap;
-}
-
-.site-info-item strong {
-    color: #f1f5f9;
-
-    font-size: 15px;
-
-    font-weight: 650;
-
-    white-space: nowrap;
-}
-
-.view-details-button {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    min-width: 145px;
-
-    background: #16a34a;
-
-    color: white;
-
-    border-radius: 6px;
-
-    padding: 9px 13px;
-
-    font-size: 11px;
-
-    font-weight: 650;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.view-details-button:hover {
-    background: #15803d;
-
-    transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   SOLAR PANELS SECTION
-   ========================================================= */
-
-.panels-section {
-    width: 100%;
-
-    margin-top: 28px;
-}
-
-.panels-header {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 13px;
-}
-
-.panels-header h2 {
-    color: #f8fafc;
-
-    font-size: 19px;
-
-    font-weight: 650;
-}
-
-
-/* =========================================================
-   ADD PANEL
-   ========================================================= */
-
-.add-panel-button {
-    background: #2563eb;
-
-    border: none;
-
-    color: white;
-
-    padding: 8px 14px;
-
-    border-radius: 5px;
-
-    font-size: 11px;
-
-    font-weight: 600;
-
-    transition: 0.2s ease;
-}
-
-.add-panel-button:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   PANEL TABLE
-   ========================================================= */
-
-.panel-table-container {
-    width: 100%;
-
-    overflow-x: auto;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 8px;
-
-    box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.10);
-}
-
-.panel-table {
-    width: 100%;
-
-    min-width: 850px;
-
-    border-collapse: collapse;
-
-    table-layout: auto;
-}
-
-.panel-table th {
-    text-align: left;
-
-    color: #7f8da1;
-
-    background: #101b2d;
-
-    font-size: 9px;
-
-    font-weight: 650;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.45px;
-
-    padding: 12px 13px;
-
-    border-bottom: 1px solid #243247;
-
-    white-space: nowrap;
-}
-
-.panel-table td {
-    color: #aeb9c8;
-
-    font-size: 11px;
-
-    padding: 14px 13px;
-
-    border-bottom: 1px solid #1e2b3d;
-
-    white-space: nowrap;
-
-    vertical-align: middle;
-}
-
-.panel-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.panel-table tbody tr:hover td {
-    background: #101d30;
-}
-
-
-/* =========================================================
-   PANEL STATUS
-   ========================================================= */
-
-.panel-table .status-badge {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: 4px 8px;
-
-    border-radius: 20px;
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    white-space: nowrap;
-}
-
-.panel-table .status-badge.active {
-    color: #22c55e;
-
-    background: rgba(34, 197, 94, 0.12);
-}
-
-.panel-table .status-badge.maintenance {
-    color: #f59e0b;
-
-    background: rgba(245, 158, 11, 0.12);
-}
-
-.panel-table .status-badge.inactive {
-    color: #ef4444;
-
-    background: rgba(239, 68, 68, 0.12);
-}
-
-.panel-table .status-badge.faulty {
-    color: #ef4444;
-
-    background: rgba(239, 68, 68, 0.12);
-}
-
-
-/* =========================================================
-   PANEL USAGE
-   ========================================================= */
-
-.usage-cell {
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-}
-
-.usage-bar {
-    width: 70px;
-
-    height: 5px;
-
-    background: #1e293b;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-}
-
-.usage-progress {
-    height: 100%;
-
-    background: #3b82f6;
-
-    border-radius: 10px;
-
-    transition: width 0.3s ease;
-}
-
-.usage-cell > span {
-    color: #94a3b8;
-
-    font-size: 10px;
-
-    min-width: 20px;
-}
-
-
-/* =========================================================
-   PANEL ACTIONS
-   ========================================================= */
-
-.action-button,
-.delete-button {
-    background: transparent;
-
-    border: none;
-
-    padding: 0;
-
-    font-size: 10px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.action-button {
-    color: #3b82f6;
-
-    margin-right: 10px;
-}
-
-.delete-button {
-    color: #ef4444;
-}
-
-.action-button:hover,
-.delete-button:hover {
-    text-decoration: underline;
-}
-
-
-/* =========================================================
-   NO PANELS
-   ========================================================= */
-
-.no-panels {
-    text-align: center;
-
-    color: #64748b !important;
-
-    padding: 30px !important;
-
-    font-size: 12px !important;
-}
-
-
-/* =========================================================
-   RESPONSIVE - TABLET
+   RESPONSIVE - 1100px
    ========================================================= */
 
 @media (max-width: 1100px) {
@@ -2588,24 +2374,22 @@ h3 {
         max-width: 100%;
     }
 
+    .sites-table {
+        min-width: 900px;
+    }
+
     .site-header-card {
         grid-template-columns:
             1.7fr
             1fr
             0.7fr
             1fr;
-
-        gap: 18px;
-    }
-
-    .view-details-button {
-        width: fit-content;
     }
 }
 
 
 /* =========================================================
-   RESPONSIVE - SMALL TABLET
+   RESPONSIVE - 800px
    ========================================================= */
 
 @media (max-width: 800px) {
@@ -2660,10 +2444,6 @@ h3 {
         grid-template-columns: 1fr;
     }
 
-    .sites-page {
-        padding: 5px 0 40px;
-    }
-
     .site-header-card {
         grid-template-columns: 1fr 1fr;
     }
@@ -2675,7 +2455,7 @@ h3 {
 
 
 /* =========================================================
-   RESPONSIVE - MOBILE
+   RESPONSIVE - 650px
    ========================================================= */
 
 @media (max-width: 650px) {
@@ -2696,20 +2476,12 @@ h3 {
         width: 100%;
     }
 
-    .sites-page-header {
+    .sites-top-bar {
         align-items: flex-start;
 
         flex-direction: column;
 
         gap: 12px;
-    }
-
-    .sites-page-header .add-site-button {
-        align-self: flex-end;
-    }
-
-    .site-search {
-        height: 44px;
     }
 
     .panels-header {
@@ -2762,7 +2534,6 @@ h3 {
         margin-left: auto;
     }
 
-
     .dashboard-navbar {
         min-height: 68px;
 
@@ -2791,25 +2562,17 @@ h3 {
         margin-left: auto;
     }
 
-
     .dashboard-content {
         padding: 20px 14px 35px;
     }
 
     .dashboard-welcome {
         padding: 20px;
-
-        margin-bottom: 18px;
     }
 
     .dashboard-welcome h1 {
         font-size: 22px;
     }
-
-    .dashboard-status {
-        line-height: 1.5;
-    }
-
 
     .stat-cards {
         grid-template-columns: 1fr;
@@ -2820,11 +2583,6 @@ h3 {
     .stat-card {
         min-height: 100px;
     }
-
-    .stat-card p {
-        font-size: 22px;
-    }
-
 
     .dashboard-lower-grid {
         grid-template-columns: 1fr;
@@ -2839,63 +2597,9 @@ h3 {
         padding: 20px;
     }
 
-
-    .donut {
-        width: 145px;
-
-        height: 145px;
+    .quick-access-grid {
+        grid-template-columns: 1fr;
     }
-
-    .donut-center {
-        width: 90px;
-
-        height: 90px;
-
-        font-size: 22px;
-    }
-
-
-    .dashboard-quick-access {
-        margin-top: 20px;
-    }
-
-    .quick-access-card {
-        padding: 17px;
-
-        gap: 13px;
-    }
-
-    .quick-access-icon {
-        width: 43px;
-
-        height: 43px;
-
-        min-width: 43px;
-
-        font-size: 20px;
-    }
-
-    .quick-access-card h3 {
-        font-size: 14px;
-    }
-
-    .quick-access-card p {
-        font-size: 11px;
-    }
-
-
-    .activity-row {
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        gap: 10px;
-    }
-
-    .activity-values {
-        align-items: flex-start;
-    }
-
 
     .page-header {
         align-items: flex-start;
@@ -2903,10 +2607,6 @@ h3 {
         gap: 15px;
 
         flex-direction: column;
-    }
-
-    .page-header h1 {
-        font-size: 25px;
     }
 
     .login-card {
@@ -2925,23 +2625,26 @@ h3 {
         font-size: 30px;
     }
 
-
-    /* =====================================================
-       SITES MOBILE
-       ===================================================== */
-
     .sites-page {
         padding: 0 0 30px;
     }
 
-    .sites-page-header h1 {
-        font-size: 25px;
+    .sites-list-header {
+        gap: 10px;
     }
 
-    .sites-page-header .add-site-button {
-        padding: 8px 14px;
+    .sites-list-header h2 {
+        font-size: 20px;
+    }
 
-        font-size: 11px;
+    .add-site-button {
+        padding: 8px 13px;
+
+        font-size: 10px;
+    }
+
+    .sites-table {
+        min-width: 900px;
     }
 
     .site-header-card {
@@ -2949,27 +2652,11 @@ h3 {
 
         gap: 17px;
     }
-
-    .site-main-info h2 {
-        font-size: 19px;
-    }
-
-    .site-info-item strong {
-        font-size: 14px;
-    }
-
-    .sites-table {
-        min-width: 950px;
-    }
-
-    .panel-table {
-        min-width: 800px;
-    }
 }
 
 
 /* =========================================================
-   RESPONSIVE - VERY SMALL MOBILE
+   RESPONSIVE - 380px
    ========================================================= */
 
 @media (max-width: 380px) {
@@ -3024,9 +2711,5 @@ h3 {
 
     .panels-header h2 {
         font-size: 17px;
-    }
-
-    .sites-page-header h1 {
-        font-size: 23px;
     }
 }
