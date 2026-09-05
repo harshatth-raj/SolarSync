@@ -39,7 +39,20 @@ public class TicketService {
     @Transactional(readOnly = true)
     public List<MaintenanceTicket> getAllTickets() {
 
-        return ticketRepository.findAll();
+        List<MaintenanceTicket> tickets = ticketRepository.findAll();
+
+        for (MaintenanceTicket ticket : tickets) {
+
+            if (ticket.getPanel() != null) {
+                ticket.getPanel().getId();
+            }
+
+            if (ticket.getAssignedTechnician() != null) {
+                ticket.getAssignedTechnician().getUsername();
+            }
+        }
+
+        return tickets;
     }
 
     // --------------------------------------------------
