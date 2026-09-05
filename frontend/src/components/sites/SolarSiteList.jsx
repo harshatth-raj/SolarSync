@@ -1,63 +1,98 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import SolarSiteForm from "./SolarSiteForm";
 
+const sampleSites = [
+  {
+    id: 1,
+    siteName: "SKCT Solar Plant",
+    locationCoordinates: "11.0168, 76.9558",
+    ratedCapacityKw: 500,
+    commissionDate: "2025-01-15",
+    panelCount: 1200
+  },
+  {
+    id: 2,
+    siteName: "Main Solar Array",
+    locationCoordinates: "11.0185, 76.9725",
+    ratedCapacityKw: 750,
+    commissionDate: "2025-03-20",
+    panelCount: 1800
+  },
+  {
+    id: 3,
+    siteName: "Green Energy Plant",
+    locationCoordinates: "11.0302, 76.9614",
+    ratedCapacityKw: 1000,
+    commissionDate: "2025-06-10",
+    panelCount: 2400
+  }
+];
+
 export default function SolarSiteList() {
-  const [showForm, setShowForm] = useState(false);
+  const [sites, setSites] = useState(sampleSites);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showForm, setShowForm] = useState(false);
 
   const user = useSelector((state) => state.auth.user);
 
-  const role = user?.role;
+  const role = String(
+    user?.role ||
+      user?.roles?.[0] ||
+      user?.authorities?.[0]?.authority ||
+      user?.authorities?.[0] ||
+      ""
+  )
+    .replace(/^ROLE_/i, "")
+    .trim()
+    .replace(/[\s-]+/g, "_")
+    .toUpperCase();
 
-  const canAddSite =
-    role === "SYSTEM_ADMINISTRATOR" ||
-    role === "ADMIN" ||
-    !role;
+  const hideAddSite = role === "SOLAR_OPERATOR";
 
-  // Sample solar sites for displaying the Sites page
-  const sites = [
-    {
-      id: 1,
-      siteName: "SKCT Solar Plant",
-      locationCoordinates: "11.0168, 76.9558",
-      ratedCapacityKw: 500,
-      commissionDate: "2025-01-15",
-      panelCount: 1200
-    },
-    {
-      id: 2,
-      siteName: "Main Solar Array",
-      locationCoordinates: "11.0185, 76.9725",
-      ratedCapacityKw: 750,
-      commissionDate: "2025-03-20",
-      panelCount: 1800
-    },
-    {
-      id: 3,
-      siteName: "Green Energy Plant",
-      locationCoordinates: "11.0302, 76.9614",
-      ratedCapacityKw: 1000,
-      commissionDate: "2025-06-10",
-      panelCount: 2400
-    }
-  ];
+  useEffect(() => {
+    let mounted = true;
+
+    axios
+      .get("http://localhost:8081/api/sites")
+      .then((response) => {
+        if (!mounted) return;
+
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setSites(response.data);
+        }
+      })
+      .catch(() => {
+        // Keep sample sites when backend is unavailable.
+        if (mounted) {
+          setSites(sampleSites);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filteredSites = sites.filter((site) => {
     const search = searchTerm.toLowerCase();
 
     return (
-      site.siteName.toLowerCase().includes(search) ||
-      site.locationCoordinates.toLowerCase().includes(search) ||
-      String(site.id).includes(search)
+      String(site.id).includes(search) ||
+      String(site.siteName || "")
+        .toLowerCase()
+        .includes(search) ||
+      String(site.locationCoordinates || "")
+        .toLowerCase()
+        .includes(search)
     );
   });
 
   return (
     <div className="sites-page">
 
-      {/* HEADER */}
       <div className="sites-header">
 
         <div className="sites-title-section">
@@ -68,7 +103,7 @@ export default function SolarSiteList() {
           </p>
         </div>
 
-        {canAddSite && (
+        {!hideAddSite && (
           <button
             type="button"
             className="add-site-button"
@@ -80,8 +115,6 @@ export default function SolarSiteList() {
 
       </div>
 
-
-      {/* SEARCH */}
       <input
         type="text"
         className="site-search"
@@ -90,8 +123,6 @@ export default function SolarSiteList() {
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-
-      {/* SITE LIST */}
       {filteredSites.length === 0 ? (
 
         <div className="no-sites">
@@ -122,9 +153,7 @@ export default function SolarSiteList() {
 
                 <tr key={site.id}>
 
-                  <td>
-                    {site.id}
-                  </td>
+                  <td>{site.id}</td>
 
                   <td>
                     <strong>
@@ -133,19 +162,19 @@ export default function SolarSiteList() {
                   </td>
 
                   <td>
-                    {site.locationCoordinates}
+                    {site.locationCoordinates || "N/A"}
                   </td>
 
                   <td>
-                    {site.ratedCapacityKw} kW
+                    {site.ratedCapacityKw || 0} kW
                   </td>
 
                   <td>
-                    {site.commissionDate}
+                    {site.commissionDate || "N/A"}
                   </td>
 
                   <td>
-                    {site.panelCount}
+                    {site.panelCount || 0}
                   </td>
 
                   <td>
@@ -169,8 +198,6 @@ export default function SolarSiteList() {
 
       )}
 
-
-      {/* EXISTING ADD SITE FORM */}
       {showForm && (
         <SolarSiteForm
           onClose={() => setShowForm(false)}
