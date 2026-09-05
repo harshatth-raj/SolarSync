@@ -12,16 +12,11 @@ export default function SolarSiteList() {
     user?.role === 'ROLE_SYSTEM_ADMINISTRATOR';
 
   const [sites, setSites] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    const request = axios.get('/api/sites', {
-      headers: user?.token
-        ? {
-            Authorization: `Bearer ${user.token}`
-          }
-        : {}
-    });
+    const request = axios.get('/api/sites');
 
     if (request && typeof request.then === 'function') {
       request
@@ -36,17 +31,29 @@ export default function SolarSiteList() {
           setSites([]);
         });
     }
-  }, [user]);
+  }, []);
+
+  const filteredSites = sites.filter((site) => {
+    const query = searchQuery.toLowerCase();
+
+    return (
+      String(site.siteName || '')
+        .toLowerCase()
+        .includes(query) ||
+      String(site.locationCoordinates || '')
+        .toLowerCase()
+        .includes(query)
+    );
+  });
 
   return (
     <div className="sites-page">
 
-      {/* TOP ACTION */}
+      {/* PAGE HEADER */}
 
-      <div className="sites-top-bar">
-        <a href="/sites" className="back-link">
-          ← Back to Sites
-        </a>
+      <div className="sites-page-header">
+
+        <h1>Solar Sites</h1>
 
         {isAdmin && (
           <button
@@ -56,200 +63,152 @@ export default function SolarSiteList() {
             + Add Site
           </button>
         )}
+
       </div>
+
+      {/* SEARCH */}
+
+      <input
+        className="site-search"
+        type="text"
+        placeholder="Search solar sites by name..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
       {/* ADD SITE FORM */}
 
       {showForm && (
-        <SolarSiteForm
-          onClose={() => setShowForm(false)}
-        />
-      )}
+        <div className="modal-overlay">
 
-      {/* SITE DETAILS */}
+          <div className="modal-card">
 
-      {sites.map((site) => (
-        <div className="site-details" key={site.id}>
-
-          {/* SITE HEADER CARD */}
-
-          <div className="site-header-card">
-
-            <div className="site-main-info">
-
-              <h2>{site.siteName}</h2>
-
-              <p>
-                Coordinates: {site.locationCoordinates}
-              </p>
-
-            </div>
-
-            <div className="site-info-item">
-              <span>RATED CAPACITY</span>
-              <strong>
-                {site.ratedCapacityKw} kW
-              </strong>
-            </div>
-
-            <div className="site-info-item">
-              <span>PANELS</span>
-              <strong>
-                {site.panels?.length || 0}
-              </strong>
-            </div>
-
-            <div className="site-info-item">
-              <span>COMMISSIONED</span>
-              <strong>
-                {site.commissionDate}
-              </strong>
-            </div>
-
-            <a
-              href={`/sites/${site.id}`}
-              className="view-details-button"
-            >
-              View Details
-            </a>
-
-          </div>
-
-          {/* PANELS SECTION */}
-
-          <div className="panels-section">
-
-            <div className="panels-header">
-
-              <h2>Solar Panels</h2>
-
-              {isAdmin && (
-                <button className="add-panel-button">
-                  + Add Panel
-                </button>
-              )}
-
-            </div>
-
-            {/* PANEL TABLE */}
-
-            <div className="panel-table-container">
-
-              <table className="panel-table">
-
-                <thead>
-                  <tr>
-                    <th>Serial Number</th>
-                    <th>Model</th>
-                    <th>Status</th>
-                    <th>Usage (hrs)</th>
-                    <th>Installation</th>
-                    <th>Capacity</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  {site.panels &&
-                  site.panels.length > 0 ? (
-
-                    site.panels.map((panel) => (
-
-                      <tr key={panel.id}>
-
-                        <td>
-                          {panel.serialNumber}
-                        </td>
-
-                        <td>
-                          {panel.modelType}
-                        </td>
-
-                        <td>
-                          <span
-                            className={`status-badge ${String(
-                              panel.status || ''
-                            ).toLowerCase()}`}
-                          >
-                            {panel.status}
-                          </span>
-                        </td>
-
-                        <td>
-                          <div className="usage-cell">
-                            <div className="usage-bar">
-                              <div
-                                className="usage-progress"
-                                style={{
-                                  width: `${Math.min(
-                                    panel.usageCount || 0,
-                                    100
-                                  )}%`
-                                }}
-                              />
-                            </div>
-
-                            <span>
-                              {panel.usageCount || 0}
-                            </span>
-                          </div>
-                        </td>
-
-                        <td>
-                          {panel.installationDate}
-                        </td>
-
-                        <td>
-                          {panel.capacity} kW
-                        </td>
-
-                        <td>
-
-                          <button className="action-button">
-                            Edit
-                          </button>
-
-                          <button className="delete-button">
-                            Delete
-                          </button>
-
-                        </td>
-
-                      </tr>
-
-                    ))
-
-                  ) : (
-
-                    <tr>
-                      <td
-                        colSpan="7"
-                        className="no-panels"
-                      >
-                        No solar panels found.
-                      </td>
-                    </tr>
-
-                  )}
-
-                </tbody>
-
-              </table>
-
-            </div>
+            <SolarSiteForm
+              onClose={() => setShowForm(false)}
+            />
 
           </div>
 
         </div>
-      ))}
+      )}
 
-      {/* NO SITES */}
+      {/* SITE TABLE */}
 
-      {sites.length === 0 && (
+      {filteredSites.length === 0 ? (
+
         <div className="no-sites">
           No solar sites found.
         </div>
+
+      ) : (
+
+        <div className="sites-table-container">
+
+          <table className="sites-table">
+
+            <thead>
+
+              <tr>
+                <th>Site Identifier</th>
+                <th>Coordinates</th>
+                <th>Capacity (kW)</th>
+                <th>Generation Rate</th>
+                <th>Commissioned Date</th>
+                <th>Panel Count</th>
+                <th>Management</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {filteredSites.map((site) => (
+
+                <tr key={site.id}>
+
+                  {/* SITE NAME */}
+
+                  <td>
+                    <strong className="site-name">
+                      {site.siteName}
+                    </strong>
+                  </td>
+
+                  {/* COORDINATES */}
+
+                  <td>
+                    {site.locationCoordinates || '-'}
+                  </td>
+
+                  {/* CAPACITY */}
+
+                  <td>
+                    {site.ratedCapacityKw || 0}
+                  </td>
+
+                  {/* GENERATION RATE */}
+
+                  <td>
+
+                    <div className="generation-cell">
+
+                      <div className="generation-bar">
+
+                        <div
+                          className="generation-progress"
+                          style={{
+                            width: `${Math.min(
+                              Number(site.generationRate || 0),
+                              100
+                            )}%`
+                          }}
+                        />
+
+                      </div>
+
+                      <span>
+                        {site.generationRate || 0}%
+                      </span>
+
+                    </div>
+
+                  </td>
+
+                  {/* COMMISSIONED */}
+
+                  <td>
+                    {site.commissionedDate || '-'}
+                  </td>
+
+                  {/* PANEL COUNT */}
+
+                  <td>
+                    {site.panelCount ?? 0}
+                  </td>
+
+                  {/* MANAGEMENT */}
+
+                  <td>
+
+                    <a
+                      className="site-view-details"
+                      href={`/sites/${site.id}`}
+                    >
+                      View Details
+                    </a>
+
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
       )}
 
     </div>
