@@ -108,7 +108,7 @@ function PageLayout({ children }) {
    DASHBOARD
    ========================================================= */
 
-function Dashboard() {
+export function Dashboard() {
   const user = useSelector((state) => state.auth.user);
 
   const [metrics, setMetrics] = useState({
