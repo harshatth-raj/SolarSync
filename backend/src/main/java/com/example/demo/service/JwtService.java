@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.util.JwtUtils;
@@ -10,9 +12,14 @@ import com.example.demo.util.JwtUtils;
 public class JwtService {
 
     private final JwtUtils jwtUtils;
+    private final UserDetailsService userDetailsService;
 
-    public JwtService(JwtUtils jwtUtils) {
+    public JwtService(
+            JwtUtils jwtUtils,
+            UserDetailsService userDetailsService) {
+
         this.jwtUtils = jwtUtils;
+        this.userDetailsService = userDetailsService;
     }
 
     public String generateToken(String username) {
@@ -44,11 +51,14 @@ public class JwtService {
         String username =
                 jwtUtils.extractUsername(token);
 
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(username);
+
         return new org.springframework.security.authentication
                 .UsernamePasswordAuthenticationToken(
-                        username,
+                        userDetails,
                         null,
-                        java.util.Collections.emptyList()
+                        userDetails.getAuthorities()
                 );
     }
 
