@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.example.demo.enums.Priority;
 import com.example.demo.enums.TicketStatus;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
@@ -19,7 +18,12 @@ public class MaintenanceTicket {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "panel_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties({
+            "hibernateLazyInitializer",
+            "handler",
+            "metrics",
+            "tickets"
+    })
     private SolarPanel panel;
 
     @Column(name = "issue_description", nullable = false, length = 1000)
@@ -41,7 +45,16 @@ public class MaintenanceTicket {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({
+            "hibernateLazyInitializer",
+            "handler",
+            "password",
+            "authorities",
+            "accountNonLocked",
+            "accountNonExpired",
+            "credentialsNonExpired",
+            "enabled"
+    })
     private SystemUser assignedTechnician;
 
     public MaintenanceTicket() {
