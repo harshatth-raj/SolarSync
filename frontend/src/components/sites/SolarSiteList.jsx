@@ -110,7 +110,7 @@ export default function SolarSiteList() {
               href={`/sites/${site.id}`}
               className="view-details-button"
             >
-              View Site Details
+              View Details
             </a>
 
           </div>
