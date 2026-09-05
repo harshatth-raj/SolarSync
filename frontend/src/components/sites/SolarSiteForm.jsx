@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-export default function SolarSiteForm({
-  onClose,
-}) {
+export default function SolarSiteForm({ onClose }) {
   const [siteName, setSiteName] = useState('');
-
   const [locationCoordinates, setLocationCoordinates] =
     useState('');
-
   const [ratedCapacityKw, setRatedCapacityKw] =
     useState('');
-
   const [commissionedDate, setCommissionedDate] =
     useState('');
-
   const [error, setError] = useState('');
 
   const getAuthHeaders = () => {
@@ -35,7 +29,8 @@ export default function SolarSiteForm({
 
     setError('');
 
-    // Coordinate validation
+    // Validate coordinates
+    // Example: 34.05, -118.24
     const coordinatePattern =
       /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
 
@@ -122,6 +117,7 @@ export default function SolarSiteForm({
           {/* Commissioned Date */}
           <input
             type="date"
+            name="commissionDate"
             value={commissionedDate}
             onChange={(e) =>
               setCommissionedDate(
