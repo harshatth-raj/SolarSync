@@ -28,7 +28,6 @@ body {
 
     background: #08111f;
     color: #f1f5f9;
-
     min-height: 100vh;
 }
 
@@ -52,102 +51,7 @@ a {
    NAVBAR
    ========================================================= */
 
-.navbar {
-    width: 100%;
-    height: 68px;
-
-    background: #0d1728;
-
-    border-bottom: 1px solid #243247;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 34px;
-
-    gap: 38px;
-
-    position: sticky;
-    top: 0;
-
-    z-index: 1000;
-}
-
-.navbar-brand {
-    font-size: 23px;
-    font-weight: 750;
-
-    color: #22c55e;
-
-    letter-spacing: 0.3px;
-
-    white-space: nowrap;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-
-    gap: 26px;
-
-    flex: 1;
-}
-
-.nav-links a {
-    color: #aeb9c8;
-
-    font-size: 14px;
-    font-weight: 500;
-
-    transition: color 0.2s ease;
-}
-
-.nav-links a:hover {
-    color: #22c55e;
-}
-
-.navbar-user {
-    display: flex;
-    align-items: center;
-
-    gap: 16px;
-
-    color: #aeb9c8;
-
-    font-size: 13px;
-
-    white-space: nowrap;
-}
-
-.navbar-user button {
-    background: transparent;
-
-    border: 1px solid #334155;
-
-    color: #e2e8f0;
-
-    padding: 8px 15px;
-
-    border-radius: 7px;
-
-    font-size: 13px;
-
-    transition: 0.2s ease;
-}
-
-.navbar-user button:hover {
-    background: #ef4444;
-
-    border-color: #ef4444;
-
-    color: white;
-}
-
-
-/* =========================================================
-   DASHBOARD NAVBAR
-   ========================================================= */
-
+.navbar,
 .dashboard-navbar {
     width: 100%;
     min-height: 68px;
@@ -169,9 +73,14 @@ a {
     z-index: 1000;
 }
 
+
+/* =========================================================
+   NAVBAR BRAND
+   ========================================================= */
+
+.navbar-brand,
 .dashboard-logo {
     font-size: 23px;
-
     font-weight: 750;
 
     color: #22c55e;
@@ -181,6 +90,12 @@ a {
     white-space: nowrap;
 }
 
+
+/* =========================================================
+   NAVIGATION LINKS
+   ========================================================= */
+
+.nav-links,
 .dashboard-nav-links {
     display: flex;
     align-items: center;
@@ -190,6 +105,7 @@ a {
     flex: 1;
 }
 
+.nav-links a,
 .dashboard-nav-links a {
     color: #aeb9c8;
 
@@ -200,10 +116,17 @@ a {
     transition: color 0.2s ease;
 }
 
+.nav-links a:hover,
 .dashboard-nav-links a:hover {
     color: #22c55e;
 }
 
+
+/* =========================================================
+   NAVBAR USER
+   ========================================================= */
+
+.navbar-user,
 .dashboard-user {
     display: flex;
     align-items: center;
@@ -217,6 +140,7 @@ a {
     white-space: nowrap;
 }
 
+.navbar-user button,
 .dashboard-user button {
     background: transparent;
 
@@ -233,6 +157,7 @@ a {
     transition: 0.2s ease;
 }
 
+.navbar-user button:hover,
 .dashboard-user button:hover {
     background: #ef4444;
 
@@ -283,7 +208,7 @@ h3 {
 
 
 /* =========================================================
-   BUTTONS
+   COMMON BUTTONS
    ========================================================= */
 
 .btn-primary {
@@ -510,7 +435,7 @@ h3 {
 
 
 /* =========================================================
-   ERROR
+   LOGIN ERROR
    ========================================================= */
 
 .error-msg {
@@ -640,16 +565,16 @@ h3 {
     transition: 0.2s ease;
 }
 
-.register-card input::placeholder {
-    color: #64748b;
-}
-
 .register-card input:focus,
 .register-card select:focus {
     border-color: #22c55e;
 
     box-shadow:
         0 0 0 2px rgba(34, 197, 94, 0.1);
+}
+
+.register-card input::placeholder {
+    color: #64748b;
 }
 
 .register-card select {
@@ -789,6 +714,11 @@ h3 {
     padding: 34px 30px 50px;
 }
 
+
+/* =========================================================
+   DASHBOARD WELCOME
+   ========================================================= */
+
 .dashboard-welcome {
     background: #0d1728;
 
@@ -801,9 +731,6 @@ h3 {
     padding: 25px 28px;
 
     margin-bottom: 24px;
-
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .dashboard-welcome h1 {
@@ -834,7 +761,7 @@ h3 {
 
 
 /* =========================================================
-   STAT CARDS
+   DASHBOARD STAT CARDS
    ========================================================= */
 
 .stat-cards {
@@ -888,10 +815,6 @@ h3 {
     font-weight: 750;
 
     white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
 }
 
 .stat-card:nth-child(1) {
@@ -927,13 +850,11 @@ h3 {
         minmax(0, 1.5fr);
 
     gap: 20px;
-
-    align-items: stretch;
 }
 
 
 /* =========================================================
-   STATUS DONUT
+   MAINTENANCE DISTRIBUTION
    ========================================================= */
 
 .status-donut {
@@ -956,8 +877,6 @@ h3 {
     color: #e2e8f0;
 
     font-size: 16px;
-
-    font-weight: 650;
 
     margin-bottom: 14px;
 }
@@ -1060,8 +979,6 @@ h3 {
     justify-content: center;
 
     color: #64748b;
-
-    font-size: 13px;
 }
 
 
@@ -1087,8 +1004,6 @@ h3 {
     color: #e2e8f0;
 
     font-size: 16px;
-
-    font-weight: 650;
 
     margin-bottom: 8px;
 }
@@ -1125,8 +1040,6 @@ h3 {
     flex-direction: column;
 
     gap: 5px;
-
-    min-width: 120px;
 }
 
 .activity-time {
@@ -1177,8 +1090,6 @@ h3 {
     justify-content: center;
 
     color: #64748b;
-
-    font-size: 13px;
 }
 
 
@@ -1194,8 +1105,6 @@ h3 {
     color: #f8fafc;
 
     font-size: 18px;
-
-    font-weight: 650;
 
     margin-bottom: 14px;
 }
@@ -1260,8 +1169,6 @@ h3 {
 }
 
 .quick-access-card h3 {
-    color: #f8fafc;
-
     font-size: 15px;
 
     margin-bottom: 6px;
@@ -1273,8 +1180,6 @@ h3 {
     font-size: 12px;
 
     line-height: 1.5;
-
-    padding-right: 25px;
 }
 
 .quick-access-arrow {
@@ -1308,35 +1213,351 @@ h3 {
 
 
 /* =========================================================
-   OLD SITE LIST
+   SEARCH
+   ========================================================= */
+
+.container > input[type="text"] {
+    display: block;
+
+    width: 100%;
+
+    height: 46px;
+
+    padding: 0 15px;
+
+    margin-bottom: 22px;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 7px;
+
+    color: #f8fafc;
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+.container > input[type="text"]::placeholder {
+    color: #64748b;
+}
+
+.container > input[type="text"]:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================================
+   =========================================================
+   SOLAR SITES PAGE
+   =========================================================
+   ========================================================= */
+
+.sites-page {
+    width: 100%;
+
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 0 0 50px;
+}
+
+
+/* =========================================================
+   SITES PAGE TOP ROW
+   ========================================================= */
+
+.sites-page .sites-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    width: 100%;
+
+    margin-bottom: 14px;
+}
+
+
+/*
+   This also supports pages where the heading is inside
+   .page-header.
+*/
+
+.sites-page .page-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    width: 100%;
+
+    margin-bottom: 14px;
+}
+
+
+/* =========================================================
+   SITES TITLE
+   ========================================================= */
+
+.sites-page .page-header h1,
+.sites-page .sites-header h1 {
+    color: #f8fafc;
+
+    font-size: 28px;
+
+    font-weight: 750;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   ADD SITE BUTTON
+   ========================================================= */
+
+.add-site-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 6px;
+
+    padding: 9px 16px;
+
+    min-height: 34px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.add-site-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 15px rgba(37, 99, 235, 0.2);
+}
+
+
+/* =========================================================
+   SITES SEARCH BAR
+   ========================================================= */
+
+.sites-page .site-search,
+.sites-page input[type="text"] {
+    width: 100%;
+
+    height: 46px;
+
+    padding: 0 15px;
+
+    margin-bottom: 18px;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 7px;
+
+    color: #f8fafc;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.sites-page .site-search::placeholder,
+.sites-page input[type="text"]::placeholder {
+    color: #64748b;
+}
+
+.sites-page .site-search:focus,
+.sites-page input[type="text"]:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+
+/* =========================================================
+   SITES LIST
    ========================================================= */
 
 .site-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   SITE CARD
+   ========================================================= */
+
+.site-card {
+    width: 100%;
+
     display: grid;
 
     grid-template-columns:
-        repeat(3, minmax(0, 1fr));
+        1.5fr
+        1.1fr
+        0.8fr
+        0.8fr
+        0.8fr
+        auto;
 
-    gap: 17px;
+    align-items: center;
+
+    gap: 20px;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 8px;
+
+    padding: 17px 20px;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
 }
 
-.site-card {
+.site-card:hover {
+    border-color: #334e68;
+
+    background: #101b2d;
+}
+
+
+/* =========================================================
+   SITE CARD TEXT
+   ========================================================= */
+
+.site-card span {
+    color: #aeb9c8;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+.site-card span:first-child {
+    color: #e2e8f0;
+
+    font-size: 14px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   SITE DETAILS LINK
+   ========================================================= */
+
+.site-card a,
+.site-card .view-details-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 105px;
+
+    padding: 8px 12px;
+
+    background: #16a34a;
+
+    color: white;
+
+    border-radius: 5px;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    transition: 0.2s ease;
+}
+
+.site-card a:hover,
+.site-card .view-details-button:hover {
+    background: #15803d;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   NO SITES
+   ========================================================= */
+
+.no-sites {
+    width: 100%;
+
+    min-height: 145px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
     background: #0d1728;
 
     border: 1px solid #243247;
 
     border-radius: 9px;
 
-    padding: 20px;
+    padding: 30px 20px;
 
-    transition: 0.2s ease;
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 13px;
 }
 
-.site-card:hover {
-    border-color: #22c55e;
 
-    transform: translateY(-2px);
-}
+/* =========================================================
+   OLD SITE CARD SUPPORT
+   ========================================================= */
 
 .site-card h3 {
     color: #22c55e;
@@ -1356,339 +1577,8 @@ h3 {
 
 
 /* =========================================================
-   =========================================================
-   NEW SOLAR SITES PAGE
-   =========================================================
+   SITES TOP BAR
    ========================================================= */
-
-
-/* =========================================================
-   SITES PAGE SECTION
-   ========================================================= */
-
-.sites-list-section {
-    width: 100%;
-}
-
-
-/* =========================================================
-   SITES HEADER
-   ========================================================= */
-
-.sites-list-header {
-    width: 100%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 18px;
-}
-
-.sites-list-header h2 {
-    color: #f8fafc;
-
-    font-size: 23px;
-
-    font-weight: 750;
-
-    margin: 0;
-}
-
-
-/* =========================================================
-   ADD SITE
-   ========================================================= */
-
-.add-site-button {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    background: #2563eb;
-
-    color: white;
-
-    border: none;
-
-    border-radius: 5px;
-
-    padding: 9px 17px;
-
-    font-size: 11px;
-
-    font-weight: 650;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.add-site-button:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   SITE SEARCH
-   ========================================================= */
-
-.site-search {
-    display: block;
-
-    width: 100%;
-
-    height: 46px;
-
-    padding: 0 15px;
-
-    margin-bottom: 18px;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 6px;
-
-    color: #f8fafc;
-
-    font-size: 12px;
-
-    outline: none;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.site-search::placeholder {
-    color: #64748b;
-}
-
-.site-search:focus {
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 2px rgba(37, 99, 235, 0.12);
-}
-
-
-/* =========================================================
-   SITES TABLE CONTAINER
-   ========================================================= */
-
-.sites-table-container {
-    width: 100%;
-
-    overflow-x: auto;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 8px;
-
-    box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.10);
-}
-
-
-/* =========================================================
-   SITES TABLE
-   ========================================================= */
-
-.sites-table {
-    width: 100%;
-
-    min-width: 900px;
-
-    border-collapse: collapse;
-
-    table-layout: auto;
-}
-
-
-/* =========================================================
-   TABLE HEADER
-   ========================================================= */
-
-.sites-table th {
-    text-align: left;
-
-    color: #7f8da1;
-
-    background: #101b2d;
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.5px;
-
-    padding: 13px 14px;
-
-    border-bottom: 1px solid #243247;
-
-    white-space: nowrap;
-}
-
-
-/* =========================================================
-   TABLE ROW
-   ========================================================= */
-
-.sites-table td {
-    color: #aeb9c8;
-
-    font-size: 11px;
-
-    padding: 15px 14px;
-
-    border-bottom: 1px solid #1e2b3d;
-
-    white-space: nowrap;
-
-    vertical-align: middle;
-}
-
-.sites-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.sites-table tbody tr:hover td {
-    background: #101d30;
-}
-
-
-/* =========================================================
-   SITE NAME
-   ========================================================= */
-
-.site-table-name {
-    color: #f1f5f9;
-
-    font-size: 12px;
-
-    font-weight: 650;
-}
-
-
-/* =========================================================
-   GENERATION CELL
-   ========================================================= */
-
-.generation-cell {
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-}
-
-.generation-bar {
-    width: 65px;
-
-    height: 5px;
-
-    background: #1e293b;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-}
-
-.generation-progress {
-    height: 100%;
-
-    background: #22c55e;
-
-    border-radius: 10px;
-
-    transition: width 0.3s ease;
-}
-
-.generation-cell span {
-    color: #94a3b8;
-
-    font-size: 10px;
-
-    min-width: 25px;
-}
-
-
-/* =========================================================
-   VIEW DETAILS
-   ========================================================= */
-
-.site-view-details {
-    display: inline-block;
-
-    color: #2563eb;
-
-    font-size: 10px;
-
-    font-weight: 650;
-
-    text-decoration: none;
-
-    cursor: pointer;
-
-    transition: color 0.2s ease;
-}
-
-.site-view-details:hover {
-    color: #60a5fa;
-
-    text-decoration: underline;
-}
-
-
-/* =========================================================
-   NO SITES
-   ========================================================= */
-
-.sites-list-section .no-sites {
-    width: 100%;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 8px;
-
-    padding: 45px 20px;
-
-    text-align: center;
-
-    color: #64748b;
-
-    font-size: 13px;
-}
-
-
-/* =========================================================
-   OLD SITES SUPPORT
-   ========================================================= */
-
-.sites-page {
-    width: 100%;
-
-    max-width: 1200px;
-
-    margin: 0 auto;
-
-    padding: 5px 0 50px;
-}
 
 .sites-top-bar {
     display: flex;
@@ -1706,6 +1596,8 @@ h3 {
     font-size: 13px;
 
     font-weight: 600;
+
+    transition: 0.2s ease;
 }
 
 .back-link:hover {
@@ -1716,7 +1608,7 @@ h3 {
 
 
 /* =========================================================
-   OLD SITE HEADER CARD SUPPORT
+   SITE HEADER CARD
    ========================================================= */
 
 .site-header-card {
@@ -1772,6 +1664,8 @@ h3 {
     flex-direction: column;
 
     gap: 5px;
+
+    min-width: 0;
 }
 
 .site-info-item span {
@@ -1782,6 +1676,8 @@ h3 {
     font-weight: 700;
 
     letter-spacing: 0.6px;
+
+    white-space: nowrap;
 }
 
 .site-info-item strong {
@@ -1790,11 +1686,13 @@ h3 {
     font-size: 15px;
 
     font-weight: 650;
+
+    white-space: nowrap;
 }
 
 
 /* =========================================================
-   VIEW SITE DETAILS BUTTON
+   VIEW SITE DETAILS
    ========================================================= */
 
 .view-details-button {
@@ -1856,6 +1754,11 @@ h3 {
     font-weight: 650;
 }
 
+
+/* =========================================================
+   ADD PANEL
+   ========================================================= */
+
 .add-panel-button {
     background: #2563eb;
 
@@ -1870,10 +1773,14 @@ h3 {
     font-size: 11px;
 
     font-weight: 600;
+
+    transition: 0.2s ease;
 }
 
 .add-panel-button:hover {
     background: #1d4ed8;
+
+    transform: translateY(-1px);
 }
 
 
@@ -1899,6 +1806,8 @@ h3 {
     min-width: 850px;
 
     border-collapse: collapse;
+
+    table-layout: auto;
 }
 
 .panel-table th {
@@ -1919,6 +1828,8 @@ h3 {
     padding: 12px 13px;
 
     border-bottom: 1px solid #243247;
+
+    white-space: nowrap;
 }
 
 .panel-table td {
@@ -1962,6 +1873,8 @@ h3 {
     font-size: 9px;
 
     font-weight: 700;
+
+    white-space: nowrap;
 }
 
 .panel-table .status-badge.active {
@@ -1976,12 +1889,7 @@ h3 {
     background: rgba(245, 158, 11, 0.12);
 }
 
-.panel-table .status-badge.inactive {
-    color: #ef4444;
-
-    background: rgba(239, 68, 68, 0.12);
-}
-
+.panel-table .status-badge.inactive,
 .panel-table .status-badge.faulty {
     color: #ef4444;
 
@@ -2019,6 +1927,8 @@ h3 {
     background: #3b82f6;
 
     border-radius: 10px;
+
+    transition: width 0.3s ease;
 }
 
 .usage-cell > span {
@@ -2042,24 +1952,109 @@ h3 {
 
     padding: 0;
 
-    font-size: 10px;
+    font-size: 11px;
 
-    font-weight: 600;
+    font-weight: 650;
+
+    cursor: pointer;
 }
 
 .action-button {
     color: #3b82f6;
 
-    margin-right: 10px;
+    margin-right: 12px;
 }
 
 .delete-button {
     color: #ef4444;
 }
 
-.action-button:hover,
-.delete-button:hover {
+.action-button:hover {
+    color: #60a5fa;
+
     text-decoration: underline;
+}
+
+.delete-button:hover {
+    color: #f87171;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   NO PANELS
+   ========================================================= */
+
+.no-panels {
+    text-align: center;
+
+    color: #64748b !important;
+
+    padding: 30px !important;
+
+    font-size: 12px !important;
+}
+
+
+/* =========================================================
+   TICKETS
+   ========================================================= */
+
+.ticket-card {
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 9px;
+
+    padding: 19px 21px;
+
+    margin-bottom: 13px;
+
+    transition: 0.2s ease;
+}
+
+.ticket-card:hover {
+    border-color: #334e68;
+}
+
+.ticket-card h3 {
+    color: #22c55e;
+
+    font-size: 16px;
+
+    margin-bottom: 13px;
+}
+
+.ticket-card p {
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    margin-bottom: 7px;
+}
+
+.ticket-card button {
+    margin-top: 10px;
+
+    background: #22c55e;
+
+    border: none;
+
+    color: #06120b;
+
+    padding: 8px 14px;
+
+    border-radius: 6px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.ticket-card button:hover {
+    background: #16a34a;
 }
 
 
@@ -2146,6 +2141,17 @@ h3 {
     border-color: #22c55e;
 }
 
+.modal-card input::placeholder,
+.modal-card textarea::placeholder {
+    color: #64748b;
+}
+
+.modal-card textarea {
+    min-height: 105px;
+
+    resize: vertical;
+}
+
 .modal-card button {
     padding: 10px 15px;
 
@@ -2164,43 +2170,43 @@ h3 {
     color: #06120b;
 }
 
+.modal-card button[type="submit"]:hover {
+    background: #16a34a;
+}
+
 .modal-card button[type="button"] {
     background: #243247;
 
     color: #e2e8f0;
 }
 
+.modal-card button[type="button"]:hover {
+    background: #334155;
+}
+
 
 /* =========================================================
-   TICKET LIST
+   SITE DETAILS
    ========================================================= */
 
-.ticket-card {
-    background: #0d1728;
+.site-details {
+    width: 100%;
 
-    border: 1px solid #243247;
-
-    border-radius: 9px;
-
-    padding: 19px 21px;
-
-    margin-bottom: 13px;
+    margin-bottom: 25px;
 }
 
-.ticket-card h3 {
-    color: #22c55e;
+.site-details h1 {
+    font-size: 25px;
 
-    font-size: 16px;
-
-    margin-bottom: 13px;
+    margin-bottom: 10px;
 }
 
-.ticket-card p {
+.site-details p {
     color: #94a3b8;
 
     font-size: 13px;
 
-    margin-bottom: 7px;
+    margin-bottom: 6px;
 }
 
 
@@ -2248,6 +2254,10 @@ h3 {
 
 .data-table tr:last-child td {
     border-bottom: none;
+}
+
+.data-table tr:hover td {
+    background: #101d30;
 }
 
 
@@ -2355,7 +2365,7 @@ h3 {
 
 
 /* =========================================================
-   RESPONSIVE - 1100px
+   TABLET
    ========================================================= */
 
 @media (max-width: 1100px) {
@@ -2366,16 +2376,15 @@ h3 {
     }
 
     .site-list {
+        grid-template-columns: 1fr;
+    }
+
+    .site-card {
         grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-    }
-
-    .dashboard-content {
-        max-width: 100%;
-    }
-
-    .sites-table {
-        min-width: 900px;
+            1.5fr
+            1fr
+            0.8fr
+            auto;
     }
 
     .site-header-card {
@@ -2385,39 +2394,36 @@ h3 {
             0.7fr
             1fr;
     }
+
+    .view-details-button {
+        width: fit-content;
+    }
+
+    .dashboard-content {
+        max-width: 100%;
+    }
 }
 
 
 /* =========================================================
-   RESPONSIVE - 800px
+   SMALL TABLET
    ========================================================= */
 
 @media (max-width: 800px) {
 
-    .navbar {
-        padding: 0 20px;
-
-        gap: 22px;
-    }
-
-    .nav-links {
-        gap: 17px;
-    }
-
-    .navbar-user span {
-        display: none;
-    }
-
+    .navbar,
     .dashboard-navbar {
         padding: 0 20px;
 
         gap: 22px;
     }
 
+    .nav-links,
     .dashboard-nav-links {
         gap: 17px;
     }
 
+    .navbar-user span,
     .dashboard-user span {
         display: none;
     }
@@ -2440,8 +2446,9 @@ h3 {
         grid-template-columns: 1fr;
     }
 
-    .site-list {
-        grid-template-columns: 1fr;
+    .site-card {
+        grid-template-columns:
+            1fr 1fr;
     }
 
     .site-header-card {
@@ -2451,17 +2458,31 @@ h3 {
     .site-main-info {
         grid-column: 1 / -1;
     }
+
+    .sites-page .page-header,
+    .sites-page .sites-header {
+        align-items: center;
+    }
 }
 
 
 /* =========================================================
-   RESPONSIVE - 650px
+   MOBILE
    ========================================================= */
 
 @media (max-width: 650px) {
 
     .quick-access-grid {
         grid-template-columns: 1fr;
+    }
+
+    .site-card {
+        grid-template-columns: 1fr;
+    }
+
+    .site-card a,
+    .site-card .view-details-button {
+        width: 100%;
     }
 
     .site-header-card {
@@ -2495,45 +2516,29 @@ h3 {
     .add-panel-button {
         align-self: flex-end;
     }
+
+    .sites-page .page-header,
+    .sites-page .sites-header {
+        align-items: flex-start;
+
+        gap: 12px;
+    }
+
+    .add-site-button {
+        padding: 8px 13px;
+
+        font-size: 11px;
+    }
 }
 
 
 /* =========================================================
-   RESPONSIVE - 550px
+   SMALL MOBILE
    ========================================================= */
 
 @media (max-width: 550px) {
 
-    .navbar {
-        height: auto;
-
-        min-height: 68px;
-
-        padding: 13px 15px;
-
-        flex-wrap: wrap;
-
-        gap: 15px;
-    }
-
-    .navbar-brand {
-        font-size: 21px;
-    }
-
-    .nav-links {
-        order: 3;
-
-        width: 100%;
-
-        justify-content: center;
-
-        padding-bottom: 5px;
-    }
-
-    .navbar-user {
-        margin-left: auto;
-    }
-
+    .navbar,
     .dashboard-navbar {
         min-height: 68px;
 
@@ -2544,10 +2549,12 @@ h3 {
         gap: 15px;
     }
 
+    .navbar-brand,
     .dashboard-logo {
         font-size: 21px;
     }
 
+    .nav-links,
     .dashboard-nav-links {
         order: 3;
 
@@ -2558,6 +2565,7 @@ h3 {
         padding-bottom: 5px;
     }
 
+    .navbar-user,
     .dashboard-user {
         margin-left: auto;
     }
@@ -2568,6 +2576,8 @@ h3 {
 
     .dashboard-welcome {
         padding: 20px;
+
+        margin-bottom: 18px;
     }
 
     .dashboard-welcome h1 {
@@ -2597,8 +2607,36 @@ h3 {
         padding: 20px;
     }
 
-    .quick-access-grid {
-        grid-template-columns: 1fr;
+    .donut {
+        width: 145px;
+
+        height: 145px;
+    }
+
+    .donut-center {
+        width: 90px;
+
+        height: 90px;
+
+        font-size: 22px;
+    }
+
+    .quick-access-card {
+        padding: 17px;
+
+        gap: 13px;
+    }
+
+    .activity-row {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+    .activity-values {
+        align-items: flex-start;
     }
 
     .page-header {
@@ -2607,6 +2645,10 @@ h3 {
         gap: 15px;
 
         flex-direction: column;
+    }
+
+    .page-header h1 {
+        font-size: 25px;
     }
 
     .login-card {
@@ -2629,22 +2671,18 @@ h3 {
         padding: 0 0 30px;
     }
 
-    .sites-list-header {
-        gap: 10px;
+    .sites-page .page-header,
+    .sites-page .sites-header {
+        flex-direction: row;
+
+        align-items: center;
+
+        justify-content: space-between;
     }
 
-    .sites-list-header h2 {
-        font-size: 20px;
-    }
-
-    .add-site-button {
-        padding: 8px 13px;
-
-        font-size: 10px;
-    }
-
-    .sites-table {
-        min-width: 900px;
+    .sites-page .page-header h1,
+    .sites-page .sites-header h1 {
+        font-size: 23px;
     }
 
     .site-header-card {
@@ -2652,11 +2690,23 @@ h3 {
 
         gap: 17px;
     }
+
+    .site-main-info h2 {
+        font-size: 19px;
+    }
+
+    .site-info-item strong {
+        font-size: 14px;
+    }
+
+    .panel-table {
+        min-width: 800px;
+    }
 }
 
 
 /* =========================================================
-   RESPONSIVE - 380px
+   VERY SMALL MOBILE
    ========================================================= */
 
 @media (max-width: 380px) {
@@ -2711,5 +2761,21 @@ h3 {
 
     .panels-header h2 {
         font-size: 17px;
+    }
+
+    .sites-page .page-header,
+    .sites-page .sites-header {
+        align-items: flex-start;
+    }
+
+    .sites-page .page-header h1,
+    .sites-page .sites-header h1 {
+        font-size: 21px;
+    }
+
+    .add-site-button {
+        padding: 7px 10px;
+
+        font-size: 10px;
     }
 }
