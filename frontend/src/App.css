@@ -335,8 +335,6 @@ h3 {
     font-size: 13px;
 
     font-weight: 700;
-
-    transition: 0.2s ease;
 }
 
 .btn-success:hover {
@@ -1483,563 +1481,6 @@ h3 {
 
 
 /* =========================================================
-   SOLAR SITES PAGE
-   ========================================================= */
-
-.sites-page {
-    width: 100%;
-
-    max-width: 1200px;
-
-    margin: 0 auto;
-
-    padding: 5px 0 50px;
-}
-
-
-/* =========================================================
-   SITES TOP BAR
-   ========================================================= */
-
-.sites-top-bar {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 18px;
-}
-
-.back-link {
-    color: #3b82f6;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    transition: 0.2s ease;
-}
-
-.back-link:hover {
-    color: #60a5fa;
-
-    text-decoration: underline;
-}
-
-
-/* =========================================================
-   ADD SITE BUTTON
-   ========================================================= */
-
-.add-site-button {
-    background: #2563eb;
-
-    color: white;
-
-    border: none;
-
-    border-radius: 6px;
-
-    padding: 9px 16px;
-
-    font-size: 12px;
-
-    font-weight: 600;
-
-    transition: 0.2s ease;
-}
-
-.add-site-button:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   SITE DETAILS HEADER CARD
-   ========================================================= */
-
-.site-header-card {
-    display: grid;
-
-    grid-template-columns:
-        minmax(250px, 2fr)
-        minmax(100px, 0.8fr)
-        minmax(70px, 0.55fr)
-        minmax(120px, 0.9fr)
-        minmax(150px, 1fr);
-
-    align-items: center;
-
-    gap: 22px;
-
-    width: 100%;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 9px;
-
-    padding: 21px 22px;
-
-    box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.12);
-}
-
-
-/* =========================================================
-   MAIN SITE INFORMATION
-   ========================================================= */
-
-.site-main-info {
-    min-width: 0;
-}
-
-.site-main-info h2 {
-    color: #f8fafc;
-
-    font-size: 21px;
-
-    font-weight: 650;
-
-    margin-bottom: 7px;
-}
-
-.site-main-info p {
-    color: #94a3b8;
-
-    font-size: 12px;
-
-    line-height: 1.5;
-
-    margin: 0;
-}
-
-
-/* =========================================================
-   SITE INFORMATION ITEMS
-   ========================================================= */
-
-.site-info-item {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 5px;
-
-    min-width: 0;
-}
-
-.site-info-item span {
-    color: #64748b;
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    letter-spacing: 0.6px;
-
-    white-space: nowrap;
-}
-
-.site-info-item strong {
-    color: #f1f5f9;
-
-    font-size: 15px;
-
-    font-weight: 650;
-
-    white-space: nowrap;
-}
-
-
-/* =========================================================
-   VIEW SITE DETAILS
-   ========================================================= */
-
-.view-details-button {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    min-width: 145px;
-
-    background: #16a34a;
-
-    color: white;
-
-    border-radius: 6px;
-
-    padding: 9px 13px;
-
-    font-size: 11px;
-
-    font-weight: 650;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.view-details-button:hover {
-    background: #15803d;
-
-    transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   SOLAR PANELS SECTION
-   ========================================================= */
-
-.panels-section {
-    width: 100%;
-
-    margin-top: 28px;
-}
-
-.panels-header {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 13px;
-}
-
-.panels-header h2 {
-    color: #f8fafc;
-
-    font-size: 19px;
-
-    font-weight: 650;
-}
-
-
-/* =========================================================
-   ADD PANEL
-   ========================================================= */
-
-.add-panel-button {
-    background: #2563eb;
-
-    border: none;
-
-    color: white;
-
-    padding: 8px 14px;
-
-    border-radius: 5px;
-
-    font-size: 11px;
-
-    font-weight: 600;
-
-    transition: 0.2s ease;
-}
-
-.add-panel-button:hover {
-    background: #1d4ed8;
-
-    transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   PANEL TABLE
-   ========================================================= */
-
-.panel-table-container {
-    width: 100%;
-
-    overflow-x: auto;
-
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 8px;
-
-    box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.10);
-}
-
-.panel-table {
-    width: 100%;
-
-    min-width: 850px;
-
-    border-collapse: collapse;
-
-    table-layout: auto;
-}
-
-.panel-table th {
-    text-align: left;
-
-    color: #7f8da1;
-
-    background: #101b2d;
-
-    font-size: 9px;
-
-    font-weight: 650;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.45px;
-
-    padding: 12px 13px;
-
-    border-bottom: 1px solid #243247;
-
-    white-space: nowrap;
-}
-
-.panel-table td {
-    color: #aeb9c8;
-
-    font-size: 11px;
-
-    padding: 14px 13px;
-
-    border-bottom: 1px solid #1e2b3d;
-
-    white-space: nowrap;
-
-    vertical-align: middle;
-}
-
-.panel-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.panel-table tbody tr:hover td {
-    background: #101d30;
-}
-
-
-/* =========================================================
-   PANEL STATUS
-   ========================================================= */
-
-.panel-table .status-badge {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    padding: 4px 8px;
-
-    border-radius: 20px;
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    white-space: nowrap;
-}
-
-.panel-table .status-badge.active,
-.panel-table .status-badge.status-active {
-    color: #22c55e;
-
-    background: rgba(34, 197, 94, 0.12);
-}
-
-.panel-table .status-badge.maintenance,
-.panel-table .status-badge.status-maintenance {
-    color: #f59e0b;
-
-    background: rgba(245, 158, 11, 0.12);
-}
-
-.panel-table .status-badge.inactive,
-.panel-table .status-badge.status-faulty {
-    color: #ef4444;
-
-    background: rgba(239, 68, 68, 0.12);
-}
-
-.panel-table .status-badge.faulty {
-    color: #ef4444;
-
-    background: rgba(239, 68, 68, 0.12);
-}
-
-
-/* =========================================================
-   PANEL USAGE
-   ========================================================= */
-
-.usage-cell {
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-}
-
-.usage-bar {
-    width: 70px;
-
-    height: 5px;
-
-    background: #1e293b;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-}
-
-.usage-progress {
-    height: 100%;
-
-    background: #3b82f6;
-
-    border-radius: 10px;
-
-    transition: width 0.3s ease;
-}
-
-.usage-bar-fill {
-    height: 100%;
-
-    background: #3b82f6;
-
-    border-radius: 10px;
-
-    transition: width 0.3s ease;
-}
-
-.usage-cell > span {
-    color: #94a3b8;
-
-    font-size: 10px;
-
-    min-width: 20px;
-}
-
-
-/* =========================================================
-   PANEL ACTIONS
-   ========================================================= */
-
-.panel-actions {
-    display: flex;
-
-    align-items: center;
-
-    gap: 13px;
-}
-
-.action-button,
-.edit-button,
-.delete-button {
-    background: transparent;
-
-    border: none;
-
-    padding: 0;
-
-    font-size: 10px;
-
-    font-weight: 650;
-
-    cursor: pointer;
-}
-
-.action-button,
-.edit-button {
-    color: #3b82f6;
-}
-
-.action-button:hover,
-.edit-button:hover {
-    color: #60a5fa;
-
-    text-decoration: underline;
-}
-
-.delete-button {
-    color: #ef4444;
-}
-
-.delete-button:hover {
-    color: #f87171;
-
-    text-decoration: underline;
-}
-
-
-/* =========================================================
-   NO PANELS
-   ========================================================= */
-
-.no-panels {
-    text-align: center;
-
-    color: #64748b !important;
-
-    padding: 30px !important;
-
-    font-size: 12px !important;
-}
-
-
-/* =========================================================
-   NO SITES
-   ========================================================= */
-
-.no-sites {
-    background: #0d1728;
-
-    border: 1px solid #243247;
-
-    border-radius: 9px;
-
-    padding: 45px 20px;
-
-    text-align: center;
-
-    color: #64748b;
-
-    font-size: 13px;
-}
-
-
-/* =========================================================
-   SITE DETAILS PAGE
-   ========================================================= */
-
-.site-details-page {
-    width: 100%;
-}
-
-.site-details-page > .site-details {
-    margin-bottom: 0;
-}
-
-
-/* =========================================================
-   SIMULATE GENERATION
-   ========================================================= */
-
-.site-header-card .btn-success {
-    min-width: 145px;
-
-    white-space: nowrap;
-}
-
-
-/* =========================================================
    TICKET LIST
    ========================================================= */
 
@@ -2232,77 +1673,7 @@ h3 {
 
 
 /* =========================================================
-   PANEL FORM
-   ========================================================= */
-
-.modal-card > div > h2 {
-    color: #f8fafc;
-
-    font-size: 21px;
-
-    margin-bottom: 22px;
-}
-
-.modal-card > div > form {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 13px;
-}
-
-.modal-card > div > form input,
-.modal-card > div > form select {
-    width: 100%;
-
-    height: 44px;
-
-    padding: 0 13px;
-
-    background: #08111f;
-
-    border: 1px solid #334155;
-
-    border-radius: 7px;
-
-    color: #f8fafc;
-
-    font-size: 13px;
-
-    outline: none;
-}
-
-.modal-card > div > form input:focus,
-.modal-card > div > form select:focus {
-    border-color: #22c55e;
-
-    box-shadow:
-        0 0 0 2px rgba(34, 197, 94, 0.08);
-}
-
-.modal-card > div > form input::placeholder {
-    color: #64748b;
-}
-
-.modal-card > div > form select {
-    cursor: pointer;
-}
-
-.modal-card > div > form button[type="submit"] {
-    background: #22c55e;
-
-    color: #06120b;
-
-    margin-top: 5px;
-}
-
-.modal-card > div > form button[type="submit"]:hover {
-    background: #16a34a;
-}
-
-
-/* =========================================================
-   SITE DETAILS - OLD SUPPORT
+   SITE DETAILS
    ========================================================= */
 
 .site-details {
@@ -2327,7 +1698,7 @@ h3 {
 
 
 /* =========================================================
-   TABLE - GLOBAL
+   GLOBAL TABLE
    ========================================================= */
 
 .data-table {
@@ -2378,7 +1749,7 @@ h3 {
 
 
 /* =========================================================
-   STATUS BADGES - GLOBAL
+   STATUS BADGES
    ========================================================= */
 
 .status-badge {
@@ -2481,6 +1852,723 @@ h3 {
 
 
 /* =========================================================
+   SOLAR SITES PAGE
+   ========================================================= */
+
+.sites-page {
+    width: 100%;
+
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 5px 0 50px;
+}
+
+
+/* =========================================================
+   SITES PAGE HEADER
+   ========================================================= */
+
+.sites-page-header {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.sites-page-header h1 {
+    color: #f8fafc;
+
+    font-size: 28px;
+
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   ADD SITE BUTTON
+   ========================================================= */
+
+.sites-page-header .add-site-button {
+    background: #2563eb;
+
+    border: none;
+
+    color: white;
+
+    padding: 9px 17px;
+
+    border-radius: 6px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.sites-page-header .add-site-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   SEARCH BAR
+   ========================================================= */
+
+.site-search {
+    display: block;
+
+    width: 100%;
+
+    height: 45px;
+
+    padding: 0 15px;
+
+    margin-bottom: 18px;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 7px;
+
+    color: #f8fafc;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.site-search::placeholder {
+    color: #64748b;
+}
+
+.site-search:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 2px rgba(37, 99, 235, 0.10);
+}
+
+
+/* =========================================================
+   SITES TABLE CONTAINER
+   ========================================================= */
+
+.sites-table-container {
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 9px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================================
+   SITES TABLE
+   ========================================================= */
+
+.sites-table {
+    width: 100%;
+
+    min-width: 950px;
+
+    border-collapse: collapse;
+
+    table-layout: auto;
+}
+
+
+/* =========================================================
+   SITES TABLE HEADER
+   ========================================================= */
+
+.sites-table th {
+    text-align: left;
+
+    color: #7f8da1;
+
+    background: #101b2d;
+
+    font-size: 10px;
+
+    font-weight: 650;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.45px;
+
+    padding: 14px 15px;
+
+    border-bottom: 1px solid #243247;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   SITES TABLE BODY
+   ========================================================= */
+
+.sites-table td {
+    color: #aeb9c8;
+
+    font-size: 12px;
+
+    padding: 17px 15px;
+
+    border-bottom: 1px solid #1e2b3d;
+
+    white-space: nowrap;
+
+    vertical-align: middle;
+}
+
+.sites-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.sites-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.sites-table tbody tr:hover td {
+    background: #101d30;
+}
+
+
+/* =========================================================
+   SITE NAME
+   ========================================================= */
+
+.sites-table .site-name {
+    color: #e2e8f0;
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   GENERATION RATE
+   ========================================================= */
+
+.generation-cell {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.generation-bar {
+    width: 70px;
+
+    height: 5px;
+
+    background: #1e293b;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.generation-progress {
+    height: 100%;
+
+    background: #22c55e;
+
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
+
+.generation-cell span {
+    color: #94a3b8;
+
+    font-size: 11px;
+
+    min-width: 35px;
+}
+
+
+/* =========================================================
+   VIEW DETAILS
+   ========================================================= */
+
+.site-view-details {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #3b82f6;
+
+    background: transparent;
+
+    border: none;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    transition:
+        color 0.2s ease,
+        text-decoration 0.2s ease;
+}
+
+.site-view-details:hover {
+    color: #60a5fa;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   NO SITES
+   ========================================================= */
+
+.sites-page .no-sites {
+    width: 100%;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 9px;
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   OLD SITE DETAIL SUPPORT
+   ========================================================= */
+
+.site-header-card {
+    display: grid;
+
+    grid-template-columns:
+        minmax(250px, 2fr)
+        minmax(100px, 0.8fr)
+        minmax(70px, 0.55fr)
+        minmax(120px, 0.9fr)
+        minmax(150px, 1fr);
+
+    align-items: center;
+
+    gap: 22px;
+
+    width: 100%;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 9px;
+
+    padding: 21px 22px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.site-main-info {
+    min-width: 0;
+}
+
+.site-main-info h2 {
+    color: #f8fafc;
+
+    font-size: 21px;
+
+    font-weight: 650;
+
+    margin-bottom: 7px;
+}
+
+.site-main-info p {
+    color: #94a3b8;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    margin: 0;
+}
+
+.site-info-item {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    min-width: 0;
+}
+
+.site-info-item span {
+    color: #64748b;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.6px;
+
+    white-space: nowrap;
+}
+
+.site-info-item strong {
+    color: #f1f5f9;
+
+    font-size: 15px;
+
+    font-weight: 650;
+
+    white-space: nowrap;
+}
+
+.view-details-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 145px;
+
+    background: #16a34a;
+
+    color: white;
+
+    border-radius: 6px;
+
+    padding: 9px 13px;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.view-details-button:hover {
+    background: #15803d;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   SOLAR PANELS SECTION
+   ========================================================= */
+
+.panels-section {
+    width: 100%;
+
+    margin-top: 28px;
+}
+
+.panels-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 13px;
+}
+
+.panels-header h2 {
+    color: #f8fafc;
+
+    font-size: 19px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   ADD PANEL
+   ========================================================= */
+
+.add-panel-button {
+    background: #2563eb;
+
+    border: none;
+
+    color: white;
+
+    padding: 8px 14px;
+
+    border-radius: 5px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.add-panel-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   PANEL TABLE
+   ========================================================= */
+
+.panel-table-container {
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #0d1728;
+
+    border: 1px solid #243247;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.10);
+}
+
+.panel-table {
+    width: 100%;
+
+    min-width: 850px;
+
+    border-collapse: collapse;
+
+    table-layout: auto;
+}
+
+.panel-table th {
+    text-align: left;
+
+    color: #7f8da1;
+
+    background: #101b2d;
+
+    font-size: 9px;
+
+    font-weight: 650;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.45px;
+
+    padding: 12px 13px;
+
+    border-bottom: 1px solid #243247;
+
+    white-space: nowrap;
+}
+
+.panel-table td {
+    color: #aeb9c8;
+
+    font-size: 11px;
+
+    padding: 14px 13px;
+
+    border-bottom: 1px solid #1e2b3d;
+
+    white-space: nowrap;
+
+    vertical-align: middle;
+}
+
+.panel-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.panel-table tbody tr:hover td {
+    background: #101d30;
+}
+
+
+/* =========================================================
+   PANEL STATUS
+   ========================================================= */
+
+.panel-table .status-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.panel-table .status-badge.active {
+    color: #22c55e;
+
+    background: rgba(34, 197, 94, 0.12);
+}
+
+.panel-table .status-badge.maintenance {
+    color: #f59e0b;
+
+    background: rgba(245, 158, 11, 0.12);
+}
+
+.panel-table .status-badge.inactive {
+    color: #ef4444;
+
+    background: rgba(239, 68, 68, 0.12);
+}
+
+.panel-table .status-badge.faulty {
+    color: #ef4444;
+
+    background: rgba(239, 68, 68, 0.12);
+}
+
+
+/* =========================================================
+   PANEL USAGE
+   ========================================================= */
+
+.usage-cell {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+.usage-bar {
+    width: 70px;
+
+    height: 5px;
+
+    background: #1e293b;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.usage-progress {
+    height: 100%;
+
+    background: #3b82f6;
+
+    border-radius: 10px;
+
+    transition: width 0.3s ease;
+}
+
+.usage-cell > span {
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    min-width: 20px;
+}
+
+
+/* =========================================================
+   PANEL ACTIONS
+   ========================================================= */
+
+.action-button,
+.delete-button {
+    background: transparent;
+
+    border: none;
+
+    padding: 0;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.action-button {
+    color: #3b82f6;
+
+    margin-right: 10px;
+}
+
+.delete-button {
+    color: #ef4444;
+}
+
+.action-button:hover,
+.delete-button:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   NO PANELS
+   ========================================================= */
+
+.no-panels {
+    text-align: center;
+
+    color: #64748b !important;
+
+    padding: 30px !important;
+
+    font-size: 12px !important;
+}
+
+
+/* =========================================================
    RESPONSIVE - TABLET
    ========================================================= */
 
@@ -2508,12 +2596,6 @@ h3 {
             1fr;
 
         gap: 18px;
-    }
-
-    .site-header-card .btn-success {
-        grid-column: 1 / -1;
-
-        width: fit-content;
     }
 
     .view-details-button {
@@ -2589,12 +2671,6 @@ h3 {
     .site-main-info {
         grid-column: 1 / -1;
     }
-
-    .site-header-card .btn-success {
-        grid-column: 1 / -1;
-
-        width: fit-content;
-    }
 }
 
 
@@ -2616,22 +2692,24 @@ h3 {
         grid-column: auto;
     }
 
-    .site-header-card .btn-success {
-        grid-column: auto;
-
-        width: 100%;
-    }
-
     .view-details-button {
         width: 100%;
     }
 
-    .sites-top-bar {
+    .sites-page-header {
         align-items: flex-start;
 
         flex-direction: column;
 
         gap: 12px;
+    }
+
+    .sites-page-header .add-site-button {
+        align-self: flex-end;
+    }
+
+    .site-search {
+        height: 44px;
     }
 
     .panels-header {
@@ -2645,18 +2723,14 @@ h3 {
     .add-panel-button {
         align-self: flex-end;
     }
-
-    .panel-actions {
-        gap: 12px;
-    }
 }
 
 
-@media (max-width: 550px) {
+/* =========================================================
+   RESPONSIVE - 550px
+   ========================================================= */
 
-    /* -------------------------
-       Existing Navbar
-       ------------------------- */
+@media (max-width: 550px) {
 
     .navbar {
         height: auto;
@@ -2689,10 +2763,6 @@ h3 {
     }
 
 
-    /* -------------------------
-       Dashboard Navbar
-       ------------------------- */
-
     .dashboard-navbar {
         min-height: 68px;
 
@@ -2722,10 +2792,6 @@ h3 {
     }
 
 
-    /* -------------------------
-       Dashboard
-       ------------------------- */
-
     .dashboard-content {
         padding: 20px 14px 35px;
     }
@@ -2745,10 +2811,6 @@ h3 {
     }
 
 
-    /* -------------------------
-       Statistics
-       ------------------------- */
-
     .stat-cards {
         grid-template-columns: 1fr;
 
@@ -2764,10 +2826,6 @@ h3 {
     }
 
 
-    /* -------------------------
-       Dashboard Lower Section
-       ------------------------- */
-
     .dashboard-lower-grid {
         grid-template-columns: 1fr;
 
@@ -2781,10 +2839,6 @@ h3 {
         padding: 20px;
     }
 
-
-    /* -------------------------
-       Donut
-       ------------------------- */
 
     .donut {
         width: 145px;
@@ -2800,10 +2854,6 @@ h3 {
         font-size: 22px;
     }
 
-
-    /* -------------------------
-       Quick Access
-       ------------------------- */
 
     .dashboard-quick-access {
         margin-top: 20px;
@@ -2834,10 +2884,6 @@ h3 {
     }
 
 
-    /* -------------------------
-       Recent Activity
-       ------------------------- */
-
     .activity-row {
         flex-direction: column;
 
@@ -2850,10 +2896,6 @@ h3 {
         align-items: flex-start;
     }
 
-
-    /* -------------------------
-       Existing Pages
-       ------------------------- */
 
     .page-header {
         align-items: flex-start;
@@ -2884,12 +2926,22 @@ h3 {
     }
 
 
-    /* -------------------------
-       Sites
-       ------------------------- */
+    /* =====================================================
+       SITES MOBILE
+       ===================================================== */
 
     .sites-page {
         padding: 0 0 30px;
+    }
+
+    .sites-page-header h1 {
+        font-size: 25px;
+    }
+
+    .sites-page-header .add-site-button {
+        padding: 8px 14px;
+
+        font-size: 11px;
     }
 
     .site-header-card {
@@ -2906,16 +2958,12 @@ h3 {
         font-size: 14px;
     }
 
+    .sites-table {
+        min-width: 950px;
+    }
+
     .panel-table {
         min-width: 800px;
-    }
-
-    .panels-header h2 {
-        font-size: 18px;
-    }
-
-    .modal-card {
-        padding: 22px;
     }
 }
 
@@ -2976,5 +3024,9 @@ h3 {
 
     .panels-header h2 {
         font-size: 17px;
+    }
+
+    .sites-page-header h1 {
+        font-size: 23px;
     }
 }
