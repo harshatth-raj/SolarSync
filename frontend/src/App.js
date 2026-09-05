@@ -328,6 +328,98 @@ export function Dashboard() {
 
 
 /* =========================================================
+   PAGE LAYOUT
+   ========================================================= */
+
+function PageLayout({ children }) {
+
+  const user = useSelector((s) => s.auth.user);
+
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+
+  /* =========================================================
+     LOGOUT
+     ========================================================= */
+
+  const handleLogout = () => {
+
+    dispatch({
+      type: 'auth/logout'
+    });
+
+    navigate('/login');
+
+  };
+
+
+  return (
+
+    <div className="dashboard-page">
+
+
+      {/* =====================================================
+          NAVBAR
+          ===================================================== */}
+
+      <nav className="dashboard-navbar">
+
+        <div className="dashboard-logo">
+          SolarSync
+        </div>
+
+
+        <div className="dashboard-nav-links">
+
+          <Link to="/">
+            Home
+          </Link>
+
+          <Link to="/sites">
+            Sites
+          </Link>
+
+          <Link to="/tickets">
+            Tickets
+          </Link>
+
+        </div>
+
+
+        <div className="dashboard-user">
+
+          <span>
+            {user?.username}
+          </span>
+
+          <button onClick={handleLogout}>
+            Logout
+          </button>
+
+        </div>
+
+      </nav>
+
+
+      {/* =====================================================
+          PAGE CONTENT
+          ===================================================== */}
+
+      <main className="dashboard-content">
+
+        {children}
+
+      </main>
+
+    </div>
+
+  );
+}
+
+
+/* =========================================================
    APP CONTENT / ROUTES
    ========================================================= */
 
@@ -392,9 +484,23 @@ function AppContent() {
       <Route
         path="/sites"
         element={
-          user
-            ? <SolarSiteList />
-            : <Navigate to="/login" />
+          user ? (
+            <PageLayout>
+
+              <h1>
+                Solar Sites
+              </h1>
+
+              <p>
+                View and manage your solar energy sites.
+              </p>
+
+              <SolarSiteList />
+
+            </PageLayout>
+          ) : (
+            <Navigate to="/login" />
+          )
         }
       />
 
@@ -406,9 +512,23 @@ function AppContent() {
       <Route
         path="/tickets"
         element={
-          user
-            ? <MaintenanceTicketList />
-            : <Navigate to="/login" />
+          user ? (
+            <PageLayout>
+
+              <h1>
+                Maintenance Tickets
+              </h1>
+
+              <p>
+                View and manage your maintenance issues.
+              </p>
+
+              <MaintenanceTicketList />
+
+            </PageLayout>
+          ) : (
+            <Navigate to="/login" />
+          )
         }
       />
 
