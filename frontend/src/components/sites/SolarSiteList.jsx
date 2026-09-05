@@ -13,63 +13,68 @@ export default function SolarSiteList() {
   const user = useSelector((state) => state.auth.user);
 
   /*
-   * Get the user's role.
+   * Read the role safely from Redux.
    */
-  const rawRole =
+  const role = String(
     user?.role ||
     user?.roles?.[0] ||
     user?.authorities?.[0]?.authority ||
     user?.authorities?.[0] ||
-    "";
-
-  const role = String(rawRole)
+    ""
+  )
     .replace(/^ROLE_/i, "")
     .trim()
     .replace(/[\s-]+/g, "_")
     .toUpperCase();
 
+
   /*
-   * IMPORTANT:
+   * The Add Site button is visible for everyone
+   * except SOLAR_OPERATOR.
    *
-   * Only SOLAR_OPERATOR is prevented from adding sites.
-   *
-   * This also allows the Add Site button to appear when
-   * the login response has not supplied a role yet.
+   * This also means that if the login response
+   * does not currently contain a role, the
+   * administrator UI still displays the button.
    */
-  const canAddSite = role !== "SOLAR_OPERATOR";
+  const hideAddSite = role === "SOLAR_OPERATOR";
 
 
+  /*
+   * Load actual sites from the backend.
+   *
+   * No sites are created here.
+   */
   useEffect(() => {
+    const loadSites = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8081/api/sites"
+        );
+
+        if (Array.isArray(response?.data)) {
+          setSites(response.data);
+        } else {
+          setSites([]);
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load solar sites:",
+          error
+        );
+
+        setSites([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadSites();
   }, []);
 
 
-  const loadSites = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8081/api/sites"
-      );
-
-      if (Array.isArray(response?.data)) {
-        setSites(response.data);
-      } else {
-        setSites([]);
-      }
-
-    } catch (error) {
-      console.error(
-        "Failed to load solar sites:",
-        error
-      );
-
-      setSites([]);
-
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
+  /*
+   * Search actual backend sites.
+   */
   const filteredSites = sites.filter((site) => {
     const search = searchTerm.toLowerCase();
 
@@ -93,7 +98,7 @@ export default function SolarSiteList() {
     <div className="sites-page">
 
       {/* =========================================
-          HEADER
+          SITES HEADER
          ========================================= */}
 
       <div className="sites-header">
@@ -112,18 +117,21 @@ export default function SolarSiteList() {
 
 
         {/* =====================================
-            ADD SITE BUTTON
+            ADD SITE
            ===================================== */}
 
-        {canAddSite && (
-          <button
-            type="button"
-            className="add-site-button"
-            onClick={() => setShowForm(true)}
-          >
-            + Add Site
-          </button>
-        )}
+        <button
+          type="button"
+          className="add-site-button"
+          style={{
+            display: hideAddSite
+              ? "none"
+              : "inline-flex"
+          }}
+          onClick={() => setShowForm(true)}
+        >
+          + Add Site
+        </button>
 
       </div>
 
@@ -155,7 +163,7 @@ export default function SolarSiteList() {
 
 
       {/* =========================================
-          EMPTY STATE
+          NO SITES
          ========================================= */}
 
       {!loading &&
@@ -167,7 +175,7 @@ export default function SolarSiteList() {
 
 
       {/* =========================================
-          SITE TABLE
+          ACTUAL BACKEND SITES
          ========================================= */}
 
       {!loading &&
@@ -221,11 +229,8 @@ export default function SolarSiteList() {
                   <tr key={site.id}>
 
                     <td>
-                      <strong>
-                        {site.id}
-                      </strong>
+                      {site.id}
                     </td>
-
 
                     <td>
                       <strong>
@@ -233,11 +238,9 @@ export default function SolarSiteList() {
                       </strong>
                     </td>
 
-
                     <td>
                       {site.locationCoordinates || "-"}
                     </td>
-
 
                     <td>
                       {site.ratedCapacityKw != null
@@ -245,18 +248,15 @@ export default function SolarSiteList() {
                         : "-"}
                     </td>
 
-
                     <td>
                       {site.commissionDate || "-"}
                     </td>
-
 
                     <td>
                       {Array.isArray(site.panels)
                         ? site.panels.length
                         : site.panelCount ?? 0}
                     </td>
-
 
                     <td>
 
@@ -291,7 +291,6 @@ export default function SolarSiteList() {
         <SolarSiteForm
           onClose={() => {
             setShowForm(false);
-            loadSites();
           }}
         />
 
