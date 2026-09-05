@@ -24,13 +24,15 @@ export default function SolarSiteList() {
 
   const loadSites = async () => {
     try {
-      const response = await axios.get("/api/sites");
+      const response = await axios.get(
+        "http://localhost:8081/api/sites"
+      );
 
-      const data = Array.isArray(response?.data)
-        ? response.data
-        : [];
-
-      setSites(data);
+      if (Array.isArray(response?.data)) {
+        setSites(response.data);
+      } else {
+        setSites([]);
+      }
     } catch (error) {
       console.error("Failed to load solar sites:", error);
       setSites([]);
@@ -53,20 +55,18 @@ export default function SolarSiteList() {
   return (
     <div className="sites-page">
 
-      {/* ================================
-          HEADER
-          ================================ */}
+      {/* =========================
+          SITES HEADER
+         ========================= */}
 
       <div className="sites-header">
 
         <div className="sites-title-section">
-
           <h1>Solar Sites</h1>
 
           <p className="sites-subtitle">
             View and manage your solar energy sites.
           </p>
-
         </div>
 
         {canAddSite && (
@@ -82,9 +82,9 @@ export default function SolarSiteList() {
       </div>
 
 
-      {/* ================================
+      {/* =========================
           SEARCH
-          ================================ */}
+         ========================= */}
 
       <input
         type="text"
@@ -97,32 +97,24 @@ export default function SolarSiteList() {
       />
 
 
-      {/* ================================
-          LOADING
-          ================================ */}
+      {/* =========================
+          SITES
+         ========================= */}
 
       {loading ? (
         <div className="sites-loading">
           Loading solar sites...
         </div>
       ) : filteredSites.length === 0 ? (
-
         <div className="no-sites">
           No solar sites found.
         </div>
-
       ) : (
-
-        /* ================================
-           SITES TABLE
-           ================================ */
-
         <div className="sites-table-container">
 
           <table className="sites-table">
 
             <thead>
-
               <tr>
                 <th>Site Name</th>
                 <th>Coordinates</th>
@@ -131,13 +123,11 @@ export default function SolarSiteList() {
                 <th>Panels</th>
                 <th>Action</th>
               </tr>
-
             </thead>
 
             <tbody>
 
               {filteredSites.map((site) => (
-
                 <tr key={site.id}>
 
                   <td>
@@ -167,18 +157,15 @@ export default function SolarSiteList() {
                   </td>
 
                   <td>
-
                     <Link
                       to={`/sites/${site.id}`}
                       className="site-view-details"
                     >
                       View Details
                     </Link>
-
                   </td>
 
                 </tr>
-
               ))}
 
             </tbody>
@@ -186,13 +173,12 @@ export default function SolarSiteList() {
           </table>
 
         </div>
-
       )}
 
 
-      {/* ================================
-          EXISTING SOLAR SITE FORM
-          ================================ */}
+      {/* =========================
+          EXISTING ADD SITE FORM
+         ========================= */}
 
       {showForm && (
         <SolarSiteForm
