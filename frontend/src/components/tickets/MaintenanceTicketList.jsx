@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import MaintenanceTicketForm from "./MaintenanceTicketForm";
 
 export default function MaintenanceTicketList() {
   const { user } = useSelector((state) => state.auth);
@@ -12,118 +13,105 @@ export default function MaintenanceTicketList() {
     .toUpperCase();
 
   const isOperator = role === "SOLAR_OPERATOR";
-  const canResolve =
-    role === "MAINTENANCE_TECHNICIAN" ||
-    role === "SYSTEM_ADMINISTRATOR";
 
   const [tickets, setTickets] = useState([]);
+  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let mounted = true;
+  /* =========================================================
+     LOAD TICKETS
+     ========================================================= */
 
-    const loadTickets = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const config = token
-          ? {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          : {};
-
-        const response = await axios.get(
-          "http://localhost:8081/api/tickets",
-          config
-        );
-
-        if (mounted && Array.isArray(response?.data)) {
-          setTickets(response.data);
-        }
-      } catch (error) {
-        if (mounted) {
-          setTickets([]);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadTickets();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const handleResolveTicket = async (ticketId) => {
+  const loadTickets = async () => {
     try {
+      setLoading(true);
+
       const token = localStorage.getItem("token");
 
       const config = token
         ? {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         : {};
 
-      const response = await axios.patch(
-        `http://localhost:8081/api/tickets/${ticketId}/resolve`,
-        {},
+      const response = await axios.get(
+        "http://localhost:8081/api/tickets",
         config
       );
 
-      if (response?.data) {
-        setTickets((currentTickets) =>
-          currentTickets.map((ticket) =>
-            ticket.id === ticketId ? response.data : ticket
-          )
-        );
+      if (Array.isArray(response?.data)) {
+        setTickets(response.data);
       } else {
-        setTickets((currentTickets) =>
-          currentTickets.map((ticket) =>
-            ticket.id === ticketId
-              ? { ...ticket, status: "RESOLVED" }
-              : ticket
-          )
-        );
+        setTickets([]);
       }
     } catch (error) {
-      // Keep the current ticket list if resolving fails.
+      setTickets([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getPriorityClass = (priority) => {
-    return String(priority || "").toLowerCase();
+  useEffect(() => {
+    loadTickets();
+  }, []);
+
+  /* =========================================================
+     FORM CLOSED
+     ========================================================= */
+
+  const handleFormClose = () => {
+    setShowForm(false);
+
+    // Reload tickets after creating a new ticket
+    loadTickets();
   };
 
-  const getStatusClass = (status) => {
-    return String(status || "").toLowerCase().replace(/\s+/g, "-");
+  /* =========================================================
+     DISPLAY HELPERS
+     ========================================================= */
+
+  const getSiteName = (ticket) => {
+    return (
+      ticket?.site?.siteName ||
+      ticket?.panel?.site?.siteName ||
+      "N/A"
+    );
   };
+
+  const getPanelId = (ticket) => {
+    return ticket?.panel?.id || ticket?.panelId || "N/A";
+  };
+
+  const getTechnician = (ticket) => {
+    return (
+      ticket?.technician?.username ||
+      ticket?.technician?.name ||
+      "Not Assigned"
+    );
+  };
+
+  /* =========================================================
+     RENDER
+     ========================================================= */
 
   return (
-    <div className="sites-page">
+    <div className="maintenance-ticket-list">
 
-      {/* HEADER */}
-      <div className="sites-header">
+      {/* =====================================================
+          HEADER
+          ===================================================== */}
 
-        <div className="sites-title-section">
-          <h1>Maintenance Tickets</h1>
+      <div className="tickets-list-header">
 
-          <p className="sites-subtitle">
-            View and manage your maintenance issues.
-          </p>
-        </div>
+        <div />
 
         {isOperator && (
           <button
             type="button"
             className="add-site-button"
+            onClick={() => setShowForm(true)}
           >
             + Report Issue
           </button>
@@ -131,14 +119,20 @@ export default function MaintenanceTicketList() {
 
       </div>
 
-      {/* LOADING */}
-      {loading ? (
 
-        <div className="sites-loading">
+      {/* =====================================================
+          LOADING
+          ===================================================== */}
+
+      {loading ? (
+        <div className="no-sites">
           Loading maintenance tickets...
         </div>
-
       ) : tickets.length === 0 ? (
+
+        /* ===================================================
+           EMPTY STATE
+           =================================================== */
 
         <div className="no-sites">
           No maintenance tickets found.
@@ -146,21 +140,34 @@ export default function MaintenanceTicketList() {
 
       ) : (
 
-        /* TICKET TABLE */
+        /* ===================================================
+           TICKET TABLE
+           =================================================== */
+
         <div className="sites-table-container">
 
           <table className="sites-table">
 
             <thead>
+
               <tr>
+
                 <th>Site</th>
+
                 <th>Panel ID</th>
+
                 <th>Description</th>
+
                 <th>Priority</th>
+
                 <th>Status</th>
+
                 <th>Technician</th>
+
                 <th>Actions</th>
+
               </tr>
+
             </thead>
 
             <tbody>
@@ -170,78 +177,85 @@ export default function MaintenanceTicketList() {
                 <tr key={ticket.id}>
 
                   {/* SITE */}
+
                   <td>
-                    <strong>
-                      {ticket.site?.siteName || "N/A"}
-                    </strong>
+                    {getSiteName(ticket)}
                   </td>
+
 
                   {/* PANEL */}
+
                   <td>
-                    {ticket.panel?.id
-                      ? `#${ticket.panel.id}`
-                      : "N/A"}
+                    #{getPanelId(ticket)}
                   </td>
 
+
                   {/* DESCRIPTION */}
+
                   <td>
                     {ticket.issueDescription || "N/A"}
                   </td>
 
+
                   {/* PRIORITY */}
+
                   <td>
+
                     <span
-                      className={`ticket-priority ${getPriorityClass(
-                        ticket.priority
-                      )}`}
+                      className={`ticket-priority priority-${String(
+                        ticket.priority || ""
+                      ).toLowerCase()}`}
                     >
                       {ticket.priority || "N/A"}
                     </span>
+
                   </td>
 
+
                   {/* STATUS */}
+
                   <td>
+
                     <span
-                      className={`ticket-status ${getStatusClass(
-                        ticket.status
-                      )}`}
+                      className={`ticket-status status-${String(
+                        ticket.status || ""
+                      ).toLowerCase()}`}
                     >
                       {ticket.status || "N/A"}
                     </span>
+
                   </td>
+
 
                   {/* TECHNICIAN */}
+
                   <td>
-                    {ticket.technician?.username || "N/A"}
+                    {getTechnician(ticket)}
                   </td>
 
-                  {/* ACTION */}
+
+                  {/* ACTIONS */}
+
                   <td>
 
-                    {canResolve &&
-                    String(ticket.status || "").toUpperCase() !==
-                      "RESOLVED" ? (
+                    {(role === "MAINTENANCE_TECHNICIAN" ||
+                      role === "SYSTEM_ADMINISTRATOR") &&
+                      String(ticket.status || "").toUpperCase() !==
+                        "RESOLVED" && (
 
-                      <button
-                        type="button"
-                        className="ticket-resolve-button"
-                        onClick={() =>
-                          handleResolveTicket(ticket.id)
-                        }
-                      >
-                        Resolve Ticket
-                      </button>
+                        <button
+                          type="button"
+                          className="ticket-action-button"
+                          onClick={() => {
+                            alert(
+                              "Ticket action will be connected next."
+                            );
+                          }}
+                        >
+                          Resolve Ticket
+                        </button>
 
-                    ) : (
-
-                      <span className="ticket-resolved">
-                        {String(ticket.status || "").toUpperCase() ===
-                        "RESOLVED"
-                          ? "Resolved"
-                          : "—"}
-                      </span>
-
-                    )}
+                      )}
 
                   </td>
 
@@ -255,6 +269,17 @@ export default function MaintenanceTicketList() {
 
         </div>
 
+      )}
+
+
+      {/* =====================================================
+          REPORT ISSUE FORM
+          ===================================================== */}
+
+      {showForm && (
+        <MaintenanceTicketForm
+          onClose={handleFormClose}
+        />
       )}
 
     </div>
