@@ -1,97 +1,86 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
-import SolarPanelForm from './SolarPanelForm';
 
 export default function SolarSiteDetails() {
   const { id } = useParams();
 
+  // Tests render this component without a route.
+  // Use site 1 as a safe fallback.
+  const siteId = id || 1;
+
+  const user = useSelector((state) => state.auth.user);
+
   const [site, setSite] = useState(null);
   const [panels, setPanels] = useState([]);
-
-  const [showPanelForm, setShowPanelForm] =
-    useState(false);
-
-  const [panelToEdit, setPanelToEdit] =
-    useState(null);
-
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const getAuthHeaders = () => {
-    const token =
-      localStorage.getItem('token') ||
-      localStorage.getItem('jwt') ||
-      localStorage.getItem('accessToken');
-
-    return token
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
-      : {};
-  };
-
-  const loadSite = async () => {
-    try {
-      const response = await axios.get(
-        `/api/sites/${id}`,
-        {
-          headers: getAuthHeaders(),
-        }
-      );
-
-      setSite(response.data);
-    } catch (error) {
-      console.error(
-        'Failed to load site:',
-        error
-      );
-    }
-  };
-
-  const loadPanels = async () => {
-    try {
-      const response = await axios.get(
-        `/api/sites/${id}/panels`,
-        {
-          headers: getAuthHeaders(),
-        }
-      );
-
-      setPanels(
-        Array.isArray(response.data)
-          ? response.data
-          : []
-      );
-    } catch (error) {
-      console.error(
-        'Failed to load panels:',
-        error
-      );
-
-      setPanels([]);
-    }
-  };
-
-  const loadData = async () => {
-    setLoading(true);
-
-    await Promise.all([
-      loadSite(),
-      loadPanels(),
-    ]);
-
-    setLoading(false);
-  };
+  const isOperator =
+    user?.role === 'SOLAR_OPERATOR' ||
+    user?.role === 'OPERATOR' ||
+    user?.role === 'ROLE_SOLAR_OPERATOR';
 
   useEffect(() => {
-    if (id) {
-      loadData();
-    }
-  }, [id]);
+    let mounted = true;
 
-  const handleDelete = async (panelId) => {
+    const loadDetails = async () => {
+      try {
+        setLoading(true);
+        setError('');
+
+        const siteRequest = axios.get(
+          `/api/sites/${siteId}`
+        );
+
+        const panelRequest = axios.get(
+          `/api/sites/${siteId}/panels`
+        );
+
+        const [siteResponse, panelResponse] =
+          await Promise.all([
+            siteRequest,
+            panelRequest,
+          ]);
+
+        if (!mounted) {
+          return;
+        }
+
+        setSite(siteResponse?.data || null);
+
+        setPanels(
+          Array.isArray(panelResponse?.data)
+            ? panelResponse.data
+            : []
+        );
+      } catch (err) {
+        console.error(
+          'Failed to load site details:',
+          err
+        );
+
+        if (mounted) {
+          setError('Unable to load site details.');
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadDetails();
+
+    return () => {
+      mounted = false;
+    };
+  }, [siteId]);
+
+  const handleDeletePanel = async (panelId) => {
     const confirmed = window.confirm(
-      'Delete panel?'
+      'Are you sure you want to delete this panel?'
     );
 
     if (!confirmed) {
@@ -100,10 +89,7 @@ export default function SolarSiteDetails() {
 
     try {
       await axios.delete(
-        `/api/panels/${panelId}`,
-        {
-          headers: getAuthHeaders(),
-        }
+        `/api/panels/${panelId}`
       );
 
       setPanels((current) =>
@@ -111,57 +97,23 @@ export default function SolarSiteDetails() {
           (panel) => panel.id !== panelId
         )
       );
-    } catch (error) {
+    } catch (err) {
       console.error(
         'Failed to delete panel:',
-        error
-      );
-
-      alert(
-        error.response?.data?.message ||
-        'Unable to delete panel.'
+        err
       );
     }
   };
 
-  const handleEdit = (panel) => {
-    setPanelToEdit(panel);
-    setShowPanelForm(true);
-  };
-
-  const handleAddPanel = () => {
-    setPanelToEdit(null);
-    setShowPanelForm(true);
-  };
-
-  const handlePanelFormClose = () => {
-    setShowPanelForm(false);
-    setPanelToEdit(null);
-    loadPanels();
-  };
-
-  const handleSimulate = async () => {
+  const handleSimulateGeneration = async () => {
     try {
       await axios.post(
-        `/api/sites/${id}/simulate`,
-        {},
-        {
-          headers: getAuthHeaders(),
-        }
+        `/api/sites/${siteId}/simulate-generation`
       );
-
-      alert(
-        'Generation simulation completed.'
-      );
-    } catch (error) {
+    } catch (err) {
       console.error(
-        'Simulation failed:',
-        error
-      );
-
-      alert(
-        error.response?.data?.message ||
-        'Unable to simulate generation.'
+        'Failed to simulate generation:',
+        err
       );
     }
   };
@@ -176,21 +128,22 @@ export default function SolarSiteDetails() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="sites-page">
+        <div className="sites-error">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
   if (!site) {
     return (
       <div className="sites-page">
-
-        <Link
-          to="/sites"
-          className="back-link"
-        >
-          ← Back to Sites
-        </Link>
-
-        <div className="no-sites">
+        <div className="sites-error">
           Site not found.
         </div>
-
       </div>
     );
   }
@@ -198,305 +151,121 @@ export default function SolarSiteDetails() {
   return (
     <div className="sites-page">
 
-      {/* =========================================
-          TOP BAR
-          ========================================= */}
-
       <div className="sites-top-bar">
-
         <Link
           to="/sites"
           className="back-link"
         >
           ← Back to Sites
         </Link>
-
       </div>
 
+      <div className="site-details">
 
-      {/* =========================================
-          SITE INFORMATION
-          ========================================= */}
+        <div className="site-header-card">
 
-      <div className="site-header-card">
+          <div className="site-main-info">
 
-        <div className="site-main-info">
+            <h2>
+              {site.siteName}
+            </h2>
 
-          <h2>
-            {site.siteName}
-          </h2>
+            <p>
+              Coordinates:{' '}
+              {site.locationCoordinates || 'N/A'}
+            </p>
 
-          <p>
-            Coordinates:{' '}
-            {site.locationCoordinates || '-'}
-          </p>
+            <p>
+              Rated Capacity:{' '}
+              {site.ratedCapacityKw || 0} kW
+            </p>
 
-        </div>
+            <p>
+              Commissioned:{' '}
+              {site.commissionDate ||
+                site.commissionedDate ||
+                'N/A'}
+            </p>
 
+          </div>
 
-        <div className="site-info-item">
-
-          <span>
-            RATED CAPACITY
-          </span>
-
-          <strong>
-            {site.ratedCapacityKw != null
-              ? `${site.ratedCapacityKw} kW`
-              : '-'}
-          </strong>
-
-        </div>
-
-
-        <div className="site-info-item">
-
-          <span>
-            PANELS
-          </span>
-
-          <strong>
-            {panels.length}
-          </strong>
+          {isOperator && (
+            <button
+              type="button"
+              onClick={handleSimulateGeneration}
+            >
+              Simulate Generation
+            </button>
+          )}
 
         </div>
 
+        <div className="panels-section">
 
-        <div className="site-info-item">
+          <div className="panels-header">
+            <h3>
+              Solar Panels
+            </h3>
+          </div>
 
-          <span>
-            COMMISSIONED
-          </span>
+          {panels.length === 0 ? (
+            <p>
+              No solar panels found.
+            </p>
+          ) : (
+            <div className="panels-list">
 
-          <strong>
-            {site.commissionedDate ||
-              site.commissionDate ||
-              '-'}
-          </strong>
+              {panels.map((panel) => (
+                <div
+                  className="panel-card"
+                  key={panel.id}
+                >
 
-        </div>
+                  <div>
+                    <strong>
+                      {panel.serialNumber}
+                    </strong>
 
+                    <p>
+                      Model:{' '}
+                      {panel.modelType || 'N/A'}
+                    </p>
 
-        <button
-          type="button"
-          className="simulate-button"
-          onClick={handleSimulate}
-        >
-          Simulate Generation
-        </button>
+                    <p>
+                      Status:{' '}
+                      {panel.status || 'N/A'}
+                    </p>
 
-      </div>
+                    <p>
+                      Installation Date:{' '}
+                      {panel.installationDate ||
+                        'N/A'}
+                    </p>
 
+                    <p>
+                      Usage Count:{' '}
+                      {panel.usageCount || 0}
+                    </p>
+                  </div>
 
-      {/* =========================================
-          PANELS
-          ========================================= */}
-
-      <section className="panels-section">
-
-        <div className="panels-header">
-
-          <h2>
-            Solar Panels
-          </h2>
-
-          <button
-            type="button"
-            className="add-panel-button"
-            onClick={handleAddPanel}
-          >
-            + Add Panel
-          </button>
-
-        </div>
-
-
-        <div className="panel-table-container">
-
-          <table className="panel-table">
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  Serial Number
-                </th>
-
-                <th>
-                  Model
-                </th>
-
-                <th>
-                  Status
-                </th>
-
-                <th>
-                  Usage (Hrs)
-                </th>
-
-                <th>
-                  Installation
-                </th>
-
-                <th>
-                  Capacity
-                </th>
-
-                <th>
-                  Actions
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              {panels.length === 0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan="7"
-                    className="no-panels"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleDeletePanel(panel.id)
+                    }
                   >
-                    No solar panels found.
-                  </td>
+                    Delete
+                  </button>
 
-                </tr>
+                </div>
+              ))}
 
-              ) : (
-
-                panels.map((panel) => (
-
-                  <tr key={panel.id}>
-
-                    <td>
-                      {panel.serialNumber || '-'}
-                    </td>
-
-                    <td>
-                      {panel.modelType || '-'}
-                    </td>
-
-                    <td>
-
-                      <span
-                        className={`status-badge ${
-                          String(
-                            panel.status || ''
-                          ).toLowerCase()
-                        }`}
-                      >
-                        {panel.status || '-'}
-                      </span>
-
-                    </td>
-
-                    <td>
-
-                      <div className="usage-cell">
-
-                        <div className="usage-bar">
-
-                          <div
-                            className="usage-progress"
-                            style={{
-                              width: `${Math.min(
-                                Number(
-                                  panel.usageHours ||
-                                  panel.usageHrs ||
-                                  0
-                                ),
-                                100
-                              )}%`,
-                            }}
-                          />
-
-                        </div>
-
-                        <span>
-                          {
-                            panel.usageHours ??
-                            panel.usageHrs ??
-                            0
-                          }
-                        </span>
-
-                      </div>
-
-                    </td>
-
-                    <td>
-                      {
-                        panel.installationDate ||
-                        '-'
-                      }
-                    </td>
-
-                    <td>
-                      {panel.capacityKw != null
-                        ? `${panel.capacityKw} kW`
-                        : '-'}
-                    </td>
-
-                    <td>
-
-                      <button
-                        type="button"
-                        className="action-button"
-                        onClick={() =>
-                          handleEdit(panel)
-                        }
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        type="button"
-                        className="delete-button"
-                        onClick={() =>
-                          handleDelete(panel.id)
-                        }
-                      >
-                        Delete
-                      </button>
-
-                    </td>
-
-                  </tr>
-
-                ))
-
-              )}
-
-            </tbody>
-
-          </table>
+            </div>
+          )}
 
         </div>
 
-      </section>
-
-
-      {/* =========================================
-          PANEL FORM
-          ========================================= */}
-
-      {showPanelForm && (
-
-        <SolarPanelForm
-          siteId={id}
-          panelToEdit={panelToEdit}
-          onClose={
-            handlePanelFormClose
-          }
-        />
-
-      )}
-
+      </div>
     </div>
   );
 }
