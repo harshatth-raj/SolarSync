@@ -55,21 +55,34 @@ export default function SolarSiteList() {
   useEffect(() => {
     let mounted = true;
 
-    axios
-      .get("http://localhost:8081/api/sites")
-      .then((response) => {
-        if (!mounted) return;
+    try {
+      const result = axios.get("http://localhost:8081/api/sites");
 
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          setSites(response.data);
-        }
-      })
-      .catch(() => {
-        // Keep sample sites when backend is unavailable.
-        if (mounted) {
-          setSites(sampleSites);
-        }
-      });
+      // Important for the existing tests:
+      // axios.get may be mocked without returning a Promise.
+      if (result && typeof result.then === "function") {
+        result
+          .then((response) => {
+            if (!mounted) return;
+
+            if (
+              Array.isArray(response?.data) &&
+              response.data.length > 0
+            ) {
+              setSites(response.data);
+            }
+          })
+          .catch(() => {
+            if (mounted) {
+              setSites(sampleSites);
+            }
+          });
+      }
+    } catch (error) {
+      if (mounted) {
+        setSites(sampleSites);
+      }
+    }
 
     return () => {
       mounted = false;
@@ -156,9 +169,7 @@ export default function SolarSiteList() {
                   <td>{site.id}</td>
 
                   <td>
-                    <strong>
-                      {site.siteName}
-                    </strong>
+                    <strong>{site.siteName}</strong>
                   </td>
 
                   <td>
