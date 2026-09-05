@@ -1,108 +1,153 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const COORD_REGEX = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
+export default function SolarSiteForm({
+  onClose,
+}) {
+  const [siteName, setSiteName] =
+    useState('');
 
-export default function SolarSiteForm({ onClose, siteToEdit }) {
-  const [siteName, setSiteName] = useState(
-    siteToEdit?.siteName || ''
-  );
+  const [locationCoordinates, setLocationCoordinates] =
+    useState('');
 
-  const [locationCoordinates, setLocationCoordinates] = useState(
-    siteToEdit?.locationCoordinates || ''
-  );
+  const [ratedCapacityKw, setRatedCapacityKw] =
+    useState('');
 
-  const [ratedCapacityKw, setRatedCapacityKw] = useState(
-    siteToEdit?.ratedCapacityKw || ''
-  );
+  const [commissionedDate, setCommissionedDate] =
+    useState('');
 
-  const [commissionDate, setCommissionDate] = useState(
-    siteToEdit?.commissionDate || ''
-  );
+  const [error, setError] =
+    useState('');
 
-  const [error, setError] = useState('');
+  const getAuthHeaders = () => {
+    const token =
+      localStorage.getItem('token') ||
+      localStorage.getItem('jwt') ||
+      localStorage.getItem('accessToken');
+
+    return token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : {};
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!COORD_REGEX.test(locationCoordinates)) {
-      setError('Invalid coordinates format');
-      return;
-    }
+    setError('');
 
     try {
-      if (siteToEdit) {
-        await axios.put(
-          `/api/sites/${siteToEdit.id}`,
-          {
-            siteName,
-            locationCoordinates,
-            ratedCapacityKw,
-            commissionDate
-          }
-        );
-      } else {
-        await axios.post(
-          '/api/sites',
-          {
-            siteName,
-            locationCoordinates,
-            ratedCapacityKw,
-            commissionDate
-          }
-        );
-      }
+      await axios.post(
+        '/api/sites',
+        {
+          siteName,
+          locationCoordinates,
+          ratedCapacityKw: Number(
+            ratedCapacityKw
+          ),
+          commissionedDate,
+        },
+        {
+          headers: getAuthHeaders(),
+        }
+      );
 
-      if (onClose) {
-        onClose();
-      }
-    } catch (error) {
-      // Keep the form open if the API request fails.
+      onClose();
+    } catch (err) {
+      console.error(
+        'Failed to create site:',
+        err
+      );
+
+      setError(
+        err.response?.data?.message ||
+        'Unable to create site.'
+      );
     }
   };
 
   return (
-    <div>
-      <h2>Register New Solar Site</h2>
+    <div className="modal-overlay">
 
-      {error && <p>{error}</p>}
+      <div className="modal-card">
 
-      <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Desert Oasis Alpha"
-          value={siteName}
-          onChange={(e) => setSiteName(e.target.value)}
-        />
+        <h2>
+          Add Solar Site
+        </h2>
 
-        <input
-          placeholder="34.05, -118.24"
-          value={locationCoordinates}
-          onChange={(e) =>
-            setLocationCoordinates(e.target.value)
-          }
-        />
+        <form onSubmit={handleSubmit}>
 
-        <input
-          placeholder="500.0"
-          value={ratedCapacityKw}
-          onChange={(e) =>
-            setRatedCapacityKw(e.target.value)
-          }
-        />
+          <input
+            type="text"
+            placeholder="Site Name"
+            value={siteName}
+            onChange={(e) =>
+              setSiteName(e.target.value)
+            }
+            required
+          />
 
-        <input
-          name="commissionDate"
-          type="date"
-          value={commissionDate}
-          onChange={(e) =>
-            setCommissionDate(e.target.value)
-          }
-        />
+          <input
+            type="text"
+            placeholder="Coordinates e.g. 11.0168,76.9558"
+            value={locationCoordinates}
+            onChange={(e) =>
+              setLocationCoordinates(
+                e.target.value
+              )
+            }
+            required
+          />
 
-        <button type="submit">
-          Commission Site
-        </button>
-      </form>
+          <input
+            type="number"
+            placeholder="Rated Capacity (kW)"
+            value={ratedCapacityKw}
+            onChange={(e) =>
+              setRatedCapacityKw(
+                e.target.value
+              )
+            }
+            required
+          />
+
+          <input
+            type="date"
+            value={commissionedDate}
+            onChange={(e) =>
+              setCommissionedDate(
+                e.target.value
+              )
+            }
+            required
+          />
+
+          {error && (
+            <div className="register-error">
+              {error}
+            </div>
+          )}
+
+          <div className="modal-actions">
+
+            <button type="submit">
+              Add Site
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
     </div>
   );
 }

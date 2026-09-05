@@ -1,51 +1,126 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import SolarPanelForm from './SolarPanelForm';
 
 export default function SolarSiteDetails() {
+  const { id } = useParams();
+
   const [site, setSite] = useState(null);
   const [panels, setPanels] = useState([]);
-  const [panelToEdit, setPanelToEdit] = useState(null);
-  const [showPanelForm, setShowPanelForm] = useState(false);
 
-  const loadPanels = () => {
-    const result = axios.get('/api/sites/1/panels');
+  const [showPanelForm, setShowPanelForm] =
+    useState(false);
 
-    if (result && typeof result.then === 'function') {
-      result
-        .then((res) => {
-          const data = res.data;
-          setPanels(Array.isArray(data) ? data : []);
-        })
-        .catch(() => {});
+  const [panelToEdit, setPanelToEdit] =
+    useState(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const getAuthHeaders = () => {
+    const token =
+      localStorage.getItem('token') ||
+      localStorage.getItem('jwt') ||
+      localStorage.getItem('accessToken');
+
+    return token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : {};
+  };
+
+  const loadSite = async () => {
+    try {
+      const response = await axios.get(
+        `/api/sites/${id}`,
+        {
+          headers: getAuthHeaders(),
+        }
+      );
+
+      setSite(response.data);
+    } catch (error) {
+      console.error(
+        'Failed to load site:',
+        error
+      );
     }
   };
 
-  useEffect(() => {
-    const r1 = axios.get('/api/sites/1');
+  const loadPanels = async () => {
+    try {
+      const response = await axios.get(
+        `/api/sites/${id}/panels`,
+        {
+          headers: getAuthHeaders(),
+        }
+      );
 
-    if (r1 && typeof r1.then === 'function') {
-      r1
-        .then((res) => setSite(res.data))
-        .catch(() => {});
+      setPanels(
+        Array.isArray(response.data)
+          ? response.data
+          : []
+      );
+    } catch (error) {
+      console.error(
+        'Failed to load panels:',
+        error
+      );
+
+      setPanels([]);
+    }
+  };
+
+  const loadData = async () => {
+    setLoading(true);
+
+    await Promise.all([
+      loadSite(),
+      loadPanels(),
+    ]);
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (id) {
+      loadData();
+    }
+  }, [id]);
+
+  const handleDelete = async (panelId) => {
+    const confirmed = window.confirm(
+      'Delete panel?'
+    );
+
+    if (!confirmed) {
+      return;
     }
 
-    loadPanels();
-  }, []);
+    try {
+      await axios.delete(
+        `/api/panels/${panelId}`,
+        {
+          headers: getAuthHeaders(),
+        }
+      );
 
-  const handleDelete = (id) => {
-    if (window.confirm('Delete panel?')) {
-      const result = axios.delete(`/api/panels/${id}`);
+      setPanels((current) =>
+        current.filter(
+          (panel) => panel.id !== panelId
+        )
+      );
+    } catch (error) {
+      console.error(
+        'Failed to delete panel:',
+        error
+      );
 
-      if (result && typeof result.then === 'function') {
-        result
-          .then(() => {
-            setPanels((current) =>
-              current.filter((panel) => panel.id !== id)
-            );
-          })
-          .catch(() => {});
-      }
+      alert(
+        error.response?.data?.message ||
+        'Unable to delete panel.'
+      );
     }
   };
 
@@ -54,31 +129,157 @@ export default function SolarSiteDetails() {
     setShowPanelForm(true);
   };
 
-  const handleCloseForm = () => {
+  const handleAddPanel = () => {
+    setPanelToEdit(null);
+    setShowPanelForm(true);
+  };
+
+  const handlePanelFormClose = () => {
     setShowPanelForm(false);
     setPanelToEdit(null);
-
-    // Reload the panels after editing
     loadPanels();
   };
 
-  const handleSimulate = () => {
-    axios.post('/api/sites/1/simulate');
+  const handleSimulate = async () => {
+    try {
+      await axios.post(
+        `/api/sites/${id}/simulate`,
+        {},
+        {
+          headers: getAuthHeaders(),
+        }
+      );
+
+      alert(
+        'Generation simulation completed.'
+      );
+    } catch (error) {
+      console.error(
+        'Simulation failed:',
+        error
+      );
+
+      alert(
+        error.response?.data?.message ||
+        'Unable to simulate generation.'
+      );
+    }
   };
 
+  if (loading) {
+    return (
+      <div className="sites-page">
+        <div className="sites-loading">
+          Loading site...
+        </div>
+      </div>
+    );
+  }
+
   if (!site) {
-    return <div>Loading...</div>;
+    return (
+      <div className="sites-page">
+
+        <Link
+          to="/sites"
+          className="back-link"
+        >
+          ← Back to Sites
+        </Link>
+
+        <div className="no-sites">
+          Site not found.
+        </div>
+
+      </div>
+    );
   }
 
   return (
-    <div className="site-details-page">
+    <div className="sites-page">
 
-      <div className="site-details">
+      {/* =========================================
+          TOP BAR
+          ========================================= */}
 
-        <h2>{site.siteName}</h2>
+      <div className="sites-top-bar">
+
+        <Link
+          to="/sites"
+          className="back-link"
+        >
+          ← Back to Sites
+        </Link>
+
+      </div>
+
+
+      {/* =========================================
+          SITE INFORMATION
+          ========================================= */}
+
+      <div className="site-header-card">
+
+        <div className="site-main-info">
+
+          <h2>
+            {site.siteName}
+          </h2>
+
+          <p>
+            Coordinates:{' '}
+            {site.locationCoordinates || '-'}
+          </p>
+
+        </div>
+
+
+        <div className="site-info-item">
+
+          <span>
+            RATED CAPACITY
+          </span>
+
+          <strong>
+            {site.ratedCapacityKw != null
+              ? `${site.ratedCapacityKw} kW`
+              : '-'}
+          </strong>
+
+        </div>
+
+
+        <div className="site-info-item">
+
+          <span>
+            PANELS
+          </span>
+
+          <strong>
+            {panels.length}
+          </strong>
+
+        </div>
+
+
+        <div className="site-info-item">
+
+          <span>
+            COMMISSIONED
+          </span>
+
+          <strong>
+            {site.commissionedDate ||
+              site.commissionDate ||
+              '-'}
+          </strong>
+
+        </div>
+
 
         <button
-          className="btn-success"
+          type="button"
+          className="simulate-button"
           onClick={handleSimulate}
         >
           Simulate Generation
@@ -86,105 +287,110 @@ export default function SolarSiteDetails() {
 
       </div>
 
-      {/* EDIT PANEL FORM */}
 
-      {showPanelForm && (
-        <div className="modal-overlay">
+      {/* =========================================
+          PANELS
+          ========================================= */}
 
-          <div className="modal-card">
-
-            <SolarPanelForm
-              onClose={handleCloseForm}
-              siteId={1}
-              panelToEdit={panelToEdit}
-            />
-
-            <button
-              type="button"
-              onClick={() => {
-                setShowPanelForm(false);
-                setPanelToEdit(null);
-              }}
-            >
-              Cancel
-            </button>
-
-          </div>
-
-        </div>
-      )}
-
-      {/* PANELS */}
-
-      <div className="panels-section">
+      <section className="panels-section">
 
         <div className="panels-header">
 
-          <h2>Solar Panels</h2>
+          <h2>
+            Solar Panels
+          </h2>
 
           <button
+            type="button"
             className="add-panel-button"
-            onClick={() => {
-              setPanelToEdit(null);
-              setShowPanelForm(true);
-            }}
+            onClick={handleAddPanel}
           >
             + Add Panel
           </button>
 
         </div>
 
+
         <div className="panel-table-container">
 
           <table className="panel-table">
 
             <thead>
+
               <tr>
-                <th>Serial Number</th>
-                <th>Model</th>
-                <th>Status</th>
-                <th>Usage (hrs)</th>
-                <th>Installation</th>
-                <th>Capacity</th>
-                <th>Actions</th>
+
+                <th>
+                  Serial Number
+                </th>
+
+                <th>
+                  Model
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+                <th>
+                  Usage (Hrs)
+                </th>
+
+                <th>
+                  Installation
+                </th>
+
+                <th>
+                  Capacity
+                </th>
+
+                <th>
+                  Actions
+                </th>
+
               </tr>
+
             </thead>
+
 
             <tbody>
 
               {panels.length === 0 ? (
 
                 <tr>
+
                   <td
                     colSpan="7"
                     className="no-panels"
                   >
                     No solar panels found.
                   </td>
+
                 </tr>
 
               ) : (
 
-                panels.map((p) => (
+                panels.map((panel) => (
 
-                  <tr key={p.id}>
+                  <tr key={panel.id}>
 
                     <td>
-                      {p.serialNumber}
+                      {panel.serialNumber || '-'}
                     </td>
 
                     <td>
-                      {p.modelType}
+                      {panel.modelType || '-'}
                     </td>
 
                     <td>
 
                       <span
                         className={`status-badge ${
-                          String(p.status || '').toLowerCase()
+                          String(
+                            panel.status || ''
+                          ).toLowerCase()
                         }`}
                       >
-                        {p.status}
+                        {panel.status || '-'}
                       </span>
 
                     </td>
@@ -199,16 +405,24 @@ export default function SolarSiteDetails() {
                             className="usage-progress"
                             style={{
                               width: `${Math.min(
-                                Number(p.usageHours || 0),
+                                Number(
+                                  panel.usageHours ||
+                                  panel.usageHrs ||
+                                  0
+                                ),
                                 100
-                              )}%`
+                              )}%`,
                             }}
                           />
 
                         </div>
 
                         <span>
-                          {p.usageHours || 0}
+                          {
+                            panel.usageHours ??
+                            panel.usageHrs ??
+                            0
+                          }
                         </span>
 
                       </div>
@@ -216,38 +430,39 @@ export default function SolarSiteDetails() {
                     </td>
 
                     <td>
-                      {p.installationDate || '-'}
+                      {
+                        panel.installationDate ||
+                        '-'
+                      }
                     </td>
 
                     <td>
-                      {p.capacityKw
-                        ? `${p.capacityKw} kW`
-                        : p.ratedCapacityKw
-                          ? `${p.ratedCapacityKw} kW`
-                          : '5.5 kW'}
+                      {panel.capacityKw != null
+                        ? `${panel.capacityKw} kW`
+                        : '-'}
                     </td>
 
                     <td>
 
-                      <div className="panel-actions">
+                      <button
+                        type="button"
+                        className="action-button"
+                        onClick={() =>
+                          handleEdit(panel)
+                        }
+                      >
+                        Edit
+                      </button>
 
-                        <button
-                          type="button"
-                          className="action-button"
-                          onClick={() => handleEdit(p)}
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          type="button"
-                          className="delete-button"
-                          onClick={() => handleDelete(p.id)}
-                        >
-                          Delete
-                        </button>
-
-                      </div>
+                      <button
+                        type="button"
+                        className="delete-button"
+                        onClick={() =>
+                          handleDelete(panel.id)
+                        }
+                      >
+                        Delete
+                      </button>
 
                     </td>
 
@@ -263,7 +478,24 @@ export default function SolarSiteDetails() {
 
         </div>
 
-      </div>
+      </section>
+
+
+      {/* =========================================
+          PANEL FORM
+          ========================================= */}
+
+      {showPanelForm && (
+
+        <SolarPanelForm
+          siteId={id}
+          panelToEdit={panelToEdit}
+          onClose={
+            handlePanelFormClose
+          }
+        />
+
+      )}
 
     </div>
   );
