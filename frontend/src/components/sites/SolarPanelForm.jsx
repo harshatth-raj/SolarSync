@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 export default function SolarPanelForm({
   onClose,
@@ -7,29 +7,29 @@ export default function SolarPanelForm({
   panelToEdit,
 }) {
   const [serialNumber, setSerialNumber] = useState(
-    panelToEdit?.serialNumber || ''
+    panelToEdit?.serialNumber || ""
   );
 
   const [modelType, setModelType] = useState(
-    panelToEdit?.modelType || ''
+    panelToEdit?.modelType || ""
   );
 
   const [installationDate, setInstallationDate] =
     useState(
-      panelToEdit?.installationDate || ''
+      panelToEdit?.installationDate || ""
     );
 
   const [status, setStatus] = useState(
-    panelToEdit?.status || 'ACTIVE'
+    panelToEdit?.status || "ACTIVE"
   );
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const getAuthHeaders = () => {
     const token =
-      localStorage.getItem('token') ||
-      localStorage.getItem('jwt') ||
-      localStorage.getItem('accessToken');
+      localStorage.getItem("token") ||
+      localStorage.getItem("jwt") ||
+      localStorage.getItem("accessToken");
 
     return token
       ? {
@@ -41,17 +41,20 @@ export default function SolarPanelForm({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError('');
+    setError("");
 
     try {
-      const data = {
-        serialNumber,
-        modelType,
-        installationDate,
-        status,
-      };
-
       if (panelToEdit) {
+        // -----------------------------
+        // EDIT EXISTING PANEL
+        // -----------------------------
+        const data = {
+          serialNumber,
+          modelType,
+          installationDate,
+          status,
+        };
+
         await axios.put(
           `/api/panels/${panelToEdit.id}`,
           data,
@@ -60,8 +63,23 @@ export default function SolarPanelForm({
           }
         );
       } else {
+        // -----------------------------
+        // CREATE NEW PANEL
+        // -----------------------------
+        const data = {
+          site: {
+            id: Number(siteId),
+          },
+          serialNumber,
+          modelType,
+          status,
+          installationDate,
+          usageCount: 0,
+          capacity: 5.5,
+        };
+
         await axios.post(
-          `/api/sites/${siteId}/panels`,
+          "/api/panels",
           data,
           {
             headers: getAuthHeaders(),
@@ -70,12 +88,13 @@ export default function SolarPanelForm({
       }
 
       onClose();
+
     } catch (err) {
-      console.error('Panel save failed:', err);
+      console.error("Panel save failed:", err);
 
       setError(
         err.response?.data?.message ||
-        'Unable to save panel.'
+          "Unable to save panel."
       );
     }
   };
@@ -87,8 +106,8 @@ export default function SolarPanelForm({
 
         <h2>
           {panelToEdit
-            ? 'Edit Panel'
-            : 'Add Panel'}
+            ? "Edit Panel"
+            : "Add Panel"}
         </h2>
 
         <form onSubmit={handleSubmit}>
