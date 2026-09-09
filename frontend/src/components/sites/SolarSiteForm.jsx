@@ -46,7 +46,7 @@ export default function SolarSiteForm({ onClose }) {
           siteName,
           locationCoordinates,
           ratedCapacityKw: Number(ratedCapacityKw),
-          commissionedDate,
+          commissionDate: commissionedDate,
         },
         {
           headers: getAuthHeaders(),
