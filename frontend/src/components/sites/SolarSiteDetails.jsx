@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import SolarPanelForm from "./SolarPanelForm";
 
 const sampleSites = {
   1: {
@@ -43,9 +44,41 @@ export default function SolarSiteDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Add Panel form state
+  const [showPanelForm, setShowPanelForm] = useState(false);
+
   const role = String(user?.role || "")
     .replace(/^ROLE_/i, "")
     .toUpperCase();
+
+  const getAuthConfig = () => {
+    const token = localStorage.getItem("token");
+
+    return token
+      ? {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      : {};
+  };
+
+  const loadPanels = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8081/api/sites/${id}/panels`,
+        getAuthConfig()
+      );
+
+      setPanels(
+        Array.isArray(response?.data)
+          ? response.data
+          : []
+      );
+    } catch (panelError) {
+      setPanels([]);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -55,21 +88,8 @@ export default function SolarSiteDetails() {
         setLoading(true);
         setError("");
 
-        const token = localStorage.getItem("token");
+        const config = getAuthConfig();
 
-        const config = token
-          ? {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          : {};
-
-        /*
-         * First try the real backend.
-         * The JWT is included so Spring Security can authorize
-         * the request.
-         */
         let siteData = null;
 
         try {
@@ -80,10 +100,6 @@ export default function SolarSiteDetails() {
 
           siteData = response?.data;
         } catch (backendError) {
-          /*
-           * If the backend site is unavailable,
-           * use the local sample site for the existing tests/demo.
-           */
           siteData = sampleSites[id];
         }
 
@@ -95,9 +111,6 @@ export default function SolarSiteDetails() {
           setSite(siteData);
         }
 
-        /*
-         * Load panels from backend using the same JWT.
-         */
         try {
           const panelResponse = await axios.get(
             `http://localhost:8081/api/sites/${id}/panels`,
@@ -112,10 +125,6 @@ export default function SolarSiteDetails() {
             );
           }
         } catch (panelError) {
-          /*
-           * If the panel endpoint is unavailable,
-           * keep the panel list empty.
-           */
           if (mounted) {
             setPanels([]);
           }
@@ -140,33 +149,34 @@ export default function SolarSiteDetails() {
 
   const handleDeletePanel = async (panelId) => {
     try {
-      const token = localStorage.getItem("token");
-
-      const config = token
-        ? {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        : {};
-
       await axios.delete(
         `http://localhost:8081/api/panels/${panelId}`,
-        config
+        getAuthConfig()
       );
 
       setPanels((currentPanels) =>
-        currentPanels.filter((panel) => panel.id !== panelId)
+        currentPanels.filter(
+          (panel) => panel.id !== panelId
+        )
       );
     } catch (err) {
       setPanels((currentPanels) =>
-        currentPanels.filter((panel) => panel.id !== panelId)
+        currentPanels.filter(
+          (panel) => panel.id !== panelId
+        )
       );
     }
   };
 
   const handleSimulateGeneration = () => {
     alert("Solar generation simulation started.");
+  };
+
+  const handlePanelFormClose = () => {
+    setShowPanelForm(false);
+
+    // Reload panels after adding/editing a panel
+    loadPanels();
   };
 
   if (loading) {
@@ -232,7 +242,9 @@ export default function SolarSiteDetails() {
 
           <div>
             <strong>Location Coordinates</strong>
-            <p>{site.locationCoordinates || "N/A"}</p>
+            <p>
+              {site.locationCoordinates || "N/A"}
+            </p>
           </div>
 
           <div>
@@ -280,7 +292,25 @@ export default function SolarSiteDetails() {
       {/* PANELS */}
       <div className="site-details-panel">
 
-        <h2>Solar Panels</h2>
+        {/* PANEL HEADER */}
+        <div
+          className="sites-header"
+          style={{ marginBottom: "20px" }}
+        >
+
+          <div className="sites-title-section">
+            <h2>Solar Panels</h2>
+          </div>
+
+          <button
+            type="button"
+            className="add-site-button"
+            onClick={() => setShowPanelForm(true)}
+          >
+            + Add Panel
+          </button>
+
+        </div>
 
         {panels.length === 0 ? (
 
@@ -312,7 +342,9 @@ export default function SolarSiteDetails() {
 
                   <tr key={panel.id}>
 
-                    <td>{panel.id}</td>
+                    <td>
+                      {panel.id}
+                    </td>
 
                     <td>
                       {panel.serialNumber || "N/A"}
@@ -360,6 +392,14 @@ export default function SolarSiteDetails() {
         )}
 
       </div>
+
+      {/* ADD PANEL FORM */}
+      {showPanelForm && (
+        <SolarPanelForm
+          siteId={site.id}
+          onClose={handlePanelFormClose}
+        />
+      )}
 
     </div>
   );
