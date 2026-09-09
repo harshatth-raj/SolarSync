@@ -120,6 +120,10 @@ export default function SolarSiteList() {
   return (
     <div className="sites-page">
 
+      {/* =====================================================
+          HEADER
+          ===================================================== */}
+
       <div className="sites-header">
 
         <div className="sites-title-section">
@@ -142,6 +146,10 @@ export default function SolarSiteList() {
 
       </div>
 
+      {/* =====================================================
+          SEARCH
+          ===================================================== */}
+
       <input
         type="text"
         className="site-search"
@@ -149,6 +157,10 @@ export default function SolarSiteList() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
+
+      {/* =====================================================
+          SITE LIST
+          ===================================================== */}
 
       {filteredSites.length === 0 ? (
 
@@ -180,27 +192,47 @@ export default function SolarSiteList() {
 
                 <tr key={site.id}>
 
-                  <td>{site.id}</td>
+                  {/* SITE ID */}
 
                   <td>
-                    <strong>{site.siteName}</strong>
+                    {site.id}
                   </td>
+
+                  {/* SITE NAME */}
+
+                  <td>
+                    <strong>
+                      {site.siteName}
+                    </strong>
+                  </td>
+
+                  {/* COORDINATES */}
 
                   <td>
                     {site.locationCoordinates || "N/A"}
                   </td>
 
+                  {/* RATED CAPACITY */}
+
                   <td>
                     {site.ratedCapacityKw || 0} kW
                   </td>
+
+                  {/* COMMISSION DATE */}
 
                   <td>
                     {site.commissionDate || "N/A"}
                   </td>
 
+                  {/* PANELS */}
+
                   <td>
-                    {site.panelCount || 0}
+                    {Array.isArray(site.panels)
+                      ? site.panels.length
+                      : 0}
                   </td>
+
+                  {/* ACTION */}
 
                   <td>
                     <Link
@@ -222,6 +254,10 @@ export default function SolarSiteList() {
         </div>
 
       )}
+
+      {/* =====================================================
+          ADD SITE FORM
+          ===================================================== */}
 
       {showForm && (
         <SolarSiteForm
