@@ -1,37 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import api from "../../services/api";
 import SolarPanelForm from "./SolarPanelForm";
-
-const sampleSites = {
-  1: {
-    id: 1,
-    siteName: "SKCT Solar Plant",
-    locationCoordinates: "11.0168, 76.9558",
-    ratedCapacityKw: 500,
-    commissionDate: "2025-01-15",
-    panelCount: 1200
-  },
-
-  2: {
-    id: 2,
-    siteName: "Main Solar Array",
-    locationCoordinates: "11.0185, 76.9725",
-    ratedCapacityKw: 750,
-    commissionDate: "2025-03-20",
-    panelCount: 1800
-  },
-
-  3: {
-    id: 3,
-    siteName: "Green Energy Plant",
-    locationCoordinates: "11.0302, 76.9614",
-    ratedCapacityKw: 1000,
-    commissionDate: "2025-06-10",
-    panelCount: 2400
-  }
-};
 
 export default function SolarSiteDetails() {
   const { id } = useParams();
@@ -51,9 +22,9 @@ export default function SolarSiteDetails() {
     .replace(/[\s-]+/g, "_")
     .toUpperCase();
 
-  /* =========================================================
-     AUTH CONFIG
-     ========================================================= */
+  // --------------------------------------------------
+  // AUTH CONFIG
+  // --------------------------------------------------
 
   const getAuthConfig = () => {
     const token =
@@ -64,20 +35,20 @@ export default function SolarSiteDetails() {
     return token
       ? {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       : {};
   };
 
-  /* =========================================================
-     LOAD PANELS FOR CURRENT SITE
-     ========================================================= */
+  // --------------------------------------------------
+  // LOAD PANELS FOR CURRENT SITE
+  // --------------------------------------------------
 
   const loadPanels = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:8081/api/panels/site/${id}`,
+      const response = await api.get(
+        `/api/panels/site/${id}`,
         getAuthConfig()
       );
 
@@ -96,9 +67,9 @@ export default function SolarSiteDetails() {
     }
   };
 
-  /* =========================================================
-     LOAD SITE
-     ========================================================= */
+  // --------------------------------------------------
+  // LOAD SITE AND PANELS
+  // --------------------------------------------------
 
   useEffect(() => {
     let mounted = true;
@@ -110,24 +81,13 @@ export default function SolarSiteDetails() {
 
         const config = getAuthConfig();
 
-        let siteData = null;
+        // Load real site from Railway backend
+        const siteResponse = await api.get(
+          `/api/sites/${id}`,
+          config
+        );
 
-        /*
-         * Load real site from backend.
-         */
-        try {
-          const response = await axios.get(
-            `http://localhost:8081/api/sites/${id}`,
-            config
-          );
-
-          siteData = response?.data;
-        } catch (backendError) {
-          /*
-           * Keep sample fallback for existing tests/demo.
-           */
-          siteData = sampleSites[id];
-        }
+        const siteData = siteResponse?.data;
 
         if (!siteData) {
           throw new Error("Site not found");
@@ -137,39 +97,29 @@ export default function SolarSiteDetails() {
           setSite(siteData);
         }
 
-        /*
-         * Load panels belonging to this site.
-         *
-         * Correct backend endpoint:
-         * GET /api/panels/site/{siteId}
-         */
-        try {
-          const panelResponse = await axios.get(
-            `http://localhost:8081/api/panels/site/${id}`,
-            config
-          );
+        // Load panels belonging to this site
+        const panelResponse = await api.get(
+          `/api/panels/site/${id}`,
+          config
+        );
 
-          if (mounted) {
-            setPanels(
-              Array.isArray(panelResponse?.data)
-                ? panelResponse.data
-                : []
-            );
-          }
-        } catch (panelError) {
-          console.error(
-            "Failed to load site panels:",
-            panelError
+        if (mounted) {
+          setPanels(
+            Array.isArray(panelResponse?.data)
+              ? panelResponse.data
+              : []
           );
-
-          if (mounted) {
-            setPanels([]);
-          }
         }
       } catch (err) {
+        console.error(
+          "Failed to load site details:",
+          err
+        );
+
         if (mounted) {
           setError(
-            "Unable to load site details."
+            err.response?.data?.message ||
+              "Unable to load site details."
           );
         }
       } finally {
@@ -186,14 +136,14 @@ export default function SolarSiteDetails() {
     };
   }, [id]);
 
-  /* =========================================================
-     DELETE PANEL
-     ========================================================= */
+  // --------------------------------------------------
+  // DELETE PANEL
+  // --------------------------------------------------
 
   const handleDeletePanel = async (panelId) => {
     try {
-      await axios.delete(
-        `http://localhost:8081/api/panels/${panelId}`,
+      await api.delete(
+        `/api/panels/${panelId}`,
         getAuthConfig()
       );
 
@@ -208,17 +158,16 @@ export default function SolarSiteDetails() {
         err
       );
 
-      setPanels((currentPanels) =>
-        currentPanels.filter(
-          (panel) => panel.id !== panelId
-        )
+      alert(
+        err.response?.data?.message ||
+          "Unable to delete panel."
       );
     }
   };
 
-  /* =========================================================
-     SIMULATE GENERATION
-     ========================================================= */
+  // --------------------------------------------------
+  // SIMULATE GENERATION
+  // --------------------------------------------------
 
   const handleSimulateGeneration = () => {
     alert(
@@ -226,22 +175,20 @@ export default function SolarSiteDetails() {
     );
   };
 
-  /* =========================================================
-     PANEL FORM CLOSED
-     ========================================================= */
+  // --------------------------------------------------
+  // PANEL FORM CLOSED
+  // --------------------------------------------------
 
-  const handlePanelFormClose = () => {
+  const handlePanelFormClose = async () => {
     setShowPanelForm(false);
 
-    /*
-     * Reload panels after adding/editing.
-     */
-    loadPanels();
+    // Reload panels after adding/editing
+    await loadPanels();
   };
 
-  /* =========================================================
-     LOADING
-     ========================================================= */
+  // --------------------------------------------------
+  // LOADING
+  // --------------------------------------------------
 
   if (loading) {
     return (
@@ -253,9 +200,9 @@ export default function SolarSiteDetails() {
     );
   }
 
-  /* =========================================================
-     ERROR
-     ========================================================= */
+  // --------------------------------------------------
+  // ERROR
+  // --------------------------------------------------
 
   if (error || !site) {
     return (
@@ -268,16 +215,14 @@ export default function SolarSiteDetails() {
     );
   }
 
-  /* =========================================================
-     MAIN UI
-     ========================================================= */
+  // --------------------------------------------------
+  // MAIN UI
+  // --------------------------------------------------
 
   return (
     <div className="sites-page">
 
-      {/* =====================================================
-          HEADER
-          ===================================================== */}
+      {/* HEADER */}
 
       <div className="sites-header">
 
@@ -303,9 +248,7 @@ export default function SolarSiteDetails() {
 
       </div>
 
-      {/* =====================================================
-          SITE INFORMATION
-          ===================================================== */}
+      {/* SITE INFORMATION */}
 
       <div className="site-details-panel">
 
@@ -320,7 +263,7 @@ export default function SolarSiteDetails() {
             gridTemplateColumns:
               "repeat(6, minmax(0, 1fr))",
             gap: "30px",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
 
@@ -402,9 +345,7 @@ export default function SolarSiteDetails() {
 
       </div>
 
-      {/* =====================================================
-          OPERATOR GENERATION ACTION
-          ===================================================== */}
+      {/* OPERATOR GENERATION ACTION */}
 
       {role === "SOLAR_OPERATOR" && (
         <div className="site-details-panel">
@@ -426,9 +367,7 @@ export default function SolarSiteDetails() {
         </div>
       )}
 
-      {/* =====================================================
-          SOLAR PANELS
-          ===================================================== */}
+      {/* SOLAR PANELS */}
 
       <div className="site-details-panel">
 
@@ -437,7 +376,7 @@ export default function SolarSiteDetails() {
         <div
           className="sites-header"
           style={{
-            marginBottom: "20px"
+            marginBottom: "20px",
           }}
         >
 
@@ -461,9 +400,7 @@ export default function SolarSiteDetails() {
 
         </div>
 
-        {/* ===================================================
-            EMPTY PANEL STATE
-            =================================================== */}
+        {/* EMPTY PANEL STATE */}
 
         {panels.length === 0 ? (
 
@@ -473,9 +410,7 @@ export default function SolarSiteDetails() {
 
         ) : (
 
-          /* =================================================
-             PANEL TABLE
-             ================================================= */
+          /* PANEL TABLE */
 
           <div className="sites-table-container">
 
@@ -582,9 +517,7 @@ export default function SolarSiteDetails() {
 
       </div>
 
-      {/* =====================================================
-          ADD PANEL FORM
-          ===================================================== */}
+      {/* ADD PANEL FORM */}
 
       {showPanelForm && (
         <SolarPanelForm
