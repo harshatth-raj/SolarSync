@@ -3,42 +3,31 @@ import api from "../../services/api";
 
 export default function SolarSiteForm({ onClose }) {
   const [siteName, setSiteName] = useState("");
-  const [locationCoordinates, setLocationCoordinates] =
-    useState("");
-  const [ratedCapacityKw, setRatedCapacityKw] =
-    useState("");
-  const [commissionedDate, setCommissionedDate] =
-    useState("");
+  const [locationCoordinates, setLocationCoordinates] = useState("");
+  const [ratedCapacityKw, setRatedCapacityKw] = useState("");
+  const [commissionedDate, setCommissionedDate] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const getAuthHeaders = () => {
     const token =
       localStorage.getItem("token") ||
       localStorage.getItem("jwt") ||
       localStorage.getItem("accessToken");
-
-    return token
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
-      : {};
+    return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError("");
 
-    // Validate coordinates
-    // Example: 34.05, -118.24
-    const coordinatePattern =
-      /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
-
+    const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
     if (!coordinatePattern.test(locationCoordinates)) {
-      setError("Invalid coordinates");
+      setError("Coordinates must be in format: 34.05, -118.24");
       return;
     }
 
+    setSubmitting(true);
     try {
       await api.post(
         "/api/sites",
@@ -48,106 +37,90 @@ export default function SolarSiteForm({ onClose }) {
           ratedCapacityKw: Number(ratedCapacityKw),
           commissionDate: commissionedDate,
         },
-        {
-          headers: getAuthHeaders(),
-        }
+        { headers: getAuthHeaders() }
       );
-
       onClose();
     } catch (err) {
-      console.error(
-        "Failed to create site:",
-        err
-      );
-
-      setError(
-        err.response?.data?.message ||
-          "Unable to create site."
-      );
+      console.error("Failed to create site:", err);
+      setError(err.response?.data?.message || "Unable to create site.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-card">
+    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-card modal-card--site">
 
-        <h2>
-          Register New Solar Site
-        </h2>
+        <div className="modal-header">
+          <div className="modal-header-icon">☀️</div>
+          <div>
+            <h2>Register New Solar Site</h2>
+            <p className="modal-subtitle">Fill in the details to commission a new site</p>
+          </div>
+          <button type="button" className="modal-close-btn" onClick={onClose}>✕</button>
+        </div>
 
         <form onSubmit={handleSubmit}>
 
-          {/* Site Name */}
-          <input
-            type="text"
-            placeholder="Desert Oasis Alpha"
-            value={siteName}
-            onChange={(e) =>
-              setSiteName(e.target.value)
-            }
-            required
-          />
+          <div className="modal-field-group">
+            <label>Site Name</label>
+            <input
+              type="text"
+              placeholder="e.g. Desert Oasis Alpha"
+              value={siteName}
+              onChange={(e) => setSiteName(e.target.value)}
+              required
+            />
+          </div>
 
-          {/* Coordinates */}
-          <input
-            type="text"
-            placeholder="34.05, -118.24"
-            value={locationCoordinates}
-            onChange={(e) =>
-              setLocationCoordinates(
-                e.target.value
-              )
-            }
-            required
-          />
+          <div className="modal-field-group">
+            <label>Location Coordinates</label>
+            <input
+              type="text"
+              placeholder="e.g. 34.05, -118.24"
+              value={locationCoordinates}
+              onChange={(e) => setLocationCoordinates(e.target.value)}
+              required
+            />
+            <span className="modal-field-hint">Latitude, Longitude</span>
+          </div>
 
-          {/* Rated Capacity */}
-          <input
-            type="number"
-            placeholder="500.0"
-            value={ratedCapacityKw}
-            onChange={(e) =>
-              setRatedCapacityKw(
-                e.target.value
-              )
-            }
-            required
-          />
-
-          {/* Commission Date */}
-          <input
-            type="date"
-            name="commissionDate"
-            value={commissionedDate}
-            onChange={(e) =>
-              setCommissionedDate(
-                e.target.value
-              )
-            }
-            required
-          />
-
-          {/* Error */}
-          {error && (
-            <div className="register-error">
-              {error}
+          <div className="modal-row">
+            <div className="modal-field-group">
+              <label>Rated Capacity (kW)</label>
+              <input
+                type="number"
+                placeholder="e.g. 500"
+                value={ratedCapacityKw}
+                onChange={(e) => setRatedCapacityKw(e.target.value)}
+                required
+                min="0"
+              />
             </div>
+
+            <div className="modal-field-group">
+              <label>Commission Date</label>
+              <input
+                type="date"
+                value={commissionedDate}
+                onChange={(e) => setCommissionedDate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="register-error">{error}</div>
           )}
 
-          {/* Buttons */}
           <div className="modal-actions">
-
-            <button type="submit">
-              Commission Site
+            <button type="submit" disabled={submitting}>
+              {submitting ? "Commissioning…" : "✓ Commission Site"}
             </button>
-
-            <button
-              type="button"
-              onClick={onClose}
-            >
+            <button type="button" onClick={onClose}>
               Cancel
             </button>
-
           </div>
 
         </form>
