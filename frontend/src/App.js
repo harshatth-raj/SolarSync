@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -124,8 +124,20 @@ export function Dashboard() {
   });
 
   const [recentActivity, setRecentActivity] = useState([]);
-
   const [calculating, setCalculating] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [liveTime, setLiveTime] = useState(new Date());
+  const [newActivityIds, setNewActivityIds] = useState(new Set());
+  const prevActivityRef = useRef([]);
+
+  /* =====================================================
+     LIVE CLOCK — ticks every second
+     ===================================================== */
+
+  useEffect(() => {
+    const clockInterval = setInterval(() => setLiveTime(new Date()), 1000);
+    return () => clearInterval(clockInterval);
+  }, []);
 
   /* =====================================================
      AUTH CONFIG
@@ -170,10 +182,6 @@ export function Dashboard() {
 
         ...current,
 
-        /* ---------------------------------------------
-           DAILY ENERGY
-           --------------------------------------------- */
-
         dailyEnergy:
           data.dailyEnergy !== undefined &&
           data.dailyEnergy !== null
@@ -182,10 +190,6 @@ export function Dashboard() {
               ).toFixed(2)
             : current.dailyEnergy,
 
-        /* ---------------------------------------------
-           MAINTENANCE COST
-           --------------------------------------------- */
-
         maintenance:
           data.maintenanceCost !== undefined &&
           data.maintenanceCost !== null
@@ -193,10 +197,6 @@ export function Dashboard() {
                 data.maintenanceCost
               ).toFixed(2)
             : current.maintenance,
-
-        /* ---------------------------------------------
-           SYSTEM EFFICIENCY
-           --------------------------------------------- */
 
         efficiency:
           data.systemEfficiency !== undefined &&
@@ -281,10 +281,6 @@ export function Dashboard() {
           ? response.data
           : [];
 
-      /* ---------------------------------------------
-         OPEN
-         --------------------------------------------- */
-
       const open =
         tickets.filter(
           (ticket) =>
@@ -292,10 +288,6 @@ export function Dashboard() {
               ticket?.status || ""
             ).toUpperCase() === "OPEN"
         ).length;
-
-      /* ---------------------------------------------
-         RESOLVED / CLOSED
-         --------------------------------------------- */
 
       const resolved =
         tickets.filter(
@@ -313,10 +305,6 @@ export function Dashboard() {
 
           }
         ).length;
-
-      /* ---------------------------------------------
-         IN PROGRESS
-         --------------------------------------------- */
 
       const inProgress =
         tickets.filter(
@@ -336,18 +324,10 @@ export function Dashboard() {
           }
         ).length;
 
-      /* ---------------------------------------------
-         TOTAL
-         --------------------------------------------- */
-
       const total =
         open +
         resolved +
         inProgress;
-
-      /* ---------------------------------------------
-         OPEN TICKETS CARD
-         --------------------------------------------- */
 
       setMetrics((current) => ({
 
@@ -357,10 +337,6 @@ export function Dashboard() {
           open,
 
       }));
-
-      /* ---------------------------------------------
-         MAINTENANCE DISTRIBUTION
-         --------------------------------------------- */
 
       setTicketDistribution({
 
@@ -403,10 +379,6 @@ export function Dashboard() {
           ? response.data
           : [];
 
-      /*
-       * Sort newest first.
-       */
-
       const sortedActivities =
         [...activities].sort(
           (a, b) =>
@@ -418,13 +390,25 @@ export function Dashboard() {
             )
         );
 
-      /*
-       * Show latest 3 readings.
-       */
+      const latest = sortedActivities.slice(0, 5);
 
-      setRecentActivity(
-        sortedActivities.slice(0, 3)
+      /* detect newly added entries to flash-animate them */
+      const prevIds = new Set(
+        prevActivityRef.current.map((a) => a?.id)
       );
+      const freshIds = new Set(
+        latest
+          .filter((a) => a?.id && !prevIds.has(a.id))
+          .map((a) => a.id)
+      );
+      if (freshIds.size > 0) {
+        setNewActivityIds(freshIds);
+        setTimeout(() => setNewActivityIds(new Set()), 2500);
+      }
+      prevActivityRef.current = latest;
+
+      setRecentActivity(latest);
+      setLastUpdated(new Date());
 
     } catch (error) {
 
@@ -441,27 +425,17 @@ export function Dashboard() {
      GENERATE NEW LIVE READING
      ===================================================== */
 
-  const generateLiveReading = async () => {
+  const generateLiveReading = useCallback(async () => {
 
     try {
 
       const config = getAuthConfig();
-
-      /*
-       * Generate a new simulated reading
-       * for panel ID 1.
-       */
 
       await api.post(
         "/api/metrics/simulate/1",
         {},
         config
       );
-
-      /*
-       * Refresh all dashboard information
-       * after generating the reading.
-       */
 
       await Promise.all([
         loadCalculatedMetrics(),
@@ -479,7 +453,8 @@ export function Dashboard() {
 
     }
 
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* =====================================================
      INITIAL DASHBOARD LOAD
@@ -523,42 +498,24 @@ export function Dashboard() {
 
     };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* =====================================================
-     CONTINUOUS LIVE DASHBOARD
+     CONTINUOUS LIVE DASHBOARD — every 10 s
      ===================================================== */
 
   useEffect(() => {
 
-    /*
-     * Generate a new simulated reading every 10 seconds.
-     *
-     * This makes Recent Activity continuously change
-     * while the Dashboard is open.
-     */
-
-    const liveInterval =
-      setInterval(() => {
-
-        generateLiveReading();
-
-      }, 10000);
-
-    /*
-     * Clean up the interval when the user leaves
-     * the Dashboard component.
-     */
+    const liveInterval = setInterval(() => {
+      generateLiveReading();
+    }, 10000);
 
     return () => {
-
-      clearInterval(
-        liveInterval
-      );
-
+      clearInterval(liveInterval);
     };
 
-  }, []);
+  }, [generateLiveReading]);
 
   /* =====================================================
      MANUAL CALCULATE METRICS
@@ -573,19 +530,11 @@ export function Dashboard() {
       const config =
         getAuthConfig();
 
-      /* ---------------------------------------------
-         Generate new simulated reading
-         --------------------------------------------- */
-
       await api.post(
         "/api/metrics/simulate/1",
         {},
         config
       );
-
-      /* ---------------------------------------------
-         Refresh everything
-         --------------------------------------------- */
 
       await Promise.all([
         loadCalculatedMetrics(),
@@ -723,7 +672,7 @@ export function Dashboard() {
 
         <section className="welcome-card">
 
-          <div>
+          <div style={{ flex: 1 }}>
 
             <h1>
               Welcome back,{" "}
@@ -740,6 +689,22 @@ export function Dashboard() {
               with optimal efficiency.
             </span>
 
+          </div>
+
+          {/* live clock */}
+          <div className="welcome-live-clock">
+            <span className="live-pulse-dot" />
+            <span className="live-label">LIVE</span>
+            <span className="live-clock-time">
+              {liveTime.toLocaleTimeString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })}
+            </span>
+            <span className="live-clock-date">
+              {liveTime.toLocaleDateString("en-CA")}
+            </span>
           </div>
 
         </section>
@@ -912,80 +877,81 @@ export function Dashboard() {
 
           <div className="dashboard-panel">
 
-            <h2>
-              Recent Activity
-            </h2>
+            {/* panel header with LIVE badge */}
+            <div className="activity-panel-header">
+              <h2>Recent Activity</h2>
+              <div className="activity-live-badge">
+                <span className="live-pulse-dot" />
+                <span>LIVE</span>
+              </div>
+            </div>
+
+            {/* last-updated line */}
+            {lastUpdated && (
+              <div className="activity-last-updated">
+                Updated {formatActivityTime(lastUpdated.toISOString())}
+              </div>
+            )}
 
             <div className="activity-list">
 
               {recentActivity.length > 0 ? (
 
                 recentActivity.map(
-                  (activity, index) => (
+                  (activity, index) => {
+                    const isNew = newActivityIds.has(activity?.id);
+                    const kwh = Number(activity?.energyGeneratedKwh || 0);
+                    const isHigh = kwh > 5;
 
-                    <div
-                      className="activity-item"
-                      key={
-                        activity?.id ||
-                        index
-                      }
-                    >
+                    return (
+                      <div
+                        className={`activity-item${isNew ? " activity-item--new" : ""}`}
+                        key={activity?.id || index}
+                      >
 
-                      <div>
+                        <div className="activity-icon-col">
+                          {isHigh ? "⚡" : "☀️"}
+                        </div>
 
-                        <small>
-                          {formatActivityDate(
-                            activity?.readingTimestamp
-                          )}{" "}
-                          {formatActivityTime(
-                            activity?.readingTimestamp
-                          )}
-                        </small>
+                        <div className="activity-body">
+                          <small>
+                            {formatActivityDate(
+                              activity?.readingTimestamp
+                            )}{" "}
+                            {formatActivityTime(
+                              activity?.readingTimestamp
+                            )}
+                          </small>
+                          <p>Energy generated</p>
+                          <span className={kwh > 0 ? "positive" : "negative"}>
+                            {kwh > 0 ? "↑" : "↓"}{" "}
+                            {kwh.toFixed(2)} kWh
+                          </span>
+                        </div>
 
-                        <p>
-                          Energy generated
-                        </p>
-
-                        <span className="positive">
-                          ↑{" "}
-                          {Number(
-                            activity?.energyGeneratedKwh || 0
-                          ).toFixed(2)}{" "}
-                          kWh
-                        </span>
+                        <div className="activity-right-col">
+                          <span className="activity-status activity-status--recorded">
+                            ✓ Recorded
+                          </span>
+                          <span className={`activity-level-badge${isHigh ? " activity-level-badge--high" : ""}`}>
+                            {isHigh ? "High" : "Normal"}
+                          </span>
+                        </div>
 
                       </div>
-
-                      <span className="activity-status">
-                        Recorded
-                      </span>
-
-                    </div>
-
-                  )
+                    );
+                  }
                 )
 
               ) : (
 
-                <div className="activity-item">
-
-                  <div>
-
-                    <small>
-                      No readings yet
-                    </small>
-
-                    <p>
-                      No energy generation data
-                      available.
-                    </p>
-
+                <div className="activity-item activity-item--empty">
+                  <div className="activity-icon-col">🔄</div>
+                  <div className="activity-body">
+                    <small>Waiting for data…</small>
+                    <p>No energy generation readings yet.</p>
                   </div>
-
-                  <span className="activity-status">
-                    Waiting
-                  </span>
-
+                  <span className="activity-status">Waiting</span>
                 </div>
 
               )}
