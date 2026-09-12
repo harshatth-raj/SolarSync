@@ -22,7 +22,7 @@ public class MetricController {
     }
 
     // --------------------------------------------------
-    // POST /api/metrics
+    // Create one metric
     // --------------------------------------------------
 
     @PostMapping
@@ -35,7 +35,7 @@ public class MetricController {
     }
 
     // --------------------------------------------------
-    // POST /api/metrics/batch
+    // Create multiple metrics
     // --------------------------------------------------
 
     @PostMapping("/batch")
@@ -48,7 +48,7 @@ public class MetricController {
     }
 
     // --------------------------------------------------
-    // GET /api/metrics/recent
+    // Get recent metrics
     // --------------------------------------------------
 
     @GetMapping("/recent")
@@ -60,7 +60,7 @@ public class MetricController {
     }
 
     // --------------------------------------------------
-    // GET /api/metrics/analytics
+    // Get analytics
     // --------------------------------------------------
 
     @GetMapping("/analytics")
@@ -72,8 +72,7 @@ public class MetricController {
     }
 
     // --------------------------------------------------
-    // GET DAILY ENERGY
-    // GET /api/metrics/daily-energy
+    // Calculate daily energy
     // --------------------------------------------------
 
     @GetMapping("/daily-energy")
@@ -85,8 +84,19 @@ public class MetricController {
     }
 
     // --------------------------------------------------
-    // GET MAINTENANCE COST
-    // GET /api/metrics/maintenance-cost
+    // Calculate system efficiency
+    // --------------------------------------------------
+
+    @GetMapping("/efficiency")
+    public ResponseEntity<BigDecimal> getSystemEfficiency() {
+
+        return ResponseEntity.ok(
+                service.getSystemEfficiency()
+        );
+    }
+
+    // --------------------------------------------------
+    // Get maintenance cost
     // --------------------------------------------------
 
     @GetMapping("/maintenance-cost")
@@ -98,20 +108,19 @@ public class MetricController {
     }
 
     // --------------------------------------------------
-    // GET SYSTEM EFFICIENCY
-    // GET /api/metrics/efficiency
+    // Calculate all dashboard metrics
     // --------------------------------------------------
 
-    @GetMapping("/efficiency")
-    public ResponseEntity<BigDecimal> getEfficiency() {
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Object>> getDashboardMetrics() {
 
         return ResponseEntity.ok(
-                service.getEfficiency()
+                service.getDashboardMetrics()
         );
     }
 
     // --------------------------------------------------
-    // GET /api/metrics/panel/{panelId}
+    // Get metrics by panel
     // --------------------------------------------------
 
     @GetMapping("/panel/{panelId}")

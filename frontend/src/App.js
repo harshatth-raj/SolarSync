@@ -123,47 +123,44 @@ export function Dashboard() {
     total: 0,
   });
 
-  useEffect(() => {
+  const [calculating, setCalculating] = useState(false);
+
+  /* =====================================================
+     AUTH CONFIG
+     ===================================================== */
+
+  const getAuthConfig = () => {
 
     const token =
       localStorage.getItem("token") ||
       localStorage.getItem("jwt") ||
       localStorage.getItem("accessToken");
 
-    const config = token
+    return token
       ? {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       : {};
+  };
+
+  /* =====================================================
+     LOAD SITES + TICKETS
+     ===================================================== */
+
+  useEffect(() => {
 
     const loadMetrics = async () => {
+
+      const config = getAuthConfig();
 
       try {
 
         const [
-          dailyEnergyResponse,
-          maintenanceResponse,
-          efficiencyResponse,
           sitesResponse,
           ticketsResponse,
         ] = await Promise.allSettled([
-
-          api.get(
-            "/api/metrics/daily-energy",
-            config
-          ),
-
-          api.get(
-            "/api/metrics/maintenance-cost",
-            config
-          ),
-
-          api.get(
-            "/api/metrics/efficiency",
-            config
-          ),
 
           api.get(
             "/api/sites",
@@ -178,64 +175,7 @@ export function Dashboard() {
         ]);
 
         /* =============================================
-           DAILY ENERGY
-           ============================================= */
-
-        if (
-          dailyEnergyResponse.status === "fulfilled"
-        ) {
-
-          setMetrics((current) => ({
-            ...current,
-
-            dailyEnergy:
-              dailyEnergyResponse.value?.data ??
-              current.dailyEnergy,
-          }));
-
-        }
-
-        /* =============================================
-           MAINTENANCE COST
-           ============================================= */
-
-        if (
-          maintenanceResponse.status === "fulfilled"
-        ) {
-
-          setMetrics((current) => ({
-            ...current,
-
-            maintenance:
-              maintenanceResponse.value?.data ??
-              current.maintenance,
-          }));
-
-        }
-
-        /* =============================================
-           SYSTEM EFFICIENCY
-           ============================================= */
-
-        if (
-          efficiencyResponse.status === "fulfilled"
-        ) {
-
-          setMetrics((current) => ({
-            ...current,
-
-            efficiency:
-              efficiencyResponse.value?.data ??
-              current.efficiency,
-          }));
-
-        }
-
-        /* =============================================
            ACTIVE SITES
-
-           Count actual sites returned by
-           the Railway backend.
            ============================================= */
 
         if (
@@ -258,11 +198,6 @@ export function Dashboard() {
 
         /* =============================================
            TICKET DATA
-
-           Calculate:
-           - OPEN
-           - RESOLVED / CLOSED
-           - IN PROGRESS
            ============================================= */
 
         if (
@@ -275,6 +210,10 @@ export function Dashboard() {
           const tickets =
             ticketsResponse.value.data;
 
+          /* -----------------------------------------
+             OPEN
+             ----------------------------------------- */
+
           const open =
             tickets.filter(
               (ticket) =>
@@ -283,9 +222,14 @@ export function Dashboard() {
                 ).toUpperCase() === "OPEN"
             ).length;
 
+          /* -----------------------------------------
+             RESOLVED / CLOSED
+             ----------------------------------------- */
+
           const resolved =
             tickets.filter(
               (ticket) => {
+
                 const status =
                   String(
                     ticket?.status || ""
@@ -295,12 +239,18 @@ export function Dashboard() {
                   status === "RESOLVED" ||
                   status === "CLOSED"
                 );
+
               }
             ).length;
+
+          /* -----------------------------------------
+             IN PROGRESS
+             ----------------------------------------- */
 
           const inProgress =
             tickets.filter(
               (ticket) => {
+
                 const status =
                   String(
                     ticket?.status || ""
@@ -311,8 +261,13 @@ export function Dashboard() {
                   status === "IN PROGRESS" ||
                   status === "IN-PROGRESS"
                 );
+
               }
             ).length;
+
+          /* -----------------------------------------
+             TOTAL
+             ----------------------------------------- */
 
           const total =
             open +
@@ -320,7 +275,7 @@ export function Dashboard() {
             inProgress;
 
           /* -----------------------------------------
-             Open Tickets metric
+             OPEN TICKETS METRIC
              ----------------------------------------- */
 
           setMetrics((current) => ({
@@ -330,7 +285,7 @@ export function Dashboard() {
           }));
 
           /* -----------------------------------------
-             Maintenance Distribution
+             MAINTENANCE DISTRIBUTION
              ----------------------------------------- */
 
           setTicketDistribution({
@@ -356,6 +311,90 @@ export function Dashboard() {
     loadMetrics();
 
   }, []);
+
+  /* =====================================================
+     CALCULATE DASHBOARD METRICS
+     ===================================================== */
+
+  const calculateMetrics = async () => {
+
+    setCalculating(true);
+
+    try {
+
+      const config = getAuthConfig();
+
+      const response =
+        await api.get(
+          "/api/metrics/dashboard",
+          config
+        );
+
+      const data =
+        response.data || {};
+
+      /* =============================================
+         DAILY ENERGY
+         ============================================= */
+
+      const dailyEnergy =
+        data.dailyEnergy !== undefined &&
+        data.dailyEnergy !== null
+          ? Number(data.dailyEnergy).toFixed(2)
+          : "0.00";
+
+      /* =============================================
+         MAINTENANCE COST
+         ============================================= */
+
+      const maintenanceCost =
+        data.maintenanceCost !== undefined &&
+        data.maintenanceCost !== null
+          ? Number(data.maintenanceCost).toFixed(2)
+          : "0.00";
+
+      /* =============================================
+         SYSTEM EFFICIENCY
+         ============================================= */
+
+      const systemEfficiency =
+        data.systemEfficiency !== undefined &&
+        data.systemEfficiency !== null
+          ? `${Number(
+              data.systemEfficiency
+            ).toFixed(1)}%`
+          : "0.0%";
+
+      /* =============================================
+         UPDATE DASHBOARD
+         ============================================= */
+
+      setMetrics((current) => ({
+        ...current,
+
+        dailyEnergy,
+
+        maintenance:
+          maintenanceCost,
+
+        efficiency:
+          systemEfficiency,
+      }));
+
+    } catch (error) {
+
+      console.error(
+        "Failed to calculate dashboard metrics:",
+        error
+      );
+
+    } finally {
+
+      setCalculating(false);
+
+    }
+
+  };
 
   /* =====================================================
      DONUT CALCULATION
@@ -424,6 +463,45 @@ export function Dashboard() {
           </div>
 
         </section>
+
+        {/* =============================================
+            CALCULATE METRICS BUTTON
+            ============================================= */}
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "20px",
+          }}
+        >
+
+          <button
+            type="button"
+            onClick={calculateMetrics}
+            disabled={calculating}
+            style={{
+              padding: "12px 22px",
+              border: "none",
+              borderRadius: "8px",
+              cursor: calculating
+                ? "not-allowed"
+                : "pointer",
+              fontWeight: "600",
+              fontSize: "14px",
+              opacity: calculating
+                ? 0.7
+                : 1,
+            }}
+          >
+
+            {calculating
+              ? "Calculating..."
+              : "Calculate Metrics"}
+
+          </button>
+
+        </div>
 
         {/* =============================================
             METRIC CARDS

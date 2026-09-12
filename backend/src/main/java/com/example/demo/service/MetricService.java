@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.EnergyMetric;
+import com.example.demo.entity.MaintenanceTicket;
 import com.example.demo.enums.PanelStatus;
 import com.example.demo.enums.TicketStatus;
 import com.example.demo.repository.EnergyMetricRepository;
@@ -37,7 +38,7 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // Save one metric
+    // Create one metric
     // --------------------------------------------------
 
     public EnergyMetric createMetric(EnergyMetric metric) {
@@ -45,7 +46,7 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // Save multiple metrics
+    // Create multiple metrics
     // --------------------------------------------------
 
     public List<EnergyMetric> createMetrics(
@@ -65,7 +66,6 @@ public class MetricService {
                 repository.findAll();
 
         if (metrics.size() > 10) {
-
             return metrics.subList(
                     Math.max(0, metrics.size() - 10),
                     metrics.size()
@@ -76,17 +76,19 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // DAILY ENERGY
+    // Calculate Daily Energy
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
     public BigDecimal getDailyEnergy() {
 
+        LocalDate today = LocalDate.now();
+
         LocalDateTime startOfDay =
-                LocalDate.now().atStartOfDay();
+                today.atStartOfDay();
 
         LocalDateTime endOfDay =
-                LocalDate.now().plusDays(1).atStartOfDay();
+                today.plusDays(1).atStartOfDay();
 
         List<EnergyMetric> metrics =
                 repository.findByReadingTimestampBetween(
@@ -94,37 +96,40 @@ public class MetricService {
                         endOfDay
                 );
 
-        BigDecimal total =
+        BigDecimal totalEnergy =
                 BigDecimal.ZERO;
 
         for (EnergyMetric metric : metrics) {
 
             if (metric.getEnergyGeneratedKwh() != null) {
 
-                total = total.add(
-                        metric.getEnergyGeneratedKwh()
-                );
+                totalEnergy =
+                        totalEnergy.add(
+                                metric.getEnergyGeneratedKwh()
+                        );
             }
         }
 
-        return total.setScale(
+        return totalEnergy.setScale(
                 2,
                 RoundingMode.HALF_UP
         );
     }
 
     // --------------------------------------------------
-    // SYSTEM EFFICIENCY
+    // Calculate System Efficiency
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
-    public BigDecimal getEfficiency() {
+    public BigDecimal getSystemEfficiency() {
+
+        LocalDate today = LocalDate.now();
 
         LocalDateTime startOfDay =
-                LocalDate.now().atStartOfDay();
+                today.atStartOfDay();
 
         LocalDateTime endOfDay =
-                LocalDate.now().plusDays(1).atStartOfDay();
+                today.plusDays(1).atStartOfDay();
 
         List<EnergyMetric> metrics =
                 repository.findByReadingTimestampBetween(
@@ -157,33 +162,73 @@ public class MetricService {
             );
         }
 
-        return totalEfficiency
-                .divide(
-                        BigDecimal.valueOf(count),
-                        1,
-                        RoundingMode.HALF_UP
-                );
+        return totalEfficiency.divide(
+                BigDecimal.valueOf(count),
+                1,
+                RoundingMode.HALF_UP
+        );
     }
 
     // --------------------------------------------------
-    // MAINTENANCE COST
+    // Calculate Maintenance Cost
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
     public BigDecimal getMaintenanceCost() {
 
         /*
-         * EnergyMetric does not currently contain
-         * maintenance cost information.
+         * There is currently no maintenance-cost field
+         * in the database.
          *
-         * Therefore we keep the existing dashboard
-         * value instead of inventing a calculation.
+         * Therefore, maintenance cost is not calculated
+         * from imaginary data.
+         *
+         * This currently returns the existing dashboard
+         * value of 3.00.
          */
+
         return new BigDecimal("3.00");
     }
 
     // --------------------------------------------------
-    // GET ANALYTICS
+    // Calculate all Dashboard Metrics
+    // --------------------------------------------------
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> getDashboardMetrics() {
+
+        BigDecimal dailyEnergy =
+                getDailyEnergy();
+
+        BigDecimal systemEfficiency =
+                getSystemEfficiency();
+
+        BigDecimal maintenanceCost =
+                getMaintenanceCost();
+
+        Map<String, Object> result =
+                new HashMap<>();
+
+        result.put(
+                "dailyEnergy",
+                dailyEnergy
+        );
+
+        result.put(
+                "systemEfficiency",
+                systemEfficiency
+        );
+
+        result.put(
+                "maintenanceCost",
+                maintenanceCost
+        );
+
+        return result;
+    }
+
+    // --------------------------------------------------
+    // Existing Analytics
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
@@ -192,16 +237,8 @@ public class MetricService {
         List<EnergyMetric> metrics =
                 repository.findAll();
 
-        // ----------------------------------------------
-        // Total Generation
-        // ----------------------------------------------
-
         BigDecimal totalGeneration =
                 BigDecimal.ZERO;
-
-        // ----------------------------------------------
-        // Average Efficiency
-        // ----------------------------------------------
 
         BigDecimal totalEfficiency =
                 BigDecimal.ZERO;
@@ -244,38 +281,20 @@ public class MetricService {
                     );
         }
 
-        // ----------------------------------------------
-        // Active Panels
-        // ----------------------------------------------
-
         int totalActivePanels =
                 panelRepository
                         .findByStatus(PanelStatus.ACTIVE)
                         .size();
-
-        // ----------------------------------------------
-        // Open Tickets
-        // ----------------------------------------------
 
         int openTickets =
                 ticketRepository
                         .findByStatus(TicketStatus.OPEN)
                         .size();
 
-        // ----------------------------------------------
-        // Panels Under Maintenance
-        // ----------------------------------------------
-
         int maintenancePanels =
                 panelRepository
-                        .findByStatus(
-                                PanelStatus.MAINTENANCE
-                        )
+                        .findByStatus(PanelStatus.MAINTENANCE)
                         .size();
-
-        // ----------------------------------------------
-        // Build Analytics Response
-        // ----------------------------------------------
 
         Map<String, Object> analytics =
                 new HashMap<>();
@@ -319,7 +338,7 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // GET METRICS BY PANEL
+    // Get Metrics By Panel
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
@@ -330,7 +349,7 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // GET METRICS BETWEEN DATES
+    // Get Metrics Between Dates
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
