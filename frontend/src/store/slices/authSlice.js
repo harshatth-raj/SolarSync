@@ -1,6 +1,21 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import authService from '../../services/authService';
 
+/* -------------------------------------------------------
+   Rehydrate user from localStorage on every app boot.
+   This prevents the "no user → redirect to login" bug
+   that happens whenever Redux state is reset (e.g. after
+   a modal closes and triggers a re-render).
+------------------------------------------------------- */
+const persistedUser = (() => {
+  try {
+    const raw = localStorage.getItem('authUser');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+})();
+
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
@@ -33,9 +48,9 @@ const authSlice = createSlice({
   name: 'auth',
 
   initialState: {
-    user: null,
+    user: persistedUser,   // ← rehydrated from localStorage
     error: null,
-    loading: false
+    loading: false,
   },
 
   reducers: {
@@ -43,7 +58,10 @@ const authSlice = createSlice({
       state.user = null;
       state.error = null;
       localStorage.removeItem('token');
-    }
+      localStorage.removeItem('jwt');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('authUser');  // ← clear persisted user
+    },
   },
 
   extraReducers: (builder) => {
@@ -58,8 +76,16 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
 
+        // persist token
         if (action.payload?.token) {
           localStorage.setItem('token', action.payload.token);
+        }
+
+        // persist full user object so it survives re-renders
+        try {
+          localStorage.setItem('authUser', JSON.stringify(action.payload));
+        } catch {
+          // ignore quota errors
         }
       })
 
@@ -69,7 +95,6 @@ const authSlice = createSlice({
         state.user = null;
       })
 
-      // REGISTER
       .addCase(register.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -84,7 +109,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
-  }
+  },
 });
 
 export const { logout } = authSlice.actions;
