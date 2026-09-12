@@ -109,9 +109,9 @@ export function Dashboard() {
   const user = useSelector((state) => state.auth.user);
 
   const [metrics, setMetrics] = useState({
-    dailyEnergy: "0",
-    maintenance: "0",
-    efficiency: "0%",
+    dailyEnergy: "0.00",
+    maintenance: "3.00",
+    efficiency: "0.0%",
     activeSites: 0,
     openTickets: 0,
   });
@@ -148,6 +148,241 @@ export function Dashboard() {
   };
 
   /* =====================================================
+     LOAD DASHBOARD METRICS
+     ===================================================== */
+
+  const loadCalculatedMetrics = async () => {
+
+    try {
+
+      const config = getAuthConfig();
+
+      const response =
+        await api.get(
+          "/api/metrics/dashboard",
+          config
+        );
+
+      const data =
+        response.data || {};
+
+      setMetrics((current) => ({
+
+        ...current,
+
+        /* ---------------------------------------------
+           DAILY ENERGY
+           --------------------------------------------- */
+
+        dailyEnergy:
+          data.dailyEnergy !== undefined &&
+          data.dailyEnergy !== null
+            ? Number(
+                data.dailyEnergy
+              ).toFixed(2)
+            : current.dailyEnergy,
+
+        /* ---------------------------------------------
+           MAINTENANCE COST
+           --------------------------------------------- */
+
+        maintenance:
+          data.maintenanceCost !== undefined &&
+          data.maintenanceCost !== null
+            ? Number(
+                data.maintenanceCost
+              ).toFixed(2)
+            : current.maintenance,
+
+        /* ---------------------------------------------
+           SYSTEM EFFICIENCY
+           --------------------------------------------- */
+
+        efficiency:
+          data.systemEfficiency !== undefined &&
+          data.systemEfficiency !== null
+            ? `${Number(
+                data.systemEfficiency
+              ).toFixed(1)}%`
+            : current.efficiency,
+
+      }));
+
+    } catch (error) {
+
+      console.error(
+        "Failed to load dashboard metrics:",
+        error
+      );
+
+    }
+
+  };
+
+  /* =====================================================
+     LOAD SITES
+     ===================================================== */
+
+  const loadSites = async () => {
+
+    try {
+
+      const config = getAuthConfig();
+
+      const response =
+        await api.get(
+          "/api/sites",
+          config
+        );
+
+      const sites =
+        Array.isArray(response.data)
+          ? response.data
+          : [];
+
+      setMetrics((current) => ({
+
+        ...current,
+
+        activeSites:
+          sites.length,
+
+      }));
+
+    } catch (error) {
+
+      console.error(
+        "Failed to load sites:",
+        error
+      );
+
+    }
+
+  };
+
+  /* =====================================================
+     LOAD TICKETS
+     ===================================================== */
+
+  const loadTickets = async () => {
+
+    try {
+
+      const config = getAuthConfig();
+
+      const response =
+        await api.get(
+          "/api/tickets",
+          config
+        );
+
+      const tickets =
+        Array.isArray(response.data)
+          ? response.data
+          : [];
+
+      /* ---------------------------------------------
+         OPEN
+         --------------------------------------------- */
+
+      const open =
+        tickets.filter(
+          (ticket) =>
+            String(
+              ticket?.status || ""
+            ).toUpperCase() === "OPEN"
+        ).length;
+
+      /* ---------------------------------------------
+         RESOLVED / CLOSED
+         --------------------------------------------- */
+
+      const resolved =
+        tickets.filter(
+          (ticket) => {
+
+            const status =
+              String(
+                ticket?.status || ""
+              ).toUpperCase();
+
+            return (
+              status === "RESOLVED" ||
+              status === "CLOSED"
+            );
+
+          }
+        ).length;
+
+      /* ---------------------------------------------
+         IN PROGRESS
+         --------------------------------------------- */
+
+      const inProgress =
+        tickets.filter(
+          (ticket) => {
+
+            const status =
+              String(
+                ticket?.status || ""
+              ).toUpperCase();
+
+            return (
+              status === "IN_PROGRESS" ||
+              status === "IN PROGRESS" ||
+              status === "IN-PROGRESS"
+            );
+
+          }
+        ).length;
+
+      /* ---------------------------------------------
+         TOTAL
+         --------------------------------------------- */
+
+      const total =
+        open +
+        resolved +
+        inProgress;
+
+      /* ---------------------------------------------
+         OPEN TICKETS CARD
+         --------------------------------------------- */
+
+      setMetrics((current) => ({
+
+        ...current,
+
+        openTickets:
+          open,
+
+      }));
+
+      /* ---------------------------------------------
+         MAINTENANCE DISTRIBUTION
+         --------------------------------------------- */
+
+      setTicketDistribution({
+
+        open,
+        resolved,
+        inProgress,
+        total,
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Failed to load tickets:",
+        error
+      );
+
+    }
+
+  };
+
+  /* =====================================================
      LOAD RECENT ACTIVITY
      ===================================================== */
 
@@ -163,20 +398,17 @@ export function Dashboard() {
           config
         );
 
-      const data =
+      const activities =
         Array.isArray(response.data)
           ? response.data
           : [];
 
       /*
-       * Show the latest 3 readings.
-       * Backend already returns recent metrics,
-       * but sorting here ensures newest readings
-       * appear first.
+       * Sort newest first.
        */
 
-      const sorted =
-        [...data].sort(
+      const sortedActivities =
+        [...activities].sort(
           (a, b) =>
             new Date(
               b?.readingTimestamp || 0
@@ -186,8 +418,12 @@ export function Dashboard() {
             )
         );
 
+      /*
+       * Show latest 3 readings.
+       */
+
       setRecentActivity(
-        sorted.slice(0, 3)
+        sortedActivities.slice(0, 3)
       );
 
     } catch (error) {
@@ -204,180 +440,28 @@ export function Dashboard() {
   };
 
   /* =====================================================
-     LOAD SITES + TICKETS + RECENT ACTIVITY
+     LOAD EVERYTHING WHEN DASHBOARD OPENS
      ===================================================== */
 
   useEffect(() => {
 
-    const loadDashboardData = async () => {
+    const loadDashboard = async () => {
 
-      const config = getAuthConfig();
-
-      try {
-
-        const [
-          sitesResponse,
-          ticketsResponse,
-        ] = await Promise.allSettled([
-
-          api.get(
-            "/api/sites",
-            config
-          ),
-
-          api.get(
-            "/api/tickets",
-            config
-          ),
-
-        ]);
-
-        /* =============================================
-           ACTIVE SITES
-           ============================================= */
-
-        if (
-          sitesResponse.status === "fulfilled" &&
-          Array.isArray(
-            sitesResponse.value?.data
-          )
-        ) {
-
-          const siteCount =
-            sitesResponse.value.data.length;
-
-          setMetrics((current) => ({
-            ...current,
-
-            activeSites: siteCount,
-          }));
-
-        }
-
-        /* =============================================
-           TICKET DATA
-           ============================================= */
-
-        if (
-          ticketsResponse.status === "fulfilled" &&
-          Array.isArray(
-            ticketsResponse.value?.data
-          )
-        ) {
-
-          const tickets =
-            ticketsResponse.value.data;
-
-          /* -----------------------------------------
-             OPEN
-             ----------------------------------------- */
-
-          const open =
-            tickets.filter(
-              (ticket) =>
-                String(
-                  ticket?.status || ""
-                ).toUpperCase() === "OPEN"
-            ).length;
-
-          /* -----------------------------------------
-             RESOLVED / CLOSED
-             ----------------------------------------- */
-
-          const resolved =
-            tickets.filter(
-              (ticket) => {
-
-                const status =
-                  String(
-                    ticket?.status || ""
-                  ).toUpperCase();
-
-                return (
-                  status === "RESOLVED" ||
-                  status === "CLOSED"
-                );
-
-              }
-            ).length;
-
-          /* -----------------------------------------
-             IN PROGRESS
-             ----------------------------------------- */
-
-          const inProgress =
-            tickets.filter(
-              (ticket) => {
-
-                const status =
-                  String(
-                    ticket?.status || ""
-                  ).toUpperCase();
-
-                return (
-                  status === "IN_PROGRESS" ||
-                  status === "IN PROGRESS" ||
-                  status === "IN-PROGRESS"
-                );
-
-              }
-            ).length;
-
-          /* -----------------------------------------
-             TOTAL
-             ----------------------------------------- */
-
-          const total =
-            open +
-            resolved +
-            inProgress;
-
-          /* -----------------------------------------
-             OPEN TICKETS METRIC
-             ----------------------------------------- */
-
-          setMetrics((current) => ({
-            ...current,
-
-            openTickets: open,
-          }));
-
-          /* -----------------------------------------
-             MAINTENANCE DISTRIBUTION
-             ----------------------------------------- */
-
-          setTicketDistribution({
-            open,
-            resolved,
-            inProgress,
-            total,
-          });
-
-        }
-
-        /* =============================================
-           RECENT ACTIVITY
-           ============================================= */
-
-        await loadRecentActivity();
-
-      } catch (error) {
-
-        console.error(
-          "Dashboard metrics error:",
-          error
-        );
-
-      }
+      await Promise.all([
+        loadCalculatedMetrics(),
+        loadSites(),
+        loadTickets(),
+        loadRecentActivity(),
+      ]);
 
     };
 
-    loadDashboardData();
+    loadDashboard();
 
   }, []);
 
   /* =====================================================
-     SIMULATE + CALCULATE METRICS
+     SIMULATE + REFRESH EVERYTHING
      ===================================================== */
 
   const calculateMetrics = async () => {
@@ -386,13 +470,13 @@ export function Dashboard() {
 
     try {
 
-      const config = getAuthConfig();
+      const config =
+        getAuthConfig();
 
-      /* =============================================
+      /* ---------------------------------------------
          STEP 1
-         Generate and save simulated reading
-         for panel ID 1
-         ============================================= */
+         Generate new simulated reading
+         --------------------------------------------- */
 
       await api.post(
         "/api/metrics/simulate/1",
@@ -400,78 +484,33 @@ export function Dashboard() {
         config
       );
 
-      /* =============================================
+      /* ---------------------------------------------
          STEP 2
-         Calculate today's dashboard metrics
-         ============================================= */
+         Reload calculated metrics
+         --------------------------------------------- */
 
-      const response =
-        await api.get(
-          "/api/metrics/dashboard",
-          config
-        );
+      await loadCalculatedMetrics();
 
-      const data =
-        response.data || {};
-
-      /* =============================================
-         DAILY ENERGY
-         ============================================= */
-
-      const dailyEnergy =
-        data.dailyEnergy !== undefined &&
-        data.dailyEnergy !== null
-          ? Number(
-              data.dailyEnergy
-            ).toFixed(2)
-          : "0.00";
-
-      /* =============================================
-         MAINTENANCE COST
-         ============================================= */
-
-      const maintenanceCost =
-        data.maintenanceCost !== undefined &&
-        data.maintenanceCost !== null
-          ? Number(
-              data.maintenanceCost
-            ).toFixed(2)
-          : "3.00";
-
-      /* =============================================
-         SYSTEM EFFICIENCY
-         ============================================= */
-
-      const systemEfficiency =
-        data.systemEfficiency !== undefined &&
-        data.systemEfficiency !== null
-          ? `${Number(
-              data.systemEfficiency
-            ).toFixed(1)}%`
-          : "0.0%";
-
-      /* =============================================
-         UPDATE DASHBOARD CARDS
-         ============================================= */
-
-      setMetrics((current) => ({
-        ...current,
-
-        dailyEnergy,
-
-        maintenance:
-          maintenanceCost,
-
-        efficiency:
-          systemEfficiency,
-      }));
-
-      /* =============================================
+      /* ---------------------------------------------
          STEP 3
-         Refresh Recent Activity
-         ============================================= */
+         Reload recent activity
+         --------------------------------------------- */
 
       await loadRecentActivity();
+
+      /* ---------------------------------------------
+         STEP 4
+         Reload sites
+         --------------------------------------------- */
+
+      await loadSites();
+
+      /* ---------------------------------------------
+         STEP 5
+         Reload tickets
+         --------------------------------------------- */
+
+      await loadTickets();
 
     } catch (error) {
 
@@ -539,13 +578,20 @@ export function Dashboard() {
     const date =
       new Date(timestamp);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
       return "Unknown date";
+
     }
 
     return date.toLocaleDateString(
       "en-CA"
     );
+
   };
 
   return (
@@ -567,7 +613,7 @@ export function Dashboard() {
             </h1>
 
             <p>
-              You are a{" "}
+              You are{" "}
               {user?.role || "SYSTEM ADMINISTRATOR"}
             </p>
 
@@ -743,7 +789,7 @@ export function Dashboard() {
           </div>
 
           {/* ===========================================
-              RECENT ACTIVITY
+              LIVE RECENT ACTIVITY
               =========================================== */}
 
           <div className="dashboard-panel">
