@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import api from "../../services/api";
 
 export default function SolarSiteForm({ onClose }) {
-  const [siteName, setSiteName] = useState('');
+  const [siteName, setSiteName] = useState("");
   const [locationCoordinates, setLocationCoordinates] =
-    useState('');
+    useState("");
   const [ratedCapacityKw, setRatedCapacityKw] =
-    useState('');
+    useState("");
   const [commissionedDate, setCommissionedDate] =
-    useState('');
-  const [error, setError] = useState('');
+    useState("");
+  const [error, setError] = useState("");
 
   const getAuthHeaders = () => {
     const token =
-      localStorage.getItem('token') ||
-      localStorage.getItem('jwt') ||
-      localStorage.getItem('accessToken');
+      localStorage.getItem("token") ||
+      localStorage.getItem("jwt") ||
+      localStorage.getItem("accessToken");
 
     return token
       ? {
@@ -27,7 +27,7 @@ export default function SolarSiteForm({ onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError('');
+    setError("");
 
     // Validate coordinates
     // Example: 34.05, -118.24
@@ -35,13 +35,13 @@ export default function SolarSiteForm({ onClose }) {
       /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
 
     if (!coordinatePattern.test(locationCoordinates)) {
-      setError('Invalid coordinates');
+      setError("Invalid coordinates");
       return;
     }
 
     try {
-      await axios.post(
-        '/api/sites',
+      await api.post(
+        "/api/sites",
         {
           siteName,
           locationCoordinates,
@@ -56,13 +56,13 @@ export default function SolarSiteForm({ onClose }) {
       onClose();
     } catch (err) {
       console.error(
-        'Failed to create site:',
+        "Failed to create site:",
         err
       );
 
       setError(
         err.response?.data?.message ||
-          'Unable to create site.'
+          "Unable to create site."
       );
     }
   };
@@ -114,7 +114,7 @@ export default function SolarSiteForm({ onClose }) {
             required
           />
 
-          {/* Commissioned Date */}
+          {/* Commission Date */}
           <input
             type="date"
             name="commissionDate"
