@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.TicketRequestDto;
+import com.example.demo.dto.TicketResponseDto;
 import com.example.demo.entity.MaintenanceTicket;
 import com.example.demo.entity.SolarPanel;
 import com.example.demo.entity.SystemUser;
@@ -37,22 +38,41 @@ public class TicketService {
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
-    public List<MaintenanceTicket> getAllTickets() {
+    public List<TicketResponseDto> getAllTickets() {
 
         List<MaintenanceTicket> tickets = ticketRepository.findAll();
+        List<TicketResponseDto> result = new java.util.ArrayList<>();
 
         for (MaintenanceTicket ticket : tickets) {
+            Long panelId = null;
+            String siteName = null;
 
             if (ticket.getPanel() != null) {
-                ticket.getPanel().getId();
+                panelId = ticket.getPanel().getId();
+                if (ticket.getPanel().getSite() != null) {
+                    siteName = ticket.getPanel().getSite().getSiteName();
+                }
             }
 
+            String techName = null;
             if (ticket.getAssignedTechnician() != null) {
-                ticket.getAssignedTechnician().getUsername();
+                techName = ticket.getAssignedTechnician().getUsername();
             }
+
+            result.add(new TicketResponseDto(
+                ticket.getId(),
+                panelId,
+                siteName,
+                ticket.getIssueDescription(),
+                ticket.getPriority(),
+                ticket.getStatus(),
+                ticket.getCreatedAt(),
+                ticket.getResolvedAt(),
+                techName
+            ));
         }
 
-        return tickets;
+        return result;
     }
 
     // --------------------------------------------------
@@ -106,7 +126,7 @@ public class TicketService {
     // ASSIGN TICKET
     // --------------------------------------------------
 
-    public MaintenanceTicket assignTicket(
+    public TicketResponseDto assignTicket(
             Long ticketId,
             Long technicianId) {
 
@@ -122,20 +142,26 @@ public class TicketService {
                                 new RuntimeException(
                                         "Technician not found"));
 
-        ticket.setAssignedTechnician(
-                technician);
+        ticket.setAssignedTechnician(technician);
+        ticket.setStatus(com.example.demo.enums.TicketStatus.IN_PROGRESS);
+        ticketRepository.save(ticket);
 
-        ticket.setStatus(
-                com.example.demo.enums.TicketStatus.IN_PROGRESS);
+        Long panelId = ticket.getPanel() != null ? ticket.getPanel().getId() : null;
+        String siteName = (ticket.getPanel() != null && ticket.getPanel().getSite() != null)
+                ? ticket.getPanel().getSite().getSiteName() : null;
 
-        return ticketRepository.save(ticket);
+        return new TicketResponseDto(
+                ticket.getId(), panelId, siteName,
+                ticket.getIssueDescription(), ticket.getPriority(),
+                ticket.getStatus(), ticket.getCreatedAt(),
+                ticket.getResolvedAt(), technician.getUsername());
     }
 
     // --------------------------------------------------
     // RESOLVE / CLOSE TICKET
     // --------------------------------------------------
 
-    public MaintenanceTicket resolveTicket(
+    public TicketResponseDto resolveTicket(
             Long ticketId) {
 
         MaintenanceTicket ticket =
@@ -150,6 +176,18 @@ public class TicketService {
         ticket.setResolvedAt(
                 LocalDateTime.now());
 
-        return ticketRepository.save(ticket);
+        ticketRepository.save(ticket);
+
+        Long panelId = ticket.getPanel() != null ? ticket.getPanel().getId() : null;
+        String siteName = (ticket.getPanel() != null && ticket.getPanel().getSite() != null)
+                ? ticket.getPanel().getSite().getSiteName() : null;
+        String techName = ticket.getAssignedTechnician() != null
+                ? ticket.getAssignedTechnician().getUsername() : null;
+
+        return new TicketResponseDto(
+                ticket.getId(), panelId, siteName,
+                ticket.getIssueDescription(), ticket.getPriority(),
+                ticket.getStatus(), ticket.getCreatedAt(),
+                ticket.getResolvedAt(), techName);
     }
 }

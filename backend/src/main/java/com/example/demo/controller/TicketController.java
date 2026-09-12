@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.dto.TicketRequestDto;
+import com.example.demo.dto.TicketResponseDto;
 import com.example.demo.entity.MaintenanceTicket;
 import com.example.demo.service.TicketService;
 
@@ -23,7 +24,7 @@ public class TicketController {
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_SOLAR_OPERATOR', 'ROLE_MAINTENANCE_TECHNICIAN', 'ROLE_SYSTEM_ADMINISTRATOR')")
-    public ResponseEntity<List<MaintenanceTicket>> getTickets() {
+    public ResponseEntity<List<TicketResponseDto>> getTickets() {
 
         return ResponseEntity.ok(
                 service.getAllTickets()
@@ -45,21 +46,18 @@ public class TicketController {
 
     @PutMapping("/{ticketId}/assign")
     @PreAuthorize("hasAnyAuthority('ROLE_MAINTENANCE_TECHNICIAN', 'ROLE_SYSTEM_ADMINISTRATOR')")
-    public ResponseEntity<MaintenanceTicket> assignTicket(
+    public ResponseEntity<TicketResponseDto> assignTicket(
             @PathVariable Long ticketId,
             @RequestParam Long technicianId) {
 
         return ResponseEntity.ok(
-                service.assignTicket(
-                        ticketId,
-                        technicianId
-                )
+                service.assignTicket(ticketId, technicianId)
         );
     }
 
     @PatchMapping("/{ticketId}/resolve")
     @PreAuthorize("hasAnyAuthority('ROLE_MAINTENANCE_TECHNICIAN', 'ROLE_SYSTEM_ADMINISTRATOR')")
-    public ResponseEntity<MaintenanceTicket> resolveTicket(
+    public ResponseEntity<TicketResponseDto> resolveTicket(
             @PathVariable Long ticketId) {
 
         return ResponseEntity.ok(

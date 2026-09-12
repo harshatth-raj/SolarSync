@@ -77,12 +77,9 @@ export default function MaintenanceTicketList() {
     }
   };
 
-  const getSiteName  = (t) => t?.panel?.site?.siteName || t?.site?.siteName || "N/A";
-  const getPanelId   = (t) => t?.panel?.id || t?.panelId || "N/A";
-  const getTechnician = (t) =>
-    t?.assignedTechnician?.username ||
-    t?.technician?.username ||
-    "Not Assigned";
+  const getSiteName   = (t) => t?.siteName || "N/A";
+  const getPanelId    = (t) => t?.panelId || "N/A";
+  const getTechnician = (t) => t?.assignedTechnician || "Not Assigned";
 
   const counts = {
     OPEN:        tickets.filter((t) => String(t.status).toUpperCase() === "OPEN").length,
