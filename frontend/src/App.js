@@ -109,11 +109,18 @@ export function Dashboard() {
   const user = useSelector((state) => state.auth.user);
 
   const [metrics, setMetrics] = useState({
-    dailyEnergy: "101.30",
-    maintenance: "3.00",
-    efficiency: "97.1%",
-    activeSites: "0",
-    openTickets: "2",
+    dailyEnergy: "0",
+    maintenance: "0",
+    efficiency: "0%",
+    activeSites: 0,
+    openTickets: 0,
+  });
+
+  const [ticketDistribution, setTicketDistribution] = useState({
+    open: 0,
+    resolved: 0,
+    inProgress: 0,
+    total: 0,
   });
 
   useEffect(() => {
@@ -226,14 +233,16 @@ export function Dashboard() {
 
         /* =============================================
            ACTIVE SITES
-           
-           Count the actual sites returned
-           by the backend.
+
+           Count actual sites returned by
+           the Railway backend.
            ============================================= */
 
         if (
           sitesResponse.status === "fulfilled" &&
-          Array.isArray(sitesResponse.value?.data)
+          Array.isArray(
+            sitesResponse.value?.data
+          )
         ) {
 
           const siteCount =
@@ -248,27 +257,88 @@ export function Dashboard() {
         }
 
         /* =============================================
-           OPEN TICKETS
+           TICKET DATA
+
+           Calculate:
+           - OPEN
+           - RESOLVED / CLOSED
+           - IN PROGRESS
            ============================================= */
 
         if (
           ticketsResponse.status === "fulfilled" &&
-          Array.isArray(ticketsResponse.value?.data)
+          Array.isArray(
+            ticketsResponse.value?.data
+          )
         ) {
 
-          const openTickets =
-            ticketsResponse.value.data.filter(
+          const tickets =
+            ticketsResponse.value.data;
+
+          const open =
+            tickets.filter(
               (ticket) =>
                 String(
-                  ticket.status || ""
+                  ticket?.status || ""
                 ).toUpperCase() === "OPEN"
             ).length;
+
+          const resolved =
+            tickets.filter(
+              (ticket) => {
+                const status =
+                  String(
+                    ticket?.status || ""
+                  ).toUpperCase();
+
+                return (
+                  status === "RESOLVED" ||
+                  status === "CLOSED"
+                );
+              }
+            ).length;
+
+          const inProgress =
+            tickets.filter(
+              (ticket) => {
+                const status =
+                  String(
+                    ticket?.status || ""
+                  ).toUpperCase();
+
+                return (
+                  status === "IN_PROGRESS" ||
+                  status === "IN PROGRESS" ||
+                  status === "IN-PROGRESS"
+                );
+              }
+            ).length;
+
+          const total =
+            open +
+            resolved +
+            inProgress;
+
+          /* -----------------------------------------
+             Open Tickets metric
+             ----------------------------------------- */
 
           setMetrics((current) => ({
             ...current,
 
-            openTickets,
+            openTickets: open,
           }));
+
+          /* -----------------------------------------
+             Maintenance Distribution
+             ----------------------------------------- */
+
+          setTicketDistribution({
+            open,
+            resolved,
+            inProgress,
+            total,
+          });
 
         }
 
@@ -286,6 +356,42 @@ export function Dashboard() {
     loadMetrics();
 
   }, []);
+
+  /* =====================================================
+     DONUT CALCULATION
+     ===================================================== */
+
+  const {
+    open,
+    resolved,
+    inProgress,
+    total,
+  } = ticketDistribution;
+
+  const openPercentage =
+    total > 0
+      ? (open / total) * 100
+      : 0;
+
+  const resolvedPercentage =
+    total > 0
+      ? (resolved / total) * 100
+      : 0;
+
+  const donutBackground =
+    total > 0
+      ? `conic-gradient(
+          #ff4d4f 0% ${openPercentage}%,
+          #22c55e ${openPercentage}% ${
+            openPercentage +
+            resolvedPercentage
+          }%,
+          #f59e0b ${
+            openPercentage +
+            resolvedPercentage
+          }% 100%
+        )`
+      : "conic-gradient(#334155 0% 100%)";
 
   return (
     <PageLayout>
@@ -393,7 +499,9 @@ export function Dashboard() {
 
         <section className="dashboard-lower">
 
-          {/* Maintenance Distribution */}
+          {/* ===========================================
+              MAINTENANCE DISTRIBUTION
+              =========================================== */}
 
           <div className="dashboard-panel">
 
@@ -403,10 +511,16 @@ export function Dashboard() {
 
             <div className="donut-wrapper">
 
-              <div className="donut-chart">
+              <div
+                className="donut-chart"
+                style={{
+                  background:
+                    donutBackground,
+                }}
+              >
 
                 <div className="donut-hole">
-                  3
+                  {total}
                 </div>
 
               </div>
@@ -417,24 +531,26 @@ export function Dashboard() {
 
               <div>
                 <span className="legend-dot red-dot"></span>
-                Open
+                Open ({open})
               </div>
 
               <div>
                 <span className="legend-dot green-dot"></span>
-                Resolved
+                Resolved ({resolved})
               </div>
 
               <div>
                 <span className="legend-dot yellow-dot"></span>
-                In Progress
+                In Progress ({inProgress})
               </div>
 
             </div>
 
           </div>
 
-          {/* Recent Activity */}
+          {/* ===========================================
+              RECENT ACTIVITY
+              =========================================== */}
 
           <div className="dashboard-panel">
 
