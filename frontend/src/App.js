@@ -18,10 +18,9 @@ import SolarSiteDetails from "./components/sites/SolarSiteDetails";
 
 import MaintenanceTicketList from "./components/tickets/MaintenanceTicketList";
 
-import axios from "axios";
+import api from "./services/api";
 
 import "./App.css";
-
 
 /* =========================================================
    PAGE LAYOUT
@@ -90,7 +89,6 @@ function PageLayout({ children }) {
 
       </nav>
 
-
       {/* ===================================================
           PAGE CONTENT
           =================================================== */}
@@ -103,7 +101,6 @@ function PageLayout({ children }) {
   );
 }
 
-
 /* =========================================================
    DASHBOARD
    ========================================================= */
@@ -115,7 +112,7 @@ export function Dashboard() {
     dailyEnergy: "101.30",
     maintenance: "3.00",
     efficiency: "97.1%",
-    activeSites: "3",
+    activeSites: "0",
     openTickets: "2",
   });
 
@@ -126,9 +123,11 @@ export function Dashboard() {
       localStorage.getItem("jwt") ||
       localStorage.getItem("accessToken");
 
-    const headers = token
+    const config = token
       ? {
-          Authorization: `Bearer ${token}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       : {};
 
@@ -144,33 +143,36 @@ export function Dashboard() {
           ticketsResponse,
         ] = await Promise.allSettled([
 
-          axios.get(
-            "http://localhost:8081/api/metrics/daily-energy",
-            { headers }
+          api.get(
+            "/api/metrics/daily-energy",
+            config
           ),
 
-          axios.get(
-            "http://localhost:8081/api/metrics/maintenance-cost",
-            { headers }
+          api.get(
+            "/api/metrics/maintenance-cost",
+            config
           ),
 
-          axios.get(
-            "http://localhost:8081/api/metrics/efficiency",
-            { headers }
+          api.get(
+            "/api/metrics/efficiency",
+            config
           ),
 
-          axios.get(
-            "http://localhost:8081/api/sites",
-            { headers }
+          api.get(
+            "/api/sites",
+            config
           ),
 
-          axios.get(
-            "http://localhost:8081/api/tickets",
-            { headers }
+          api.get(
+            "/api/tickets",
+            config
           ),
 
         ]);
 
+        /* =============================================
+           DAILY ENERGY
+           ============================================= */
 
         if (
           dailyEnergyResponse.status === "fulfilled"
@@ -186,6 +188,9 @@ export function Dashboard() {
 
         }
 
+        /* =============================================
+           MAINTENANCE COST
+           ============================================= */
 
         if (
           maintenanceResponse.status === "fulfilled"
@@ -201,6 +206,9 @@ export function Dashboard() {
 
         }
 
+        /* =============================================
+           SYSTEM EFFICIENCY
+           ============================================= */
 
         if (
           efficiencyResponse.status === "fulfilled"
@@ -216,21 +224,32 @@ export function Dashboard() {
 
         }
 
+        /* =============================================
+           ACTIVE SITES
+           
+           Count the actual sites returned
+           by the backend.
+           ============================================= */
 
         if (
           sitesResponse.status === "fulfilled" &&
           Array.isArray(sitesResponse.value?.data)
         ) {
 
+          const siteCount =
+            sitesResponse.value.data.length;
+
           setMetrics((current) => ({
             ...current,
 
-            activeSites:
-              sitesResponse.value.data.length,
+            activeSites: siteCount,
           }));
 
         }
 
+        /* =============================================
+           OPEN TICKETS
+           ============================================= */
 
         if (
           ticketsResponse.status === "fulfilled" &&
@@ -268,7 +287,6 @@ export function Dashboard() {
 
   }, []);
 
-
   return (
     <PageLayout>
 
@@ -301,7 +319,6 @@ export function Dashboard() {
 
         </section>
 
-
         {/* =============================================
             METRIC CARDS
             ============================================= */}
@@ -320,7 +337,6 @@ export function Dashboard() {
 
           </div>
 
-
           <div className="metric-card metric-red">
 
             <span>
@@ -332,7 +348,6 @@ export function Dashboard() {
             </strong>
 
           </div>
-
 
           <div className="metric-card metric-green">
 
@@ -346,7 +361,6 @@ export function Dashboard() {
 
           </div>
 
-
           <div className="metric-card metric-yellow">
 
             <span>
@@ -358,7 +372,6 @@ export function Dashboard() {
             </strong>
 
           </div>
-
 
           <div className="metric-card metric-purple">
 
@@ -373,7 +386,6 @@ export function Dashboard() {
           </div>
 
         </section>
-
 
         {/* =============================================
             LOWER DASHBOARD
@@ -422,7 +434,6 @@ export function Dashboard() {
 
           </div>
 
-
           {/* Recent Activity */}
 
           <div className="dashboard-panel">
@@ -461,7 +472,6 @@ export function Dashboard() {
 
               </div>
 
-
               <div className="activity-item">
 
                 <div>
@@ -489,7 +499,6 @@ export function Dashboard() {
                 </span>
 
               </div>
-
 
               <div className="activity-item">
 
@@ -531,7 +540,6 @@ export function Dashboard() {
   );
 }
 
-
 /* =========================================================
    MAIN APP
    ========================================================= */
@@ -555,13 +563,15 @@ function App() {
           path="/login"
           element={
             user ? (
-              <Navigate to="/" replace />
+              <Navigate
+                to="/"
+                replace
+              />
             ) : (
               <Login />
             )
           }
         />
-
 
         {/* ===============================================
             REGISTER
@@ -571,13 +581,15 @@ function App() {
           path="/register"
           element={
             user ? (
-              <Navigate to="/" replace />
+              <Navigate
+                to="/"
+                replace
+              />
             ) : (
               <Register />
             )
           }
         />
-
 
         {/* ===============================================
             DASHBOARD
@@ -596,7 +608,6 @@ function App() {
             )
           }
         />
-
 
         {/* ===============================================
             SOLAR SITES
@@ -618,7 +629,6 @@ function App() {
           }
         />
 
-
         {/* ===============================================
             SOLAR SITE DETAILS
             =============================================== */}
@@ -639,7 +649,6 @@ function App() {
           }
         />
 
-
         {/* ===============================================
             TICKETS
             =============================================== */}
@@ -659,7 +668,6 @@ function App() {
             )
           }
         />
-
 
         {/* ===============================================
             FALLBACK
