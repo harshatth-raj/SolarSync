@@ -128,6 +128,8 @@ export function Dashboard() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [liveTime, setLiveTime] = useState(new Date());
   const [newActivityIds, setNewActivityIds] = useState(new Set());
+  const [flashedCards, setFlashedCards] = useState(new Set());
+  const prevMetricsRef = useRef(null);
   const prevActivityRef = useRef([]);
 
   /* =====================================================
@@ -178,35 +180,34 @@ export function Dashboard() {
       const data =
         response.data || {};
 
-      setMetrics((current) => ({
+      setMetrics((current) => {
 
-        ...current,
+        const next = { ...current };
+        const changed = new Set();
 
-        dailyEnergy:
-          data.dailyEnergy !== undefined &&
-          data.dailyEnergy !== null
-            ? Number(
-                data.dailyEnergy
-              ).toFixed(2)
-            : current.dailyEnergy,
+        if (data.dailyEnergy !== undefined && data.dailyEnergy !== null) {
+          const val = Number(data.dailyEnergy).toFixed(2);
+          if (val !== current.dailyEnergy) { next.dailyEnergy = val; changed.add("dailyEnergy"); }
+        }
 
-        maintenance:
-          data.maintenanceCost !== undefined &&
-          data.maintenanceCost !== null
-            ? Number(
-                data.maintenanceCost
-              ).toFixed(2)
-            : current.maintenance,
+        if (data.maintenanceCost !== undefined && data.maintenanceCost !== null) {
+          const val = Number(data.maintenanceCost).toFixed(2);
+          if (val !== current.maintenance) { next.maintenance = val; changed.add("maintenance"); }
+        }
 
-        efficiency:
-          data.systemEfficiency !== undefined &&
-          data.systemEfficiency !== null
-            ? `${Number(
-                data.systemEfficiency
-              ).toFixed(1)}%`
-            : current.efficiency,
+        if (data.systemEfficiency !== undefined && data.systemEfficiency !== null) {
+          const val = `${Number(data.systemEfficiency).toFixed(1)}%`;
+          if (val !== current.efficiency) { next.efficiency = val; changed.add("efficiency"); }
+        }
 
-      }));
+        if (changed.size > 0) {
+          setFlashedCards(changed);
+          setTimeout(() => setFlashedCards(new Set()), 2000);
+        }
+
+        return next;
+
+      });
 
     } catch (error) {
 
@@ -754,64 +755,32 @@ export function Dashboard() {
 
         <section className="metric-grid">
 
-          <div className="metric-card metric-blue">
-
-            <span>
-              DAILY ENERGY
-            </span>
-
-            <strong>
-              {metrics.dailyEnergy}
-            </strong>
-
+          <div className={`metric-card metric-blue${flashedCards.has("dailyEnergy") ? " metric-card--flash metric-card--flash-blue" : ""}`}>
+            <span>DAILY ENERGY</span>
+            <strong>{metrics.dailyEnergy} <em className="metric-unit">kWh</em></strong>
+            {flashedCards.has("dailyEnergy") && <span className="metric-updated-dot" />}
           </div>
 
-          <div className="metric-card metric-red">
-
-            <span>
-              MAINTENANCE COST
-            </span>
-
-            <strong>
-              {metrics.maintenance}
-            </strong>
-
+          <div className={`metric-card metric-red${flashedCards.has("maintenance") ? " metric-card--flash metric-card--flash-red" : ""}`}>
+            <span>MAINTENANCE COST</span>
+            <strong>{metrics.maintenance}</strong>
+            {flashedCards.has("maintenance") && <span className="metric-updated-dot" />}
           </div>
 
-          <div className="metric-card metric-green">
-
-            <span>
-              SYSTEM EFFICIENCY
-            </span>
-
-            <strong>
-              {metrics.efficiency}
-            </strong>
-
+          <div className={`metric-card metric-green${flashedCards.has("efficiency") ? " metric-card--flash metric-card--flash-green" : ""}`}>
+            <span>SYSTEM EFFICIENCY</span>
+            <strong>{metrics.efficiency}</strong>
+            {flashedCards.has("efficiency") && <span className="metric-updated-dot" />}
           </div>
 
           <div className="metric-card metric-yellow">
-
-            <span>
-              ACTIVE SITES
-            </span>
-
-            <strong>
-              {metrics.activeSites}
-            </strong>
-
+            <span>ACTIVE SITES</span>
+            <strong>{metrics.activeSites}</strong>
           </div>
 
           <div className="metric-card metric-purple">
-
-            <span>
-              OPEN TICKETS
-            </span>
-
-            <strong>
-              {metrics.openTickets}
-            </strong>
-
+            <span>OPEN TICKETS</span>
+            <strong>{metrics.openTickets}</strong>
           </div>
 
         </section>

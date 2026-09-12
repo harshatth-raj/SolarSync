@@ -346,6 +346,45 @@ a {
   border-left-color: #a855f7;
 }
 
+/* live flash animations for metric cards */
+
+.metric-card {
+  position: relative;
+  transition: box-shadow 0.3s ease;
+}
+
+.metric-card--flash {
+  animation: metricFlash 2s ease-out;
+}
+
+@keyframes metricFlash {
+  0%   { transform: scale(1.03); }
+  15%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.metric-card--flash-blue  { box-shadow: 0 0 0 2px rgba(59,130,246,0.5),  0 0 18px rgba(59,130,246,0.2);  }
+.metric-card--flash-red   { box-shadow: 0 0 0 2px rgba(239,68,68,0.5),   0 0 18px rgba(239,68,68,0.2);   }
+.metric-card--flash-green { box-shadow: 0 0 0 2px rgba(34,197,94,0.5),   0 0 18px rgba(34,197,94,0.2);   }
+
+.metric-updated-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: livePulse 1.4s ease-in-out infinite;
+}
+
+.metric-unit {
+  font-size: 10px;
+  font-weight: 400;
+  font-style: normal;
+  color: #64748b;
+}
+
 
 /* =========================================================
    LOWER DASHBOARD
