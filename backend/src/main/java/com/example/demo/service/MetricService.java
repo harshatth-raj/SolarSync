@@ -7,12 +7,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.EnergyMetric;
-import com.example.demo.entity.MaintenanceTicket;
+import com.example.demo.entity.SolarPanel;
 import com.example.demo.enums.PanelStatus;
 import com.example.demo.enums.TicketStatus;
 import com.example.demo.repository.EnergyMetricRepository;
@@ -26,6 +27,8 @@ public class MetricService {
     private final EnergyMetricRepository repository;
     private final SolarPanelRepository panelRepository;
     private final MaintenanceTicketRepository ticketRepository;
+
+    private final Random random = new Random();
 
     public MetricService(
             EnergyMetricRepository repository,
@@ -73,6 +76,85 @@ public class MetricService {
         }
 
         return metrics;
+    }
+
+    // --------------------------------------------------
+    // SIMULATE SOLAR GENERATION
+    // --------------------------------------------------
+
+    public EnergyMetric simulateGeneration(Long panelId) {
+
+        SolarPanel panel =
+                panelRepository.findById(panelId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Solar panel not found"
+                                )
+                        );
+
+        EnergyMetric metric =
+                new EnergyMetric();
+
+        metric.setPanel(panel);
+
+        metric.setReadingTimestamp(
+                LocalDateTime.now()
+        );
+
+        /*
+         * Generate realistic-looking simulated values.
+         *
+         * Energy:       15.00 - 40.00 kWh
+         * Temperature:  30.00 - 45.00 °C
+         * Irradiance:   600.00 - 1000.00 W/m²
+         * Efficiency:   94.00 - 99.00 %
+         */
+
+        double energy =
+                15.0 + (random.nextDouble() * 25.0);
+
+        double temperature =
+                30.0 + (random.nextDouble() * 15.0);
+
+        double irradiance =
+                600.0 + (random.nextDouble() * 400.0);
+
+        double efficiency =
+                94.0 + (random.nextDouble() * 5.0);
+
+        metric.setEnergyGeneratedKwh(
+                BigDecimal.valueOf(energy)
+                        .setScale(
+                                2,
+                                RoundingMode.HALF_UP
+                        )
+        );
+
+        metric.setPanelTemperature(
+                BigDecimal.valueOf(temperature)
+                        .setScale(
+                                2,
+                                RoundingMode.HALF_UP
+                        )
+        );
+
+        metric.setSolarIrradiance(
+                BigDecimal.valueOf(irradiance)
+                        .setScale(
+                                2,
+                                RoundingMode.HALF_UP
+                        )
+        );
+
+        metric.setConversionEfficiency(
+                BigDecimal.valueOf(efficiency)
+                        .setScale(
+                                2,
+                                RoundingMode.HALF_UP
+                        )
+        );
+
+        return repository.save(metric);
     }
 
     // --------------------------------------------------
@@ -156,6 +238,7 @@ public class MetricService {
         }
 
         if (count == 0) {
+
             return BigDecimal.ZERO.setScale(
                     1,
                     RoundingMode.HALF_UP
@@ -170,7 +253,7 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // Calculate Maintenance Cost
+    // Maintenance Cost
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
@@ -180,11 +263,7 @@ public class MetricService {
          * There is currently no maintenance-cost field
          * in the database.
          *
-         * Therefore, maintenance cost is not calculated
-         * from imaginary data.
-         *
-         * This currently returns the existing dashboard
-         * value of 3.00.
+         * Keeping the existing dashboard value for now.
          */
 
         return new BigDecimal("3.00");
@@ -283,17 +362,23 @@ public class MetricService {
 
         int totalActivePanels =
                 panelRepository
-                        .findByStatus(PanelStatus.ACTIVE)
+                        .findByStatus(
+                                PanelStatus.ACTIVE
+                        )
                         .size();
 
         int openTickets =
                 ticketRepository
-                        .findByStatus(TicketStatus.OPEN)
+                        .findByStatus(
+                                TicketStatus.OPEN
+                        )
                         .size();
 
         int maintenancePanels =
                 panelRepository
-                        .findByStatus(PanelStatus.MAINTENANCE)
+                        .findByStatus(
+                                PanelStatus.MAINTENANCE
+                        )
                         .size();
 
         Map<String, Object> analytics =

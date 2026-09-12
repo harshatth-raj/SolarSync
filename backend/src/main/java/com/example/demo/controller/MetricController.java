@@ -48,6 +48,19 @@ public class MetricController {
     }
 
     // --------------------------------------------------
+    // SIMULATE GENERATION
+    // --------------------------------------------------
+
+    @PostMapping("/simulate/{panelId}")
+    public ResponseEntity<EnergyMetric> simulateGeneration(
+            @PathVariable Long panelId) {
+
+        return ResponseEntity.ok(
+                service.simulateGeneration(panelId)
+        );
+    }
+
+    // --------------------------------------------------
     // Get recent metrics
     // --------------------------------------------------
 

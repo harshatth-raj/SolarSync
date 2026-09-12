@@ -151,7 +151,7 @@ export function Dashboard() {
 
   useEffect(() => {
 
-    const loadMetrics = async () => {
+    const loadDashboardData = async () => {
 
       const config = getAuthConfig();
 
@@ -308,12 +308,12 @@ export function Dashboard() {
 
     };
 
-    loadMetrics();
+    loadDashboardData();
 
   }, []);
 
   /* =====================================================
-     CALCULATE DASHBOARD METRICS
+     SIMULATE + CALCULATE METRICS
      ===================================================== */
 
   const calculateMetrics = async () => {
@@ -323,6 +323,23 @@ export function Dashboard() {
     try {
 
       const config = getAuthConfig();
+
+      /* =============================================
+         STEP 1
+         Generate and save a simulated reading
+         for panel ID 1
+         ============================================= */
+
+      await api.post(
+        "/api/metrics/simulate/1",
+        {},
+        config
+      );
+
+      /* =============================================
+         STEP 2
+         Calculate today's dashboard metrics
+         ============================================= */
 
       const response =
         await api.get(
@@ -340,7 +357,9 @@ export function Dashboard() {
       const dailyEnergy =
         data.dailyEnergy !== undefined &&
         data.dailyEnergy !== null
-          ? Number(data.dailyEnergy).toFixed(2)
+          ? Number(
+              data.dailyEnergy
+            ).toFixed(2)
           : "0.00";
 
       /* =============================================
@@ -350,8 +369,10 @@ export function Dashboard() {
       const maintenanceCost =
         data.maintenanceCost !== undefined &&
         data.maintenanceCost !== null
-          ? Number(data.maintenanceCost).toFixed(2)
-          : "0.00";
+          ? Number(
+              data.maintenanceCost
+            ).toFixed(2)
+          : "3.00";
 
       /* =============================================
          SYSTEM EFFICIENCY
