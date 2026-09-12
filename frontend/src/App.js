@@ -433,35 +433,135 @@ export function Dashboard() {
         error
       );
 
-      setRecentActivity([]);
+    }
+
+  };
+
+  /* =====================================================
+     GENERATE NEW LIVE READING
+     ===================================================== */
+
+  const generateLiveReading = async () => {
+
+    try {
+
+      const config = getAuthConfig();
+
+      /*
+       * Generate a new simulated reading
+       * for panel ID 1.
+       */
+
+      await api.post(
+        "/api/metrics/simulate/1",
+        {},
+        config
+      );
+
+      /*
+       * Refresh all dashboard information
+       * after generating the reading.
+       */
+
+      await Promise.all([
+        loadCalculatedMetrics(),
+        loadRecentActivity(),
+        loadSites(),
+        loadTickets(),
+      ]);
+
+    } catch (error) {
+
+      console.error(
+        "Failed to generate live reading:",
+        error
+      );
 
     }
 
   };
 
   /* =====================================================
-     LOAD EVERYTHING WHEN DASHBOARD OPENS
+     INITIAL DASHBOARD LOAD
      ===================================================== */
 
   useEffect(() => {
 
+    let mounted = true;
+
     const loadDashboard = async () => {
 
-      await Promise.all([
-        loadCalculatedMetrics(),
-        loadSites(),
-        loadTickets(),
-        loadRecentActivity(),
-      ]);
+      if (!mounted) {
+        return;
+      }
+
+      try {
+
+        await Promise.all([
+          loadCalculatedMetrics(),
+          loadSites(),
+          loadTickets(),
+          loadRecentActivity(),
+        ]);
+
+      } catch (error) {
+
+        console.error(
+          "Failed to load dashboard:",
+          error
+        );
+
+      }
 
     };
 
     loadDashboard();
 
+    return () => {
+
+      mounted = false;
+
+    };
+
   }, []);
 
   /* =====================================================
-     SIMULATE + REFRESH EVERYTHING
+     CONTINUOUS LIVE DASHBOARD
+     ===================================================== */
+
+  useEffect(() => {
+
+    /*
+     * Generate a new simulated reading every 10 seconds.
+     *
+     * This makes Recent Activity continuously change
+     * while the Dashboard is open.
+     */
+
+    const liveInterval =
+      setInterval(() => {
+
+        generateLiveReading();
+
+      }, 10000);
+
+    /*
+     * Clean up the interval when the user leaves
+     * the Dashboard component.
+     */
+
+    return () => {
+
+      clearInterval(
+        liveInterval
+      );
+
+    };
+
+  }, []);
+
+  /* =====================================================
+     MANUAL CALCULATE METRICS
      ===================================================== */
 
   const calculateMetrics = async () => {
@@ -474,7 +574,6 @@ export function Dashboard() {
         getAuthConfig();
 
       /* ---------------------------------------------
-         STEP 1
          Generate new simulated reading
          --------------------------------------------- */
 
@@ -485,32 +584,15 @@ export function Dashboard() {
       );
 
       /* ---------------------------------------------
-         STEP 2
-         Reload calculated metrics
+         Refresh everything
          --------------------------------------------- */
 
-      await loadCalculatedMetrics();
-
-      /* ---------------------------------------------
-         STEP 3
-         Reload recent activity
-         --------------------------------------------- */
-
-      await loadRecentActivity();
-
-      /* ---------------------------------------------
-         STEP 4
-         Reload sites
-         --------------------------------------------- */
-
-      await loadSites();
-
-      /* ---------------------------------------------
-         STEP 5
-         Reload tickets
-         --------------------------------------------- */
-
-      await loadTickets();
+      await Promise.all([
+        loadCalculatedMetrics(),
+        loadRecentActivity(),
+        loadSites(),
+        loadTickets(),
+      ]);
 
     } catch (error) {
 
@@ -590,6 +672,42 @@ export function Dashboard() {
 
     return date.toLocaleDateString(
       "en-CA"
+    );
+
+  };
+
+  /* =====================================================
+     FORMAT TIME
+     ===================================================== */
+
+  const formatActivityTime = (
+    timestamp
+  ) => {
+
+    if (!timestamp) {
+      return "";
+    }
+
+    const date =
+      new Date(timestamp);
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return "";
+
+    }
+
+    return date.toLocaleTimeString(
+      "en-IN",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }
     );
 
   };
@@ -817,6 +935,9 @@ export function Dashboard() {
 
                         <small>
                           {formatActivityDate(
+                            activity?.readingTimestamp
+                          )}{" "}
+                          {formatActivityTime(
                             activity?.readingTimestamp
                           )}
                         </small>
