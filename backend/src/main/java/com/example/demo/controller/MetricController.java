@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +68,45 @@ public class MetricController {
 
         return ResponseEntity.ok(
                 service.getAnalytics()
+        );
+    }
+
+    // --------------------------------------------------
+    // GET DAILY ENERGY
+    // GET /api/metrics/daily-energy
+    // --------------------------------------------------
+
+    @GetMapping("/daily-energy")
+    public ResponseEntity<BigDecimal> getDailyEnergy() {
+
+        return ResponseEntity.ok(
+                service.getDailyEnergy()
+        );
+    }
+
+    // --------------------------------------------------
+    // GET MAINTENANCE COST
+    // GET /api/metrics/maintenance-cost
+    // --------------------------------------------------
+
+    @GetMapping("/maintenance-cost")
+    public ResponseEntity<BigDecimal> getMaintenanceCost() {
+
+        return ResponseEntity.ok(
+                service.getMaintenanceCost()
+        );
+    }
+
+    // --------------------------------------------------
+    // GET SYSTEM EFFICIENCY
+    // GET /api/metrics/efficiency
+    // --------------------------------------------------
+
+    @GetMapping("/efficiency")
+    public ResponseEntity<BigDecimal> getEfficiency() {
+
+        return ResponseEntity.ok(
+                service.getEfficiency()
         );
     }
 

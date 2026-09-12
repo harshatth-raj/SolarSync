@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +76,114 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // Get analytics
+    // DAILY ENERGY
+    // --------------------------------------------------
+
+    @Transactional(readOnly = true)
+    public BigDecimal getDailyEnergy() {
+
+        LocalDateTime startOfDay =
+                LocalDate.now().atStartOfDay();
+
+        LocalDateTime endOfDay =
+                LocalDate.now().plusDays(1).atStartOfDay();
+
+        List<EnergyMetric> metrics =
+                repository.findByReadingTimestampBetween(
+                        startOfDay,
+                        endOfDay
+                );
+
+        BigDecimal total =
+                BigDecimal.ZERO;
+
+        for (EnergyMetric metric : metrics) {
+
+            if (metric.getEnergyGeneratedKwh() != null) {
+
+                total = total.add(
+                        metric.getEnergyGeneratedKwh()
+                );
+            }
+        }
+
+        return total.setScale(
+                2,
+                RoundingMode.HALF_UP
+        );
+    }
+
+    // --------------------------------------------------
+    // SYSTEM EFFICIENCY
+    // --------------------------------------------------
+
+    @Transactional(readOnly = true)
+    public BigDecimal getEfficiency() {
+
+        LocalDateTime startOfDay =
+                LocalDate.now().atStartOfDay();
+
+        LocalDateTime endOfDay =
+                LocalDate.now().plusDays(1).atStartOfDay();
+
+        List<EnergyMetric> metrics =
+                repository.findByReadingTimestampBetween(
+                        startOfDay,
+                        endOfDay
+                );
+
+        BigDecimal totalEfficiency =
+                BigDecimal.ZERO;
+
+        int count = 0;
+
+        for (EnergyMetric metric : metrics) {
+
+            if (metric.getConversionEfficiency() != null) {
+
+                totalEfficiency =
+                        totalEfficiency.add(
+                                metric.getConversionEfficiency()
+                        );
+
+                count++;
+            }
+        }
+
+        if (count == 0) {
+            return BigDecimal.ZERO.setScale(
+                    1,
+                    RoundingMode.HALF_UP
+            );
+        }
+
+        return totalEfficiency
+                .divide(
+                        BigDecimal.valueOf(count),
+                        1,
+                        RoundingMode.HALF_UP
+                );
+    }
+
+    // --------------------------------------------------
+    // MAINTENANCE COST
+    // --------------------------------------------------
+
+    @Transactional(readOnly = true)
+    public BigDecimal getMaintenanceCost() {
+
+        /*
+         * EnergyMetric does not currently contain
+         * maintenance cost information.
+         *
+         * Therefore we keep the existing dashboard
+         * value instead of inventing a calculation.
+         */
+        return new BigDecimal("3.00");
+    }
+
+    // --------------------------------------------------
+    // GET ANALYTICS
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
@@ -120,13 +229,19 @@ public class MetricService {
             }
         }
 
-        double averageEfficiency = 0.0;
+        BigDecimal averageEfficiency =
+                BigDecimal.ZERO;
 
         if (efficiencyCount > 0) {
 
             averageEfficiency =
-                    totalEfficiency.doubleValue()
-                    / efficiencyCount;
+                    totalEfficiency.divide(
+                            BigDecimal.valueOf(
+                                    efficiencyCount
+                            ),
+                            2,
+                            RoundingMode.HALF_UP
+                    );
         }
 
         // ----------------------------------------------
@@ -170,10 +285,6 @@ public class MetricService {
                 totalGeneration
         );
 
-        /*
-         * EnergyMetric currently does not contain
-         * an energy consumption field.
-         */
         analytics.put(
                 "totalConsumption",
                 BigDecimal.ZERO
@@ -208,7 +319,7 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // Get metrics by panel
+    // GET METRICS BY PANEL
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
@@ -219,7 +330,7 @@ public class MetricService {
     }
 
     // --------------------------------------------------
-    // Get metrics between dates
+    // GET METRICS BETWEEN DATES
     // --------------------------------------------------
 
     @Transactional(readOnly = true)
