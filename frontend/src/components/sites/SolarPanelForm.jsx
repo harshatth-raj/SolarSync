@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 export default function SolarPanelForm({
   onClose,
@@ -14,10 +14,9 @@ export default function SolarPanelForm({
     panelToEdit?.modelType || ""
   );
 
-  const [installationDate, setInstallationDate] =
-    useState(
-      panelToEdit?.installationDate || ""
-    );
+  const [installationDate, setInstallationDate] = useState(
+    panelToEdit?.installationDate || ""
+  );
 
   const [status, setStatus] = useState(
     panelToEdit?.status || "ACTIVE"
@@ -45,9 +44,7 @@ export default function SolarPanelForm({
 
     try {
       if (panelToEdit) {
-        // -----------------------------
         // EDIT EXISTING PANEL
-        // -----------------------------
         const data = {
           serialNumber,
           modelType,
@@ -55,7 +52,7 @@ export default function SolarPanelForm({
           status,
         };
 
-        await axios.put(
+        await api.put(
           `/api/panels/${panelToEdit.id}`,
           data,
           {
@@ -63,9 +60,7 @@ export default function SolarPanelForm({
           }
         );
       } else {
-        // -----------------------------
         // CREATE NEW PANEL
-        // -----------------------------
         const data = {
           site: {
             id: Number(siteId),
@@ -78,7 +73,7 @@ export default function SolarPanelForm({
           capacity: 5.5,
         };
 
-        await axios.post(
+        await api.post(
           "/api/panels",
           data,
           {
@@ -88,7 +83,6 @@ export default function SolarPanelForm({
       }
 
       onClose();
-
     } catch (err) {
       console.error("Panel save failed:", err);
 
@@ -101,7 +95,6 @@ export default function SolarPanelForm({
 
   return (
     <div className="modal-overlay">
-
       <div className="modal-card">
 
         <h2>
@@ -112,7 +105,9 @@ export default function SolarPanelForm({
 
         <form onSubmit={handleSubmit}>
 
+          {/* Serial Number */}
           <input
+            type="text"
             placeholder="e.g. SN-12345"
             value={serialNumber}
             onChange={(e) =>
@@ -121,7 +116,9 @@ export default function SolarPanelForm({
             required
           />
 
+          {/* Model Type */}
           <input
+            type="text"
             placeholder="Model Type"
             value={modelType}
             onChange={(e) =>
@@ -130,6 +127,7 @@ export default function SolarPanelForm({
             required
           />
 
+          {/* Installation Date */}
           <input
             type="date"
             value={installationDate}
@@ -139,11 +137,13 @@ export default function SolarPanelForm({
             required
           />
 
+          {/* Status */}
           <select
             value={status}
             onChange={(e) =>
               setStatus(e.target.value)
             }
+            required
           >
             <option value="ACTIVE">
               ACTIVE
@@ -158,12 +158,14 @@ export default function SolarPanelForm({
             </option>
           </select>
 
+          {/* Error */}
           {error && (
             <div className="register-error">
               {error}
             </div>
           )}
 
+          {/* Buttons */}
           <div className="modal-actions">
 
             <button type="submit">
@@ -182,7 +184,6 @@ export default function SolarPanelForm({
         </form>
 
       </div>
-
     </div>
   );
 }
