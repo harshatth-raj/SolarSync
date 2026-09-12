@@ -1,38 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "./services/api";
 import SolarSiteForm from "./SolarSiteForm";
 
-const sampleSites = [
-  {
-    id: 1,
-    siteName: "SKCT Solar Plant",
-    locationCoordinates: "11.0168, 76.9558",
-    ratedCapacityKw: 500,
-    commissionDate: "2025-01-15",
-    panelCount: 1200
-  },
-  {
-    id: 2,
-    siteName: "Main Solar Array",
-    locationCoordinates: "11.0185, 76.9725",
-    ratedCapacityKw: 750,
-    commissionDate: "2025-03-20",
-    panelCount: 1800
-  },
-  {
-    id: 3,
-    siteName: "Green Energy Plant",
-    locationCoordinates: "11.0302, 76.9614",
-    ratedCapacityKw: 1000,
-    commissionDate: "2025-06-10",
-    panelCount: 2400
-  }
-];
-
 export default function SolarSiteList() {
-  const [sites, setSites] = useState(sampleSites);
+  const [sites, setSites] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
 
@@ -55,48 +28,37 @@ export default function SolarSiteList() {
   useEffect(() => {
     let mounted = true;
 
-    try {
-      const token = localStorage.getItem("token");
+    const loadSites = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-      const config = token
-        ? {
-            headers: {
-              Authorization: `Bearer ${token}`
+        const config = token
+          ? {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
-          }
-        : {};
+          : {};
 
-      const result = axios.get(
-        "http://localhost:8081/api/sites",
-        config
-      );
+        const response = await api.get("/api/sites", config);
 
-      // Keeps compatibility with the existing Jest tests.
-      if (result && typeof result.then === "function") {
-        result
-          .then((response) => {
-            if (!mounted) return;
+        if (!mounted) return;
 
-            if (
-              Array.isArray(response?.data) &&
-              response.data.length > 0
-            ) {
-              setSites(response.data);
-            } else {
-              setSites(sampleSites);
-            }
-          })
-          .catch(() => {
-            if (mounted) {
-              setSites(sampleSites);
-            }
-          });
+        if (Array.isArray(response?.data)) {
+          setSites(response.data);
+        } else {
+          setSites([]);
+        }
+      } catch (error) {
+        console.error("Failed to load solar sites:", error);
+
+        if (mounted) {
+          setSites([]);
+        }
       }
-    } catch (error) {
-      if (mounted) {
-        setSites(sampleSites);
-      }
-    }
+    };
+
+    loadSites();
 
     return () => {
       mounted = false;
@@ -120,9 +82,7 @@ export default function SolarSiteList() {
   return (
     <div className="sites-page">
 
-      {/* =====================================================
-          HEADER
-          ===================================================== */}
+      {/* HEADER */}
 
       <div className="sites-header">
 
@@ -146,9 +106,7 @@ export default function SolarSiteList() {
 
       </div>
 
-      {/* =====================================================
-          SEARCH
-          ===================================================== */}
+      {/* SEARCH */}
 
       <input
         type="text"
@@ -158,9 +116,7 @@ export default function SolarSiteList() {
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      {/* =====================================================
-          SITE LIST
-          ===================================================== */}
+      {/* SITE LIST */}
 
       {filteredSites.length === 0 ? (
 
@@ -192,13 +148,9 @@ export default function SolarSiteList() {
 
                 <tr key={site.id}>
 
-                  {/* SITE ID */}
-
                   <td>
                     {site.id}
                   </td>
-
-                  {/* SITE NAME */}
 
                   <td>
                     <strong>
@@ -206,33 +158,23 @@ export default function SolarSiteList() {
                     </strong>
                   </td>
 
-                  {/* COORDINATES */}
-
                   <td>
                     {site.locationCoordinates || "N/A"}
                   </td>
-
-                  {/* RATED CAPACITY */}
 
                   <td>
                     {site.ratedCapacityKw || 0} kW
                   </td>
 
-                  {/* COMMISSION DATE */}
-
                   <td>
                     {site.commissionDate || "N/A"}
                   </td>
-
-                  {/* PANELS */}
 
                   <td>
                     {Array.isArray(site.panels)
                       ? site.panels.length
                       : 0}
                   </td>
-
-                  {/* ACTION */}
 
                   <td>
                     <Link
@@ -255,13 +197,16 @@ export default function SolarSiteList() {
 
       )}
 
-      {/* =====================================================
-          ADD SITE FORM
-          ===================================================== */}
+      {/* ADD SITE FORM */}
 
       {showForm && (
         <SolarSiteForm
-          onClose={() => setShowForm(false)}
+          onClose={() => {
+            setShowForm(false);
+
+            // Reload the page data after adding a site
+            window.location.reload();
+          }}
         />
       )}
 
