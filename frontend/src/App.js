@@ -724,27 +724,11 @@ export function Dashboard() {
 
           <button
             type="button"
+            className="calc-metrics-btn"
             onClick={calculateMetrics}
             disabled={calculating}
-            style={{
-              padding: "12px 22px",
-              border: "none",
-              borderRadius: "8px",
-              cursor: calculating
-                ? "not-allowed"
-                : "pointer",
-              fontWeight: "600",
-              fontSize: "14px",
-              opacity: calculating
-                ? 0.7
-                : 1,
-            }}
           >
-
-            {calculating
-              ? "Calculating..."
-              : "Calculate Metrics"}
-
+            {calculating ? "⟳ Calculating…" : "⚡ Calculate Metrics"}
           </button>
 
         </div>

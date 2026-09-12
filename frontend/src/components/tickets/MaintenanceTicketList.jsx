@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import api from "../../services/api";
 import MaintenanceTicketForm from "./MaintenanceTicketForm";
 
 export default function MaintenanceTicketList() {
@@ -18,34 +18,19 @@ export default function MaintenanceTicketList() {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  /* =========================================================
-     LOAD TICKETS
-     ========================================================= */
+  const getAuthConfig = () => {
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("jwt") ||
+      localStorage.getItem("accessToken");
+    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  };
 
   const loadTickets = async () => {
     try {
       setLoading(true);
-
-      const token = localStorage.getItem("token");
-
-      const config = token
-        ? {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        : {};
-
-      const response = await axios.get(
-        "http://localhost:8081/api/tickets",
-        config
-      );
-
-      if (Array.isArray(response?.data)) {
-        setTickets(response.data);
-      } else {
-        setTickets([]);
-      }
+      const response = await api.get("/api/tickets", getAuthConfig());
+      setTickets(Array.isArray(response?.data) ? response.data : []);
     } catch (error) {
       console.error("Failed to load maintenance tickets:", error);
       setTickets([]);
@@ -54,91 +39,38 @@ export default function MaintenanceTicketList() {
     }
   };
 
-  useEffect(() => {
-    loadTickets();
-  }, []);
+  useEffect(() => { loadTickets(); }, []);
 
-  /* =========================================================
-     FORM CLOSED
-     ========================================================= */
-
-  const handleFormClose = () => {
-    setShowForm(false);
-    loadTickets();
-  };
-
-  /* =========================================================
-     RESOLVE TICKET
-     ========================================================= */
+  const handleFormClose = () => { setShowForm(false); loadTickets(); };
 
   const handleResolveTicket = async (ticketId) => {
     try {
-      const token = localStorage.getItem("token");
-
-      const config = token
-        ? {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        : {};
-
-      await axios.patch(
-        `http://localhost:8081/api/tickets/${ticketId}/resolve`,
-        {},
-        config
-      );
-
+      await api.patch(`/api/tickets/${ticketId}/resolve`, {}, getAuthConfig());
       await loadTickets();
     } catch (error) {
       console.error("Failed to resolve ticket:", error);
-      alert("Failed to resolve ticket.");
     }
   };
 
-  /* =========================================================
-     DISPLAY HELPERS
-     ========================================================= */
-
-  const getSiteName = (ticket) => {
-    /*
-     * Current backend response does not include panel.site.
-     * For now, use the site name if the API provides it.
-     */
-    return (
-      ticket?.site?.siteName ||
-      ticket?.panel?.site?.siteName ||
-      "N/A"
-    );
-  };
-
-  const getPanelId = (ticket) => {
-    return ticket?.panel?.id || ticket?.panelId || "N/A";
-  };
-
-  const getTechnician = (ticket) => {
-    return (
-      ticket?.assignedTechnician?.username ||
-      ticket?.technician?.username ||
-      ticket?.technician?.name ||
-      "Not Assigned"
-    );
-  };
-
-  /* =========================================================
-     RENDER
-     ========================================================= */
+  const getSiteName  = (t) => t?.site?.siteName || t?.panel?.site?.siteName || "N/A";
+  const getPanelId   = (t) => t?.panel?.id || t?.panelId || "N/A";
+  const getTechnician = (t) =>
+    t?.assignedTechnician?.username ||
+    t?.technician?.username ||
+    t?.technician?.name ||
+    "Not Assigned";
 
   return (
-    <div className="maintenance-ticket-list">
+    <div className="tickets-page">
 
-      {/* =====================================================
-          HEADER
-          ===================================================== */}
-
-      <div className="tickets-list-header">
-
-        <div />
+      {/* PAGE HEADER */}
+      <div className="sites-header">
+        <div className="sites-title-section">
+          <h1>Maintenance Tickets</h1>
+          <p className="sites-subtitle">
+            Track and manage solar panel maintenance issues.
+          </p>
+        </div>
 
         {isOperator && (
           <button
@@ -149,156 +81,94 @@ export default function MaintenanceTicketList() {
             + Report Issue
           </button>
         )}
-
       </div>
 
-      {/* =====================================================
-          LOADING
-          ===================================================== */}
+      {/* STATS ROW */}
+      {!loading && tickets.length > 0 && (
+        <div className="ticket-stats-row">
+          <div className="ticket-stat ticket-stat--open">
+            <span>{tickets.filter(t => String(t.status).toUpperCase() === "OPEN").length}</span>
+            <label>Open</label>
+          </div>
+          <div className="ticket-stat ticket-stat--progress">
+            <span>{tickets.filter(t => String(t.status).toUpperCase().includes("PROGRESS")).length}</span>
+            <label>In Progress</label>
+          </div>
+          <div className="ticket-stat ticket-stat--resolved">
+            <span>{tickets.filter(t => ["RESOLVED","CLOSED"].includes(String(t.status).toUpperCase())).length}</span>
+            <label>Resolved</label>
+          </div>
+          <div className="ticket-stat ticket-stat--total">
+            <span>{tickets.length}</span>
+            <label>Total</label>
+          </div>
+        </div>
+      )}
 
+      {/* TABLE */}
       {loading ? (
-        <div className="no-sites">
-          Loading maintenance tickets...
-        </div>
+        <div className="no-sites">Loading maintenance tickets…</div>
       ) : tickets.length === 0 ? (
-
-        /* ===================================================
-           EMPTY STATE
-           =================================================== */
-
-        <div className="no-sites">
-          No maintenance tickets found.
-        </div>
-
+        <div className="no-sites">No maintenance tickets found.</div>
       ) : (
-
-        /* ===================================================
-           TICKET TABLE
-           =================================================== */
-
         <div className="sites-table-container">
-
           <table className="sites-table">
-
             <thead>
               <tr>
+                <th>#</th>
                 <th>Site</th>
-                <th>Panel ID</th>
+                <th>Panel</th>
                 <th>Description</th>
                 <th>Priority</th>
                 <th>Status</th>
                 <th>Technician</th>
-                <th>Actions</th>
+                <th>Action</th>
               </tr>
             </thead>
-
             <tbody>
-
               {tickets.map((ticket) => {
-
-                const status = String(
-                  ticket.status || ""
-                ).toUpperCase();
-
-                const isClosed =
-                  status === "CLOSED" ||
-                  status === "RESOLVED";
+                const status = String(ticket.status || "").toUpperCase();
+                const isClosed = status === "CLOSED" || status === "RESOLVED";
 
                 return (
                   <tr key={ticket.id}>
-
-                    {/* SITE */}
-
-                    <td>
-                      {getSiteName(ticket)}
-                    </td>
-
-                    {/* PANEL */}
-
-                    <td>
-                      #{getPanelId(ticket)}
-                    </td>
-
-                    {/* DESCRIPTION */}
-
-                    <td>
+                    <td>{ticket.id}</td>
+                    <td><strong>{getSiteName(ticket)}</strong></td>
+                    <td>#{getPanelId(ticket)}</td>
+                    <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" }}>
                       {ticket.issueDescription || "N/A"}
                     </td>
-
-                    {/* PRIORITY */}
-
                     <td>
-                      <span
-                        className={`ticket-priority priority-${String(
-                          ticket.priority || ""
-                        ).toLowerCase()}`}
-                      >
+                      <span className={`ticket-priority priority-${String(ticket.priority || "").toLowerCase()}`}>
                         {ticket.priority || "N/A"}
                       </span>
                     </td>
-
-                    {/* STATUS */}
-
                     <td>
-                      <span
-                        className={`ticket-status status-${String(
-                          ticket.status || ""
-                        ).toLowerCase()}`}
-                      >
+                      <span className={`ticket-status status-${String(ticket.status || "").toLowerCase().replace(/\s+/g,"_")}`}>
                         {ticket.status || "N/A"}
                       </span>
                     </td>
-
-                    {/* TECHNICIAN */}
-
+                    <td>{getTechnician(ticket)}</td>
                     <td>
-                      {getTechnician(ticket)}
+                      {(role === "MAINTENANCE_TECHNICIAN" || role === "SYSTEM_ADMINISTRATOR") && !isClosed && (
+                        <button
+                          type="button"
+                          className="ticket-action-button"
+                          onClick={() => handleResolveTicket(ticket.id)}
+                        >
+                          Resolve
+                        </button>
+                      )}
                     </td>
-
-                    {/* ACTIONS */}
-
-                    <td>
-
-                      {(role === "MAINTENANCE_TECHNICIAN" ||
-                        role === "SYSTEM_ADMINISTRATOR") &&
-                        !isClosed && (
-
-                          <button
-                            type="button"
-                            className="ticket-action-button"
-                            onClick={() =>
-                              handleResolveTicket(ticket.id)
-                            }
-                          >
-                            Resolve Ticket
-                          </button>
-
-                        )}
-
-                    </td>
-
                   </tr>
                 );
               })}
-
             </tbody>
-
           </table>
-
         </div>
-
       )}
 
-      {/* =====================================================
-          REPORT ISSUE FORM
-          ===================================================== */}
-
-      {showForm && (
-        <MaintenanceTicketForm
-          onClose={handleFormClose}
-        />
-      )}
-
+      {showForm && <MaintenanceTicketForm onClose={handleFormClose} />}
     </div>
   );
 }

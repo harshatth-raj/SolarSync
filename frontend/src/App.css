@@ -1616,3 +1616,83 @@ a { text-decoration: none; }
   .login-side-text { display: none; }
   .login-card { margin-left: 0; }
 }
+
+/* =========================================================
+   CALCULATE METRICS BUTTON
+   ========================================================= */
+
+.calc-metrics-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+  transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+}
+
+.calc-metrics-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(124,58,237,0.45);
+}
+
+.calc-metrics-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================================================
+   TICKET STATS ROW
+   ========================================================= */
+
+.ticket-stats-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+.ticket-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line-soft);
+  background: var(--bg-panel);
+  gap: 4px;
+}
+
+.ticket-stat span {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ticket-stat label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+.ticket-stat--open     { border-left: 3px solid var(--accent-red); }
+.ticket-stat--open span { color: #f87171; }
+
+.ticket-stat--progress { border-left: 3px solid var(--accent-yellow); }
+.ticket-stat--progress span { color: #fbbf24; }
+
+.ticket-stat--resolved { border-left: 3px solid var(--accent-green); }
+.ticket-stat--resolved span { color: #4ade80; }
+
+.ticket-stat--total    { border-left: 3px solid var(--accent-blue); }
+.ticket-stat--total span { color: #60a5fa; }
