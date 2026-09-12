@@ -1696,3 +1696,67 @@ a { text-decoration: none; }
 
 .ticket-stat--total    { border-left: 3px solid var(--accent-blue); }
 .ticket-stat--total span { color: #60a5fa; }
+
+/* ── Tickets live badge ── */
+.tickets-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--accent-green);
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
+/* ── Filter bar ── */
+.tickets-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.tickets-filter-bar strong { color: var(--text-primary); }
+.tickets-filter-clear {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.tickets-filter-clear:hover { color: var(--accent-red); border-color: var(--accent-red); }
+
+/* ── Active stat card ── */
+.ticket-stat--active {
+  background: rgba(255,255,255,0.07) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* ── New ticket row flash ── */
+@keyframes rowFlash {
+  0%   { background: rgba(34,197,94,0.18); }
+  100% { background: transparent; }
+}
+.ticket-row--new td { animation: rowFlash 2.5s ease-out; }
+
+/* ── Date + desc cells ── */
+.ticket-date-cell {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.ticket-desc-cell {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
