@@ -1573,7 +1573,7 @@ a {
 /* Use solarsync.png as a decorative background for auth pages */
 .login-wrapper,
 .register-container {
-  background-image: url('/solarsync.png');
+  background-image: url('../solarsync.png');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
