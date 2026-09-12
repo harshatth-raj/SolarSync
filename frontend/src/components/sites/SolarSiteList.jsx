@@ -29,18 +29,7 @@ export default function SolarSiteList() {
   const loadSites = useCallback(async () => {
     try {
       setLoading(true);
-
-      const token =
-        localStorage.getItem("token") ||
-        localStorage.getItem("jwt") ||
-        localStorage.getItem("accessToken");
-
-      const config = token
-        ? { headers: { Authorization: `Bearer ${token}` } }
-        : {};
-
-      const response = await api.get("/api/sites", config);
-
+      const response = await api.get("/api/sites");
       setSites(Array.isArray(response?.data) ? response.data : []);
     } catch (error) {
       console.error("Failed to load solar sites:", error);

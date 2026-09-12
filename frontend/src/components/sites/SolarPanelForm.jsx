@@ -24,72 +24,23 @@ export default function SolarPanelForm({
 
   const [error, setError] = useState("");
 
-  const getAuthHeaders = () => {
-    const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem("jwt") ||
-      localStorage.getItem("accessToken");
-
-    return token
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
-      : {};
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError("");
-
     try {
       if (panelToEdit) {
-        // EDIT EXISTING PANEL
-        const data = {
-          serialNumber,
-          modelType,
-          installationDate,
-          status,
-        };
-
-        await api.put(
-          `/api/panels/${panelToEdit.id}`,
-          data,
-          {
-            headers: getAuthHeaders(),
-          }
-        );
+        await api.put(`/api/panels/${panelToEdit.id}`, { serialNumber, modelType, installationDate, status });
       } else {
-        // CREATE NEW PANEL
-        const data = {
-          site: {
-            id: Number(siteId),
-          },
-          serialNumber,
-          modelType,
-          status,
-          installationDate,
-          usageCount: 0,
-          capacity: 5.5,
-        };
-
-        await api.post(
-          "/api/panels",
-          data,
-          {
-            headers: getAuthHeaders(),
-          }
-        );
+        await api.post("/api/panels", {
+          site: { id: Number(siteId) },
+          serialNumber, modelType, status, installationDate,
+          usageCount: 0, capacity: 5.5,
+        });
       }
-
       onClose();
     } catch (err) {
       console.error("Panel save failed:", err);
-
-      setError(
-        err.response?.data?.message ||
-          "Unable to save panel."
-      );
+      setError(err.response?.data?.message || "Unable to save panel.");
     }
   };
 

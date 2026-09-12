@@ -22,47 +22,16 @@ export default function SolarSiteDetails() {
     .replace(/[\s-]+/g, "_")
     .toUpperCase();
 
-  // --------------------------------------------------
-  // AUTH CONFIG
-  // --------------------------------------------------
-
-  const getAuthConfig = () => {
-    const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem("jwt") ||
-      localStorage.getItem("accessToken");
-
-    return token
-      ? {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      : {};
-  };
-
-  // --------------------------------------------------
-  // LOAD PANELS FOR CURRENT SITE
-  // --------------------------------------------------
-
   const loadPanels = async () => {
     try {
-      const response = await api.get(
-        `/api/panels/site/${id}`,
-        getAuthConfig()
-      );
-
+      const response = await api.get(`/api/panels/site/${id}`);
       if (Array.isArray(response?.data)) {
         setPanels(response.data);
       } else {
         setPanels([]);
       }
     } catch (panelError) {
-      console.error(
-        "Failed to load panels:",
-        panelError
-      );
-
+      console.error("Failed to load panels:", panelError);
       setPanels([]);
     }
   };
@@ -79,37 +48,13 @@ export default function SolarSiteDetails() {
         setLoading(true);
         setError("");
 
-        const config = getAuthConfig();
-
-        // Load real site from Railway backend
-        const siteResponse = await api.get(
-          `/api/sites/${id}`,
-          config
-        );
-
+        const siteResponse = await api.get(`/api/sites/${id}`);
         const siteData = siteResponse?.data;
+        if (!siteData) throw new Error("Site not found");
+        if (mounted) setSite(siteData);
 
-        if (!siteData) {
-          throw new Error("Site not found");
-        }
-
-        if (mounted) {
-          setSite(siteData);
-        }
-
-        // Load panels belonging to this site
-        const panelResponse = await api.get(
-          `/api/panels/site/${id}`,
-          config
-        );
-
-        if (mounted) {
-          setPanels(
-            Array.isArray(panelResponse?.data)
-              ? panelResponse.data
-              : []
-          );
-        }
+        const panelResponse = await api.get(`/api/panels/site/${id}`);
+        if (mounted) setPanels(Array.isArray(panelResponse?.data) ? panelResponse.data : []);
       } catch (err) {
         console.error(
           "Failed to load site details:",
@@ -142,26 +87,11 @@ export default function SolarSiteDetails() {
 
   const handleDeletePanel = async (panelId) => {
     try {
-      await api.delete(
-        `/api/panels/${panelId}`,
-        getAuthConfig()
-      );
-
-      setPanels((currentPanels) =>
-        currentPanels.filter(
-          (panel) => panel.id !== panelId
-        )
-      );
+      await api.delete(`/api/panels/${panelId}`);
+      setPanels((currentPanels) => currentPanels.filter((panel) => panel.id !== panelId));
     } catch (err) {
-      console.error(
-        "Failed to delete panel:",
-        err
-      );
-
-      alert(
-        err.response?.data?.message ||
-          "Unable to delete panel."
-      );
+      console.error("Failed to delete panel:", err);
+      alert(err.response?.data?.message || "Unable to delete panel.");
     }
   };
 

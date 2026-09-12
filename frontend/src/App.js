@@ -145,21 +145,7 @@ export function Dashboard() {
      AUTH CONFIG
      ===================================================== */
 
-  const getAuthConfig = () => {
-
-    const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem("jwt") ||
-      localStorage.getItem("accessToken");
-
-    return token
-      ? {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      : {};
-  };
+  // Auth is handled automatically by api.js interceptor
 
   /* =====================================================
      LOAD DASHBOARD METRICS
@@ -169,13 +155,8 @@ export function Dashboard() {
 
     try {
 
-      const config = getAuthConfig();
-
       const response =
-        await api.get(
-          "/api/metrics/dashboard",
-          config
-        );
+        await api.get("/api/metrics/dashboard");
 
       const data =
         response.data || {};
@@ -228,13 +209,8 @@ export function Dashboard() {
 
     try {
 
-      const config = getAuthConfig();
-
       const response =
-        await api.get(
-          "/api/sites",
-          config
-        );
+        await api.get("/api/sites");
 
       const sites =
         Array.isArray(response.data)
@@ -269,13 +245,8 @@ export function Dashboard() {
 
     try {
 
-      const config = getAuthConfig();
-
       const response =
-        await api.get(
-          "/api/tickets",
-          config
-        );
+        await api.get("/api/tickets");
 
       const tickets =
         Array.isArray(response.data)
@@ -367,13 +338,8 @@ export function Dashboard() {
 
     try {
 
-      const config = getAuthConfig();
-
       const response =
-        await api.get(
-          "/api/metrics/recent",
-          config
-        );
+        await api.get("/api/metrics/recent");
 
       const activities =
         Array.isArray(response.data)
@@ -430,12 +396,9 @@ export function Dashboard() {
 
     try {
 
-      const config = getAuthConfig();
-
       await api.post(
         "/api/metrics/simulate/1",
-        {},
-        config
+        {}
       );
 
       await Promise.all([
@@ -528,13 +491,9 @@ export function Dashboard() {
 
     try {
 
-      const config =
-        getAuthConfig();
-
       await api.post(
         "/api/metrics/simulate/1",
-        {},
-        config
+        {}
       );
 
       await Promise.all([

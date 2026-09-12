@@ -5,14 +5,6 @@ import MaintenanceTicketForm from "./MaintenanceTicketForm";
 
 const POLL_INTERVAL = 10000;
 
-const getAuthConfig = () => {
-  const token =
-    localStorage.getItem("token") ||
-    localStorage.getItem("jwt") ||
-    localStorage.getItem("accessToken");
-  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-};
-
 const fmt = (dt) => {
   if (!dt) return "—";
   const d = new Date(dt);
@@ -41,7 +33,7 @@ export default function MaintenanceTicketList() {
   const loadTickets = useCallback(async (silent = false) => {
     try {
       if (!silent) setLoading(true);
-      const res = await api.get("/api/tickets", getAuthConfig());
+      const res = await api.get("/api/tickets");
       const data = Array.isArray(res?.data) ? res.data : [];
 
       // detect new tickets for flash
@@ -70,7 +62,7 @@ export default function MaintenanceTicketList() {
 
   const handleResolve = async (ticketId) => {
     try {
-      await api.patch(`/api/tickets/${ticketId}/resolve`, {}, getAuthConfig());
+      await api.patch(`/api/tickets/${ticketId}/resolve`, {});
       loadTickets(true);
     } catch (err) {
       console.error("Failed to resolve ticket:", err);

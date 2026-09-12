@@ -13,19 +13,11 @@ export default function MaintenanceTicketForm({ onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const getAuthConfig = () => {
-    const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem("jwt") ||
-      localStorage.getItem("accessToken");
-    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-  };
-
   useEffect(() => {
     let mounted = true;
     const loadSites = async () => {
       try {
-        const response = await api.get("/api/sites", getAuthConfig());
+        const response = await api.get("/api/sites");
         if (!mounted) return;
         const siteData = Array.isArray(response?.data) ? response.data : [];
         setSites(siteData);
@@ -43,7 +35,7 @@ export default function MaintenanceTicketForm({ onClose }) {
     const loadPanels = async () => {
       try {
         setLoadingPanels(true);
-        const response = await api.get(`/api/panels/site/${selectedSite}`, getAuthConfig());
+        const response = await api.get(`/api/panels/site/${selectedSite}`);
         if (!mounted) return;
         const panelData = Array.isArray(response?.data) ? response.data : [];
         setPanels(panelData);
@@ -65,7 +57,7 @@ export default function MaintenanceTicketForm({ onClose }) {
         panelId: selectedPanel ? Number(selectedPanel) : null,
         issueDescription: description.trim(),
         priority,
-      }, getAuthConfig());
+      });
       onClose();
     } catch (err) {
       setError(err.response?.data?.message || "Unable to create maintenance ticket.");

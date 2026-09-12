@@ -9,36 +9,21 @@ export default function SolarSiteForm({ onClose }) {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const getAuthHeaders = () => {
-    const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem("jwt") ||
-      localStorage.getItem("accessToken");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
     const coordinatePattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
     if (!coordinatePattern.test(locationCoordinates)) {
       setError("Coordinates must be in format: 34.05, -118.24");
       return;
     }
-
     setSubmitting(true);
     try {
-      await api.post(
-        "/api/sites",
-        {
-          siteName,
-          locationCoordinates,
-          ratedCapacityKw: Number(ratedCapacityKw),
-          commissionDate: commissionedDate,
-        },
-        { headers: getAuthHeaders() }
-      );
+      await api.post("/api/sites", {
+        siteName, locationCoordinates,
+        ratedCapacityKw: Number(ratedCapacityKw),
+        commissionDate: commissionedDate,
+      });
       onClose();
     } catch (err) {
       console.error("Failed to create site:", err);
