@@ -123,6 +123,8 @@ export function Dashboard() {
     total: 0,
   });
 
+  const [recentActivity, setRecentActivity] = useState([]);
+
   const [calculating, setCalculating] = useState(false);
 
   /* =====================================================
@@ -146,7 +148,63 @@ export function Dashboard() {
   };
 
   /* =====================================================
-     LOAD SITES + TICKETS
+     LOAD RECENT ACTIVITY
+     ===================================================== */
+
+  const loadRecentActivity = async () => {
+
+    try {
+
+      const config = getAuthConfig();
+
+      const response =
+        await api.get(
+          "/api/metrics/recent",
+          config
+        );
+
+      const data =
+        Array.isArray(response.data)
+          ? response.data
+          : [];
+
+      /*
+       * Show the latest 3 readings.
+       * Backend already returns recent metrics,
+       * but sorting here ensures newest readings
+       * appear first.
+       */
+
+      const sorted =
+        [...data].sort(
+          (a, b) =>
+            new Date(
+              b?.readingTimestamp || 0
+            ) -
+            new Date(
+              a?.readingTimestamp || 0
+            )
+        );
+
+      setRecentActivity(
+        sorted.slice(0, 3)
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Failed to load recent activity:",
+        error
+      );
+
+      setRecentActivity([]);
+
+    }
+
+  };
+
+  /* =====================================================
+     LOAD SITES + TICKETS + RECENT ACTIVITY
      ===================================================== */
 
   useEffect(() => {
@@ -297,6 +355,12 @@ export function Dashboard() {
 
         }
 
+        /* =============================================
+           RECENT ACTIVITY
+           ============================================= */
+
+        await loadRecentActivity();
+
       } catch (error) {
 
         console.error(
@@ -326,7 +390,7 @@ export function Dashboard() {
 
       /* =============================================
          STEP 1
-         Generate and save a simulated reading
+         Generate and save simulated reading
          for panel ID 1
          ============================================= */
 
@@ -387,7 +451,7 @@ export function Dashboard() {
           : "0.0%";
 
       /* =============================================
-         UPDATE DASHBOARD
+         UPDATE DASHBOARD CARDS
          ============================================= */
 
       setMetrics((current) => ({
@@ -401,6 +465,13 @@ export function Dashboard() {
         efficiency:
           systemEfficiency,
       }));
+
+      /* =============================================
+         STEP 3
+         Refresh Recent Activity
+         ============================================= */
+
+      await loadRecentActivity();
 
     } catch (error) {
 
@@ -452,6 +523,30 @@ export function Dashboard() {
           }% 100%
         )`
       : "conic-gradient(#334155 0% 100%)";
+
+  /* =====================================================
+     FORMAT DATE
+     ===================================================== */
+
+  const formatActivityDate = (
+    timestamp
+  ) => {
+
+    if (!timestamp) {
+      return "Unknown date";
+    }
+
+    const date =
+      new Date(timestamp);
+
+    if (Number.isNaN(date.getTime())) {
+      return "Unknown date";
+    }
+
+    return date.toLocaleDateString(
+      "en-CA"
+    );
+  };
 
   return (
     <PageLayout>
@@ -659,89 +754,74 @@ export function Dashboard() {
 
             <div className="activity-list">
 
-              <div className="activity-item">
+              {recentActivity.length > 0 ? (
 
-                <div>
+                recentActivity.map(
+                  (activity, index) => (
 
-                  <small>
-                    2026-08-25
-                  </small>
+                    <div
+                      className="activity-item"
+                      key={
+                        activity?.id ||
+                        index
+                      }
+                    >
 
-                  <p>
-                    Energy generated
-                  </p>
+                      <div>
 
-                  <span className="positive">
-                    ↑ 13.50 kWh
-                  </span>
+                        <small>
+                          {formatActivityDate(
+                            activity?.readingTimestamp
+                          )}
+                        </small>
 
-                  <span className="negative">
-                    ↓ 1.90 kWh
-                  </span>
+                        <p>
+                          Energy generated
+                        </p>
 
-                </div>
+                        <span className="positive">
+                          ↑{" "}
+                          {Number(
+                            activity?.energyGeneratedKwh || 0
+                          ).toFixed(2)}{" "}
+                          kWh
+                        </span>
 
-                <span className="activity-status">
-                  Normal
-                </span>
+                      </div>
 
-              </div>
+                      <span className="activity-status">
+                        Recorded
+                      </span>
 
-              <div className="activity-item">
+                    </div>
 
-                <div>
+                  )
+                )
 
-                  <small>
-                    2026-08-24
-                  </small>
+              ) : (
 
-                  <p>
-                    Energy generated
-                  </p>
+                <div className="activity-item">
 
-                  <span className="positive">
-                    ↑ 42.50 kWh
-                  </span>
+                  <div>
 
-                  <span className="negative">
-                    ↓ 4.20 kWh
-                  </span>
+                    <small>
+                      No readings yet
+                    </small>
 
-                </div>
+                    <p>
+                      No energy generation data
+                      available.
+                    </p>
 
-                <span className="activity-status">
-                  Normal
-                </span>
+                  </div>
 
-              </div>
-
-              <div className="activity-item">
-
-                <div>
-
-                  <small>
-                    2026-08-23
-                  </small>
-
-                  <p>
-                    Energy generated
-                  </p>
-
-                  <span className="positive">
-                    ↑ 25.40 kWh
-                  </span>
-
-                  <span className="negative">
-                    ↓ 2.10 kWh
+                  <span className="activity-status">
+                    Waiting
                   </span>
 
                 </div>
 
-                <span className="activity-status">
-                  Normal
-                </span>
-
-              </div>
+              )}
 
             </div>
 
