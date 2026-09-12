@@ -66,6 +66,38 @@ function StatCards({ stats }) {
 
             ))}
 
+            {cards.map((card) => (
+
+                <div
+                    className="stat-card"
+                    key={card.title}
+                >
+
+                    <h3>
+                        {card.title}
+                    </h3>
+
+                    <p>
+                        {card.value}
+                    </p>
+
+                </div>
+
+            ))}
+
+            <div className="stat-quote">
+                {(() => {
+                    const quotes = [
+                        'Efficiency today, resilience tomorrow.',
+                        'Small gains compound into sustainable impact.',
+                        'Data-driven decisions, brighter outcomes.'
+                    ];
+
+                    const idx = Number(stats.totalActivePanels || 0) % quotes.length;
+                    return <em>{quotes[idx]}</em>;
+                })()}
+            </div>
+
         </div>
     );
 }

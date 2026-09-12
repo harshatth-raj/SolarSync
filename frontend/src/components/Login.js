@@ -28,13 +28,16 @@ export default function Login() {
     return (
         <div className="register-container">
 
-            <div className="register-card">
+            <div className="login-wrapper">
 
-                <h1>SolarSync Login</h1>
+                <div className="login-side-text" aria-hidden="true">
+                    <div className="login-side-line1">Monitor and optimize your solar assets with confidence.</div>
+                    <div className="login-side-line2">Powering a cleaner, smarter energy future.</div>
+                </div>
 
-                <p className="register-subtitle">
-                    Welcome back to SolarSync
-                </p>
+                <div className="register-card">
+
+                    <h1>Welcome to SolarSync</h1>
 
                 <form onSubmit={handleSubmit}>
 
@@ -92,9 +95,7 @@ export default function Login() {
                         className="register-button"
                         disabled={loading}
                     >
-                        {loading
-                            ? "Logging in..."
-                            : "Login"}
+                        {loading ? "Signing in..." : "Sign In"}
                     </button>
 
                 </form>
@@ -110,10 +111,12 @@ export default function Login() {
                         type="button"
                         onClick={() => navigate("/register")}
                     >
-                        Register
+                        Create account
                     </button>
 
                 </p>
+
+            </div>
 
             </div>
 

@@ -17,9 +17,9 @@ body,
 body {
   margin: 0;
 
-  background: #07111f;
+  background: #07141d;
 
-  color: #f8fafc;
+  color: #edf6ff;
 
   font-family:
     Inter,
@@ -55,6 +55,27 @@ a {
   min-height: 100vh;
 
   background: #07111f;
+  background-image: url('/solarsyncdash.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+
+.app::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 8, 18, 0.45);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.dashboard-navbar,
+.dashboard-content {
+  position: relative;
+  z-index: 1;
 }
 
 
@@ -79,9 +100,11 @@ a {
 
   padding: 0 32px;
 
-  background: #050b16;
+  background: rgba(4, 12, 20, 0.62);
 
-  border-bottom: 1px solid #1d2b3e;
+  border-bottom: 1px solid rgba(103, 213, 242, 0.14);
+
+  backdrop-filter: blur(8px);
 }
 
 
@@ -184,15 +207,18 @@ a {
   margin: 0 auto;
 
   padding: 35px 30px 60px;
+  display: flex;
+  justify-content: center;
 }
 
-
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
-
-.dashboard-page {
-  width: 100%;
+.dashboard-page,
+.sites-page,
+.tickets-page {
+  width: min(100%, 1200px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
 }
 
 
@@ -213,13 +239,13 @@ a {
 
   margin-bottom: 20px;
 
-  background: #0d1728;
+  background: var(--bg-panel);
 
-  border: 1px solid #223148;
+  border: 1px solid var(--line-soft);
 
   border-left: 3px solid #2563eb;
 
-  border-radius: 7px;
+  border-radius: 12px;
 }
 
 .welcome-card h1 {
@@ -267,11 +293,11 @@ a {
 .metric-card {
   min-height: 82px;
 
-  background: #0d1728;
+  background: var(--bg-panel);
 
-  border: 1px solid #223148;
+  border: 1px solid var(--line-soft);
 
-  border-radius: 7px;
+  border-radius: 12px;
 
   padding: 16px;
 
@@ -337,11 +363,11 @@ a {
 .dashboard-panel {
   min-height: 255px;
 
-  background: #0d1728;
+  background: var(--bg-panel);
 
-  border: 1px solid #223148;
+  border: 1px solid var(--line-soft);
 
-  border-radius: 8px;
+  border-radius: 12px;
 
   padding: 20px;
 }
@@ -649,15 +675,15 @@ a {
 
   padding: 0 14px;
 
-  background: #0d1728;
+  background: rgba(6, 14, 24, 0.55);
 
-  border: 1px solid #243247;
+  border: 1px solid rgba(148, 163, 184, 0.18);
 
   border-radius: 6px;
 
   outline: none;
 
-  color: #e2e8f0;
+  color: #edf6ff;
 
   font-size: 11px;
 }
@@ -668,10 +694,7 @@ a {
 
 .site-search:focus {
   border-color: #2563eb;
-
-  box-shadow:
-    0 0 0 2px
-    rgba(37, 99, 235, 0.10);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15);
 }
 
 
@@ -684,9 +707,9 @@ a {
 
   overflow-x: auto;
 
-  background: #0d1728;
+  background: var(--bg-panel);
 
-  border: 1px solid #243247;
+  border: 1px solid var(--line-soft);
 
   border-radius: 8px;
 }
@@ -700,7 +723,7 @@ a {
 }
 
 .sites-table thead {
-  background: #101b2d;
+  background: rgba(14, 24, 37, 0.74);
 }
 
 .sites-table th {
@@ -742,7 +765,7 @@ a {
 }
 
 .sites-table tbody tr:hover td {
-  background: #101c2d;
+  background: rgba(17, 31, 49, 0.6);
 }
 
 
@@ -892,11 +915,11 @@ a {
 
   padding: 20px;
 
-  background: #0d1728;
+  background: var(--bg-panel);
 
-  border: 1px solid #243247;
+  border: 1px solid var(--line-soft);
 
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .site-main-info h2 {
@@ -1033,9 +1056,9 @@ a {
 
   overflow-x: auto;
 
-  background: #0d1728;
+  background: var(--bg-panel);
 
-  border: 1px solid #243247;
+  border: 1px solid var(--line-soft);
 
   border-radius: 8px;
 }
@@ -1049,7 +1072,7 @@ a {
 }
 
 .panel-table thead {
-  background: #101b2d;
+  background: rgba(12, 22, 35, 0.72);
 }
 
 .panel-table th {
@@ -1248,9 +1271,9 @@ a {
 
   padding: 25px;
 
-  background: #0d1728;
+  background: var(--bg-panel);
 
-  border: 1px solid #2a3b53;
+  border: 1px solid var(--line-soft);
 
   border-radius: 10px;
 
@@ -1284,15 +1307,15 @@ a {
 
   padding: 9px 12px;
 
-  background: #08111f;
+  background: rgba(6, 14, 24, 0.55);
 
-  border: 1px solid #334155;
+  border: 1px solid rgba(148, 163, 184, 0.18);
 
   border-radius: 6px;
 
   outline: none;
 
-  color: #f8fafc;
+  color: #edf6ff;
 
   font-size: 11px;
 }
@@ -1415,7 +1438,7 @@ a {
   background:
     radial-gradient(
       circle at 80% 15%,
-      rgba(34, 197, 94, 0.08),
+      rgba(34, 197, 94, 0.06),
       transparent 30%
     ),
     #07111f;
@@ -1429,18 +1452,18 @@ a {
 .register-card {
   width: 100%;
 
-  max-width: 500px;
+  max-width: 520px;
 
-  padding: 42px 55px;
+  padding: 48px 44px;
 
-  background: #0d1728;
+  background: rgba(3, 6, 10, 0.36);
+  backdrop-filter: blur(6px) saturate(120%);
 
-  border: 1px solid #2a3b53;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 
-  border-radius: 14px;
+  border-radius: 12px;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
 }
 
 
@@ -1449,15 +1472,19 @@ a {
    ========================================================= */
 
 .register-card h1 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 
   text-align: center;
 
-  color: #22c55e;
+  color: transparent;
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 
-  font-size: 36px;
+  font-size: 44px;
 
-  font-weight: 700;
+  font-weight: 800;
 }
 
 
@@ -1466,14 +1493,173 @@ a {
    ========================================================= */
 
 .register-subtitle {
-  margin: 0 0 28px;
+  margin: 0 0 12px;
 
-  text-align: center;
+  text-align: left;
 
-  color: #94a3b8;
+  color: #cbd5e1;
 
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: 500;
 }
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: transparent;
+}
+
+.login-card {
+  max-width: 520px;
+  padding: 48px 44px;
+  background: rgba(3, 6, 10, 0.36);
+  backdrop-filter: blur(6px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
+}
+
+.login-side-text {
+  position: absolute;
+  left: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 420px;
+}
+
+.login-side-text .login-side-line1 {
+  color: #e6f8ff;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg,#06b6d4,#3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-side-text .login-side-line2 {
+  color: #9fc9ff;
+  font-size: 18px;
+  font-weight: 600;
+  font-style: italic;
+}
+
+@media (max-width: 920px) {
+  .login-side-text { display: none; }
+}
+
+/* Logo used on authentication pages (place solarsync.png in frontend/public) */
+.auth-logo {
+  display: block;
+  margin: 0 auto 14px;
+  width: 96px;
+  height: auto;
+}
+
+@media (min-width: 921px) {
+  /* keep logo slightly left when side text present */
+  .register-card .auth-logo,
+  .login-card .auth-logo {
+    margin-left: 10px;
+    margin-right: 0;
+  }
+}
+
+/* Use solarsync.png as a decorative background for auth pages */
+.login-wrapper,
+.register-container {
+  background-image: url('/solarsync.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+
+/* dark overlay for contrast */
+.login-wrapper::before,
+.register-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(3,6,10,0.55), rgba(3,6,10,0.55));
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ensure card content sits above overlay */
+.register-card,
+.login-card {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 920px) {
+  .login-wrapper,
+  .register-container {
+    background-image: none;
+  }
+}
+
+.login-card h1 {
+  margin: 0 0 6px;
+  text-align: center;
+  color: transparent;
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 44px;
+  font-weight: 800;
+}
+
+.login-subtitle {
+  margin: 0 0 12px;
+  text-align: left;
+  color: #cbd5e1;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.login-quote { color: #60a5fa; font-size: 14px; font-style: italic; margin-top:6px; margin-bottom:18px }
+
+.login-card {
+  max-width: 520px;
+  margin-left: 18px;
+  padding: 48px 44px;
+  background: #0d1728;
+  border: 1px solid #223148;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(2, 6, 23, 0.6);
+  text-align: left;
+}
+
+.login-card h1 {
+  margin: 0 0 6px;
+  text-align: left;
+  color: transparent;
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 44px;
+  font-weight: 800;
+}
+
+.login-subtitle {
+  margin: 0 0 12px;
+  text-align: left;
+  color: #cbd5e1;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.login-quote { color: #60a5fa; font-size: 14px; font-style: italic; margin-top:6px; margin-bottom:18px }
 
 
 /* =========================================================
@@ -1775,15 +1961,123 @@ a {
   }
 
   .register-container {
-    padding: 25px 15px;
+    padding: 20px 18px;
+    align-items: center;
+    justify-content: center;
   }
 
   .register-card {
-    padding: 32px 25px;
+    padding: 28px 20px;
   }
 
   .register-card h1 {
-    font-size: 30px;
+    font-size: 32px;
+    text-align: center;
   }
 
+}
+
+/* =========================================================
+   TEXT VARIABLES
+   ========================================================= */
+
+:root {
+  --panel-bg: linear-gradient(180deg, rgba(9, 20, 35, 0.78), rgba(4, 12, 20, 0.7));
+  --panel-bg-alt: linear-gradient(180deg, rgba(12, 25, 41, 0.8), rgba(7, 17, 29, 0.72));
+  --panel-line: rgba(103, 213, 242, 0.22);
+  --panel-shadow: rgba(2, 6, 23, 0.28);
+  --text-strong: #f4fbff;
+  --text-main: #e6f3ff;
+  --text-soft: #cfe3ff;
+  --text-muted: #9ac1e8;
+}
+
+.welcome-card,
+.metric-card,
+.dashboard-panel,
+.sites-table-container,
+.site-header-card,
+.panel-table-container,
+.modal-card,
+.site-search,
+.tickets-table-container,
+.ticket-card,
+.ticket-hero,
+.sites-table-container,
+.panel-table-container,
+.ticket-table-container {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-line);
+  box-shadow: 0 12px 30px var(--panel-shadow);
+}
+
+.welcome-card,
+.metric-card,
+.dashboard-panel,
+.site-header-card,
+.ticket-card,
+.ticket-hero,
+.sites-table-container,
+.panel-table-container,
+.tickets-table-container,
+.modal-card {
+  border-radius: 14px;
+}
+
+.welcome-card h1,
+.metric-card strong,
+.dashboard-panel h2,
+.sites-title-section h1,
+.site-main-info h2,
+.tickets-page h1,
+.ticket-title,
+.site-info-item strong,
+.sites-table td:first-child strong,
+.ticket-table td:first-child {
+  color: var(--text-strong);
+}
+
+.welcome-card p,
+.welcome-card span,
+.metric-card span,
+.sites-subtitle,
+.site-main-info p,
+.site-info-item span,
+.usage-cell span,
+.tickets-subtitle,
+.ticket-meta,
+.dashboard-panel p,
+.dashboard-panel span,
+.sites-table td,
+.panel-table td,
+.ticket-table td,
+.ticket-table th,
+.activity-status,
+.dashboard-user span,
+.dashboard-nav-links a,
+.site-view-details,
+.back-link,
+.status-badge,
+.metric-card,
+.ticket-card,
+.ticket-hero {
+  color: var(--text-main);
+}
+
+.site-search::placeholder,
+.modal-card input::placeholder,
+.modal-card textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.sites-table thead,
+.panel-table thead,
+.ticket-table thead {
+  background: rgba(14, 24, 37, 0.74);
+}
+
+.sites-table tbody tr:hover td,
+.panel-table tbody tr:hover td,
+.ticket-table tbody tr:hover td {
+  background: rgba(17, 31, 49, 0.6);
 }

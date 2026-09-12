@@ -5,9 +5,14 @@ import { logout } from '../../store/slices/authSlice';
 export default function Navbar() {
   const dispatch = useDispatch();
   return (
-    <nav role="navigation">
-      <span>SolarSync</span>
-      <button onClick={() => dispatch(logout())}>Logout</button>
+    <nav className="navbar" role="navigation">
+      <div className="navbar-brand">
+        <span className="brand-name">SolarSync</span>
+        <small className="brand-tag">Operations Dashboard</small>
+      </div>
+      <div className="navbar-actions">
+        <button className="signout-button" onClick={() => dispatch(logout())}>Sign Out</button>
+      </div>
     </nav>
   );
 }

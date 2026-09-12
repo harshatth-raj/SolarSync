@@ -39,11 +39,6 @@ function Register() {
         setSuccess("");
         setValidationError("");
 
-        /* =================================================
-           USERNAME VALIDATION
-           Only A-Z and a-z are allowed
-        ================================================= */
-
         const usernameRegex = /^[A-Za-z]+$/;
 
         if (!usernameRegex.test(formData.username)) {
@@ -52,11 +47,6 @@ function Register() {
             );
             return;
         }
-
-
-        /* =================================================
-           PASSWORD VALIDATION
-        ================================================= */
 
         const uppercaseRegex = /[A-Z]/;
         const lowercaseRegex = /[a-z]/;
@@ -91,11 +81,6 @@ function Register() {
             return;
         }
 
-
-        /* =================================================
-           CONFIRM PASSWORD
-        ================================================= */
-
         if (
             formData.password !==
             formData.confirmPassword
@@ -106,11 +91,6 @@ function Register() {
             return;
         }
 
-
-        /* =================================================
-           DATA SENT TO BACKEND
-        ================================================= */
-
         const registerData = {
             username: formData.username,
             email: formData.email,
@@ -118,20 +98,13 @@ function Register() {
             role: formData.role
         };
 
-
-        /* =================================================
-           REGISTER
-        ================================================= */
-
         const result = await dispatch(
             register(registerData)
         );
 
         if (register.fulfilled.match(result)) {
 
-            setSuccess(
-                "Registration successful! Redirecting to login..."
-            );
+            setSuccess("Account created — redirecting to sign in...");
 
             setTimeout(() => {
                 navigate("/login");
@@ -144,11 +117,13 @@ function Register() {
 
             <div className="register-card">
 
-                <h1>Register</h1>
+                <h1>Create account</h1>
 
                 <p className="register-subtitle">
-                    Create your SolarSync account
+                    Join SolarSync to monitor sites, panels, and performance.
                 </p>
+
+                <p className="register-quote">Build reliable solar operations with data-driven insights.</p>
 
                 <form onSubmit={handleSubmit}>
 
@@ -206,15 +181,15 @@ function Register() {
                         />
 
                         <small className="password-requirements">
-                            Password must contain:
+                            Password requirements:
                             <br />
-                            • One uppercase letter
+                            • At least one uppercase letter
                             <br />
-                            • One lowercase letter
+                            • At least one lowercase letter
                             <br />
-                            • One number
+                            • At least one digit
                             <br />
-                            • One special character (#, $, @, !, *)
+                            • At least one special character (#, $, @, !, *)
                         </small>
 
                     </div>
@@ -284,9 +259,7 @@ function Register() {
                         className="register-button"
                         disabled={loading}
                     >
-                        {loading
-                            ? "Registering..."
-                            : "Register"}
+                        {loading ? "Creating account..." : "Create account"}
                     </button>
 
                 </form>
@@ -320,7 +293,7 @@ function Register() {
                         type="button"
                         onClick={() => navigate("/login")}
                     >
-                        Login
+                        Sign in
                     </button>
 
                 </p>

@@ -23,7 +23,6 @@ function Login() {
         );
 
         if (login.fulfilled.match(result)) {
-            alert("Login successful!");
             navigate("/");
         }
     };
@@ -31,9 +30,16 @@ function Login() {
     return (
         <div className="login-container">
 
-            <div className="login-card">
+            <div className="login-wrapper">
 
-                <h1>Login</h1>
+                <div className="login-side-text" aria-hidden="true">
+                    <div className="login-side-line1">Monitor and optimize your solar assets with confidence.</div>
+                    <div className="login-side-line2">Powering a cleaner, smarter energy future.</div>
+                </div>
+
+                <div className="login-card">
+
+                    <h1>Welcome to SolarSync</h1>
 
                 <form onSubmit={handleSubmit}>
 
@@ -69,7 +75,7 @@ function Login() {
                         type="submit"
                         disabled={loading}
                     >
-                        {loading ? "Logging in..." : "Login"}
+                        {loading ? "Signing in..." : "Sign In"}
                     </button>
 
                     {error && (
@@ -87,9 +93,11 @@ function Login() {
                         type="button"
                         onClick={() => navigate("/register")}
                     >
-                        Register
+                        Create account
                     </button>
                 </p>
+
+                </div>
 
             </div>
 
