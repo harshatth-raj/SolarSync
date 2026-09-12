@@ -55,7 +55,7 @@ a {
   min-height: 100vh;
 
   background: #07111f;
-  background-image: url('/solarsyncdash.png');
+  background-image: url('%PUBLIC_URL%/solarsyncdash.png');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
