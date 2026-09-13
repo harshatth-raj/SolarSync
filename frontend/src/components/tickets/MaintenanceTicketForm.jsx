@@ -2,29 +2,32 @@ import React, { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-    fetchSites
-} from "../../store/slices/siteSlice";
+import { fetchSites } from "../../store/slices/siteSlice";
 
-import {
-    fetchPanelsBySite
-} from "../../store/slices/panelSlice";
+import { fetchPanelsBySite } from "../../store/slices/panelSlice";
 
-import {
-    createTicket
-} from "../../store/slices/ticketSlice";
+import { createTicket } from "../../store/slices/ticketSlice";
 
 
 function MaintenanceTicketForm({ onClose }) {
 
     const dispatch = useDispatch();
 
+
     const sites = useSelector(
-        state => state.sites.items
+        state => state.sites.items || []
     );
 
     const panels = useSelector(
-        state => state.panels.items
+        state => state.panels.items || []
+    );
+
+    const siteError = useSelector(
+        state => state.sites.error
+    );
+
+    const panelError = useSelector(
+        state => state.panels.error
     );
 
     const ticketError = useSelector(
@@ -32,9 +35,11 @@ function MaintenanceTicketForm({ onClose }) {
     );
 
 
-    const [siteId, setSiteId] = useState("");
+    const [siteId, setSiteId] =
+        useState("");
 
-    const [panelId, setPanelId] = useState("");
+    const [panelId, setPanelId] =
+        useState("");
 
     const [priority, setPriority] =
         useState("LOW");
@@ -61,7 +66,7 @@ function MaintenanceTicketForm({ onClose }) {
 
 
     /* =========================================
-       LOAD PANELS WHEN SITE CHANGES
+       LOAD PANELS AFTER SITE SELECTION
     ========================================= */
 
     useEffect(() => {
@@ -93,7 +98,7 @@ function MaintenanceTicketForm({ onClose }) {
 
 
     /* =========================================
-       SUBMIT TICKET
+       SUBMIT
     ========================================= */
 
     const handleSubmit = async (e) => {
@@ -124,7 +129,7 @@ function MaintenanceTicketForm({ onClose }) {
         if (!issueDescription.trim()) {
 
             alert(
-                "Please enter an issue description."
+                "Please enter the issue description."
             );
 
             return;
@@ -136,15 +141,6 @@ function MaintenanceTicketForm({ onClose }) {
 
         try {
 
-            /*
-             * This matches TicketRequestDto:
-             *
-             * siteId
-             * panelId
-             * issueDescription
-             * priority
-             */
-
             const ticketData = {
 
                 siteId: Number(siteId),
@@ -155,6 +151,7 @@ function MaintenanceTicketForm({ onClose }) {
                     issueDescription.trim(),
 
                 priority: priority
+
             };
 
 
@@ -171,7 +168,6 @@ function MaintenanceTicketForm({ onClose }) {
 
             }
 
-
         } finally {
 
             setSubmitting(false);
@@ -184,6 +180,8 @@ function MaintenanceTicketForm({ onClose }) {
     return (
 
         <div className="ticket-form">
+
+            {/* HEADER */}
 
             <div className="ticket-form-header">
 
@@ -214,15 +212,16 @@ function MaintenanceTicketForm({ onClose }) {
 
             <form onSubmit={handleSubmit}>
 
-                {/* ==============================
-                    SOLAR SITE
-                ============================== */}
+                {/* =================================
+                    SITE
+                ================================= */}
 
                 <div className="form-group">
 
                     <label>
                         Solar Site
                     </label>
+
 
                     <select
                         value={siteId}
@@ -252,18 +251,48 @@ function MaintenanceTicketForm({ onClose }) {
 
                     </select>
 
+
+                    {sites.length === 0 &&
+                        !siteError && (
+
+                        <small
+                            style={{
+                                color: "#94a3b8"
+                            }}
+                        >
+                            No solar sites available.
+                        </small>
+
+                    )}
+
+
+                    {siteError && (
+
+                        <small
+                            style={{
+                                color: "#f87171"
+                            }}
+                        >
+                            Unable to load solar sites:
+                            {" "}
+                            {siteError}
+                        </small>
+
+                    )}
+
                 </div>
 
 
-                {/* ==============================
-                    SOLAR PANEL
-                ============================== */}
+                {/* =================================
+                    PANEL
+                ================================= */}
 
                 <div className="form-group">
 
                     <label>
                         Solar Panel
                     </label>
+
 
                     <select
                         value={panelId}
@@ -286,7 +315,7 @@ function MaintenanceTicketForm({ onClose }) {
                                 : loadingPanels
                                     ? "Loading panels..."
                                     : panels.length === 0
-                                        ? "No panels available"
+                                        ? "No panels available for this site"
                                         : "Select Solar Panel"}
 
                         </option>
@@ -309,18 +338,34 @@ function MaintenanceTicketForm({ onClose }) {
 
                     </select>
 
+
+                    {panelError && (
+
+                        <small
+                            style={{
+                                color: "#f87171"
+                            }}
+                        >
+                            Unable to load panels:
+                            {" "}
+                            {panelError}
+                        </small>
+
+                    )}
+
                 </div>
 
 
-                {/* ==============================
+                {/* =================================
                     PRIORITY
-                ============================== */}
+                ================================= */}
 
                 <div className="form-group">
 
                     <label>
                         Priority
                     </label>
+
 
                     <select
                         value={priority}
@@ -352,15 +397,16 @@ function MaintenanceTicketForm({ onClose }) {
                 </div>
 
 
-                {/* ==============================
+                {/* =================================
                     DESCRIPTION
-                ============================== */}
+                ================================= */}
 
                 <div className="form-group">
 
                     <label>
                         Issue Description
                     </label>
+
 
                     <textarea
                         value={issueDescription}
@@ -377,9 +423,7 @@ function MaintenanceTicketForm({ onClose }) {
                 </div>
 
 
-                {/* ==============================
-                    ERROR
-                ============================== */}
+                {/* ERROR */}
 
                 {ticketError && (
 
@@ -390,9 +434,7 @@ function MaintenanceTicketForm({ onClose }) {
                 )}
 
 
-                {/* ==============================
-                    BUTTONS
-                ============================== */}
+                {/* BUTTONS */}
 
                 <div className="ticket-form-actions">
 
@@ -409,7 +451,11 @@ function MaintenanceTicketForm({ onClose }) {
                     <button
                         type="submit"
                         className="ticket-submit-button"
-                        disabled={submitting}
+                        disabled={
+                            submitting ||
+                            !siteId ||
+                            !panelId
+                        }
                     >
                         {submitting
                             ? "Submitting..."
