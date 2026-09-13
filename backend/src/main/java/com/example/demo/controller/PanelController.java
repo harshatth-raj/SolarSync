@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.SolarPanel;
@@ -21,10 +22,11 @@ public class PanelController {
 
     // --------------------------------------------------
     // CREATE PANEL
-    // POST /api/panels
+    // All three roles can create a panel
     // --------------------------------------------------
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMINISTRATOR','SOLAR_OPERATOR','MAINTENANCE_TECHNICIAN')")
     public ResponseEntity<SolarPanel> createPanel(
             @RequestBody SolarPanel panel) {
 
@@ -34,12 +36,13 @@ public class PanelController {
         );
     }
 
+
     // --------------------------------------------------
     // GET ALL PANELS
-    // GET /api/panels
     // --------------------------------------------------
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMINISTRATOR','SOLAR_OPERATOR','MAINTENANCE_TECHNICIAN')")
     public ResponseEntity<List<SolarPanel>> getAllPanels() {
 
         return ResponseEntity.ok(
@@ -47,12 +50,13 @@ public class PanelController {
         );
     }
 
+
     // --------------------------------------------------
     // GET PANEL BY ID
-    // GET /api/panels/{id}
     // --------------------------------------------------
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMINISTRATOR','SOLAR_OPERATOR','MAINTENANCE_TECHNICIAN')")
     public ResponseEntity<SolarPanel> getPanelById(
             @PathVariable Long id) {
 
@@ -61,12 +65,14 @@ public class PanelController {
         );
     }
 
+
     // --------------------------------------------------
     // GET PANELS BY SITE
-    // GET /api/panels/site/{siteId}
+    // THIS IS THE IMPORTANT ONE FOR YOUR FORM
     // --------------------------------------------------
 
     @GetMapping("/site/{siteId}")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMINISTRATOR','SOLAR_OPERATOR','MAINTENANCE_TECHNICIAN')")
     public ResponseEntity<List<SolarPanel>> getPanelsBySite(
             @PathVariable Long siteId) {
 
@@ -75,12 +81,13 @@ public class PanelController {
         );
     }
 
+
     // --------------------------------------------------
     // UPDATE PANEL
-    // PUT /api/panels/{id}
     // --------------------------------------------------
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('SYSTEM_ADMINISTRATOR')")
     public ResponseEntity<SolarPanel> updatePanel(
             @PathVariable Long id,
             @RequestBody SolarPanel panel) {
@@ -90,12 +97,13 @@ public class PanelController {
         );
     }
 
+
     // --------------------------------------------------
     // DELETE PANEL
-    // DELETE /api/panels/{id}
     // --------------------------------------------------
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SYSTEM_ADMINISTRATOR')")
     public ResponseEntity<String> deletePanel(
             @PathVariable Long id) {
 
