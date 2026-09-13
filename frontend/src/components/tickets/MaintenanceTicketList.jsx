@@ -14,10 +14,20 @@ import {
     resolveTicket
 } from "../../store/slices/ticketSlice";
 
+import MaintenanceTicketForm
+    from "./MaintenanceTicketForm";
+
 
 function MaintenanceTicketList() {
 
     const dispatch = useDispatch();
+
+    const [showForm, setShowForm] =
+        useState(false);
+
+    const [search, setSearch] =
+        useState("");
+
 
     const {
         items,
@@ -27,17 +37,6 @@ function MaintenanceTicketList() {
         state => state.tickets
     );
 
-    const user = useSelector(
-        state => state.auth.user
-    );
-
-    const [search, setSearch] =
-        useState("");
-
-
-    /* --------------------------------
-       Fetch tickets
-    -------------------------------- */
 
     useEffect(() => {
 
@@ -46,70 +45,77 @@ function MaintenanceTicketList() {
     }, [dispatch]);
 
 
-    /* --------------------------------
-       Search
-    -------------------------------- */
+    /* =====================================
+       SEARCH
+    ===================================== */
 
-    const filteredTickets = useMemo(() => {
+    const filteredTickets =
+        useMemo(() => {
 
-        const query =
-            search.toLowerCase();
-
-        return items.filter(ticket => {
-
-            const siteName =
-                ticket.site?.siteName ||
-                ticket.siteName ||
-                "";
-
-            const panelNumber =
-                ticket.panel?.serialNumber ||
-                ticket.panel?.id ||
-                ticket.panelId ||
-                "";
-
-            const description =
-                ticket.issueDescription ||
-                ticket.description ||
-                "";
-
-            const priority =
-                ticket.priority ||
-                "";
-
-            const status =
-                ticket.status ||
-                "";
-
-            return (
-                String(siteName)
+            const query =
+                search
                     .toLowerCase()
-                    .includes(query) ||
-
-                String(panelNumber)
-                    .toLowerCase()
-                    .includes(query) ||
-
-                String(description)
-                    .toLowerCase()
-                    .includes(query) ||
-
-                String(priority)
-                    .toLowerCase()
-                    .includes(query) ||
-
-                String(status)
-                    .toLowerCase()
-                    .includes(query)
-            );
-        });
-
-    }, [items, search]);
+                    .trim();
 
 
-    /* --------------------------------
-       Resolve ticket
-    -------------------------------- */
+            if (!query) {
+                return items;
+            }
+
+
+            return items.filter(ticket => {
+
+                return (
+
+                    String(
+                        ticket.siteName || ""
+                    )
+                        .toLowerCase()
+                        .includes(query)
+
+                    ||
+
+                    String(
+                        ticket.panelId || ""
+                    )
+                        .toLowerCase()
+                        .includes(query)
+
+                    ||
+
+                    String(
+                        ticket.issueDescription ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(query)
+
+                    ||
+
+                    String(
+                        ticket.priority || ""
+                    )
+                        .toLowerCase()
+                        .includes(query)
+
+                    ||
+
+                    String(
+                        ticket.status || ""
+                    )
+                        .toLowerCase()
+                        .includes(query)
+
+                );
+
+            });
+
+        }, [items, search]);
+
+
+    /* =====================================
+       RESOLVE
+    ===================================== */
 
     const handleResolve = async (id) => {
 
@@ -118,72 +124,82 @@ function MaintenanceTicketList() {
                 "Are you sure you want to resolve this ticket?"
             );
 
+
         if (!confirmed) {
             return;
         }
 
-        dispatch(resolveTicket(id));
+
+        await dispatch(
+            resolveTicket(id)
+        );
+
     };
 
 
-    /* --------------------------------
-       Status class
-    -------------------------------- */
+    /* =====================================
+       PRIORITY CLASS
+    ===================================== */
 
-    const getStatusClass = (status) => {
+    const getPriorityClass =
+        (priority) => {
 
-        const value =
-            String(status || "")
-                .toUpperCase();
+            switch (
+                String(priority)
+                    .toUpperCase()
+            ) {
 
-        if (value === "RESOLVED") {
-            return "ticket-status resolved";
-        }
+                case "CRITICAL":
+                    return "critical";
 
-        if (
-            value === "IN_PROGRESS" ||
-            value === "IN PROGRESS"
-        ) {
-            return "ticket-status progress";
-        }
+                case "HIGH":
+                    return "high";
 
-        return "ticket-status open";
-    };
+                case "MEDIUM":
+                    return "medium";
+
+                default:
+                    return "low";
+            }
+
+        };
 
 
-    /* --------------------------------
-       Priority class
-    -------------------------------- */
+    /* =====================================
+       STATUS CLASS
+    ===================================== */
 
-    const getPriorityClass = (priority) => {
+    const getStatusClass =
+        (status) => {
 
-        const value =
-            String(priority || "")
-                .toUpperCase();
+            const value =
+                String(status || "")
+                    .toUpperCase();
 
-        if (value === "CRITICAL") {
-            return "ticket-priority critical";
-        }
 
-        if (value === "HIGH") {
-            return "ticket-priority high";
-        }
+            if (value === "CLOSED") {
+                return "resolved";
+            }
 
-        if (value === "MEDIUM") {
-            return "ticket-priority medium";
-        }
 
-        return "ticket-priority low";
-    };
+            if (
+                value === "IN_PROGRESS"
+            ) {
+                return "progress";
+            }
+
+
+            return "open";
+        };
 
 
     return (
 
         <div className="ticket-page">
 
-            {/* ==================================
+            {/* =================================
                 HEADER
-            ================================== */}
+            ================================= */}
 
             <div className="ticket-page-header">
 
@@ -200,12 +216,22 @@ function MaintenanceTicketList() {
 
                 </div>
 
+
+                <button
+                    className="btn-primary"
+                    onClick={() =>
+                        setShowForm(true)
+                    }
+                >
+                    + Report Issue
+                </button>
+
             </div>
 
 
-            {/* ==================================
+            {/* =================================
                 SEARCH
-            ================================== */}
+            ================================= */}
 
             <div className="ticket-search">
 
@@ -214,16 +240,18 @@ function MaintenanceTicketList() {
                     placeholder="Search maintenance tickets..."
                     value={search}
                     onChange={(e) =>
-                        setSearch(e.target.value)
+                        setSearch(
+                            e.target.value
+                        )
                     }
                 />
 
             </div>
 
 
-            {/* ==================================
+            {/* =================================
                 ERROR
-            ================================== */}
+            ================================= */}
 
             {error && (
 
@@ -234,9 +262,9 @@ function MaintenanceTicketList() {
             )}
 
 
-            {/* ==================================
+            {/* =================================
                 LOADING
-            ================================== */}
+            ================================= */}
 
             {loading ? (
 
@@ -249,21 +277,17 @@ function MaintenanceTicketList() {
                 <div className="ticket-empty">
 
                     <h3>
-                        No Maintenance Tickets
+                        No maintenance tickets found.
                     </h3>
 
                     <p>
-                        There are currently no
-                        maintenance tickets to display.
+                        Click "Report Issue" to
+                        create your first ticket.
                     </p>
 
                 </div>
 
             ) : (
-
-                /* ==================================
-                   TABLE
-                ================================== */
 
                 <div className="ticket-table-wrapper">
 
@@ -297,12 +321,9 @@ function MaintenanceTicketList() {
                                     TECHNICIAN
                                 </th>
 
-                                {user?.role ===
-                                    "MAINTENANCE_TECHNICIAN" && (
-                                    <th>
-                                        ACTION
-                                    </th>
-                                )}
+                                <th>
+                                    ACTION
+                                </th>
 
                             </tr>
 
@@ -312,120 +333,138 @@ function MaintenanceTicketList() {
                         <tbody>
 
                             {filteredTickets.map(
-                                (ticket) => {
+                                ticket => (
 
-                                    const siteName =
-                                        ticket.site?.siteName ||
-                                        ticket.siteName ||
-                                        "—";
+                                    <tr
+                                        key={ticket.id}
+                                    >
 
-                                    const panel =
-                                        ticket.panel?.serialNumber ||
-                                        ticket.panel?.id ||
-                                        ticket.panelId ||
-                                        "—";
+                                        <td>
+                                            {ticket.siteName ||
+                                                "—"}
+                                        </td>
 
-                                    const description =
-                                        ticket.issueDescription ||
-                                        ticket.description ||
-                                        "—";
 
-                                    const technician =
-                                        ticket.technician?.username ||
-                                        ticket.technician?.name ||
-                                        ticket.technician ||
-                                        "—";
+                                        <td>
+                                            {ticket.panelId ||
+                                                "—"}
+                                        </td>
 
-                                    return (
 
-                                        <tr
-                                            key={ticket.id}
+                                        <td
+                                            className="description-cell"
                                         >
+                                            {
+                                                ticket.issueDescription ||
+                                                "—"
+                                            }
+                                        </td>
 
-                                            <td>
-                                                <strong>
-                                                    {siteName}
-                                                </strong>
-                                            </td>
 
-                                            <td>
-                                                {panel}
-                                            </td>
+                                        <td>
 
-                                            <td className="description-cell">
-                                                {description}
-                                            </td>
+                                            <span
+                                                className={
+                                                    `ticket-priority ${getPriorityClass(
+                                                        ticket.priority
+                                                    )}`
+                                                }
+                                            >
+                                                {
+                                                    ticket.priority ||
+                                                    "LOW"
+                                                }
+                                            </span>
 
-                                            <td>
+                                        </td>
 
-                                                <span
-                                                    className={
-                                                        getPriorityClass(
-                                                            ticket.priority
+
+                                        <td>
+
+                                            <span
+                                                className={
+                                                    `ticket-status ${getStatusClass(
+                                                        ticket.status
+                                                    )}`
+                                                }
+                                            >
+                                                {
+                                                    ticket.status ||
+                                                    "OPEN"
+                                                }
+                                            </span>
+
+                                        </td>
+
+
+                                        <td>
+                                            {
+                                                ticket.technicianName ||
+                                                ticket.techName ||
+                                                "—"
+                                            }
+                                        </td>
+
+
+                                        <td>
+
+                                            {String(
+                                                ticket.status
+                                            ).toUpperCase()
+                                                !== "CLOSED" && (
+
+                                                <button
+                                                    className="resolve-ticket-btn"
+                                                    onClick={() =>
+                                                        handleResolve(
+                                                            ticket.id
                                                         )
                                                     }
                                                 >
-                                                    {ticket.priority ||
-                                                        "LOW"}
-                                                </span>
-
-                                            </td>
-
-                                            <td>
-
-                                                <span
-                                                    className={
-                                                        getStatusClass(
-                                                            ticket.status
-                                                        )
-                                                    }
-                                                >
-                                                    {ticket.status ||
-                                                        "OPEN"}
-                                                </span>
-
-                                            </td>
-
-                                            <td>
-                                                {technician}
-                                            </td>
-
-
-                                            {user?.role ===
-                                                "MAINTENANCE_TECHNICIAN" && (
-
-                                                <td>
-
-                                                    {ticket.status !==
-                                                        "RESOLVED" && (
-
-                                                        <button
-                                                            className="resolve-ticket-btn"
-                                                            onClick={() =>
-                                                                handleResolve(
-                                                                    ticket.id
-                                                                )
-                                                            }
-                                                        >
-                                                            Resolve
-                                                        </button>
-
-                                                    )}
-
-                                                </td>
+                                                    Resolve
+                                                </button>
 
                                             )}
 
-                                        </tr>
+                                        </td>
 
-                                    );
+                                    </tr>
 
-                                }
+                                )
                             )}
 
                         </tbody>
 
                     </table>
+
+                </div>
+
+            )}
+
+
+            {/* =================================
+                REPORT ISSUE MODAL
+            ================================= */}
+
+            {showForm && (
+
+                <div className="modal-overlay">
+
+                    <div className="modal-card ticket-modal">
+
+                        <MaintenanceTicketForm
+                            onClose={() => {
+
+                                setShowForm(false);
+
+                                dispatch(
+                                    fetchTickets()
+                                );
+
+                            }}
+                        />
+
+                    </div>
 
                 </div>
 
