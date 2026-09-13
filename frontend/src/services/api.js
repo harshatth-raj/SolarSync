@@ -1,10 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL?.replace(/\/+$/, "") || "",
+  baseURL: process.env.REACT_APP_API_URL || "",
 });
 
-// Auto-attach JWT token to every request
 api.interceptors.request.use((config) => {
   const token =
     localStorage.getItem("token") ||

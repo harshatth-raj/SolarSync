@@ -44,15 +44,27 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/static/**",
+                                "/*.js",
+                                "/*.css",
+                                "/*.ico",
+                                "/*.png",
+                                "/*.json",
+                                "/login",
+                                "/register",
+                                "/sites",
+                                "/sites/**",
+                                "/tickets",
+                                "/dashboard",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs",
-                                "/api/**"
+                                "/api/auth/**"
                         ).permitAll()
-
-                        .anyRequest()
-                        .authenticated())
+                        .anyRequest().authenticated())
 
                 .authenticationProvider(authenticationProvider)
 
