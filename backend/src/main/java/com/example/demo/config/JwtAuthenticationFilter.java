@@ -30,23 +30,70 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String authHeader =
+                request.getHeader("Authorization");
 
-        // No JWT present
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        /* No token */
+        if (authHeader == null ||
+                !authHeader.startsWith("Bearer ")) {
+
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract token
-        String token = authHeader.substring(7);
+        String token =
+                authHeader.substring(7);
 
-        // Validate token
-        if (jwtService.isTokenValid(token)) {
+        try {
 
-            SecurityContextHolder.getContext()
-                    .setAuthentication(jwtService.getAuthentication(token));
+            /*
+             * Load username from JWT
+             */
+            String username =
+                    jwtService.extractUsername(token);
 
+            /*
+             * Only authenticate if there is no existing
+             * authentication.
+             */
+            if (username != null &&
+                    SecurityContextHolder
+                            .getContext()
+                            .getAuthentication() == null) {
+
+                /*
+                 * Load the actual user from database
+                 */
+                var userDetails =
+                        jwtService.loadUserByUsername(username);
+
+                /*
+                 * Validate JWT against the user
+                 */
+                if (jwtService.isTokenValid(
+                        token,
+                        userDetails)) {
+
+                    var authentication =
+                            jwtService.getAuthentication(
+                                    token,
+                                    userDetails);
+
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(
+                                    authentication);
+                }
+            }
+
+        } catch (Exception e) {
+
+            /*
+             * Invalid token:
+             * leave SecurityContext unauthenticated.
+             */
+            SecurityContextHolder
+                    .clearContext();
         }
 
         filterChain.doFilter(request, response);

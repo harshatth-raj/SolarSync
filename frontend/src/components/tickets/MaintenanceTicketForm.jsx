@@ -1,51 +1,29 @@
 import React, { useEffect, useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import api from "../../services/api";
 
-import { fetchSites } from "../../store/slices/siteSlice";
+export default function MaintenanceTicketForm({ onClose }) {
 
-import { fetchPanelsBySite } from "../../store/slices/panelSlice";
-
-import { createTicket } from "../../store/slices/ticketSlice";
-
-
-function MaintenanceTicketForm({ onClose }) {
-
-    const dispatch = useDispatch();
-
-
-    const sites = useSelector(
-        state => state.sites.items || []
-    );
-
-    const panels = useSelector(
-        state => state.panels.items || []
-    );
-
-    const siteError = useSelector(
-        state => state.sites.error
-    );
-
-    const panelError = useSelector(
-        state => state.panels.error
-    );
-
-    const ticketError = useSelector(
-        state => state.tickets.error
-    );
-
-
-    const [siteId, setSiteId] =
+    const [description, setDescription] =
         useState("");
 
-    const [panelId, setPanelId] =
+    const [sites, setSites] =
+        useState([]);
+
+    const [panels, setPanels] =
+        useState([]);
+
+    const [selectedSite, setSelectedSite] =
+        useState("");
+
+    const [selectedPanel, setSelectedPanel] =
         useState("");
 
     const [priority, setPriority] =
         useState("LOW");
 
-    const [issueDescription, setIssueDescription] =
-        useState("");
+    const [loadingSites, setLoadingSites] =
+        useState(true);
 
     const [loadingPanels, setLoadingPanels] =
         useState(false);
@@ -53,62 +31,178 @@ function MaintenanceTicketForm({ onClose }) {
     const [submitting, setSubmitting] =
         useState(false);
 
-
-    /* =========================================
-       LOAD SITES
-    ========================================= */
-
-    useEffect(() => {
-
-        dispatch(fetchSites());
-
-    }, [dispatch]);
+    const [error, setError] =
+        useState("");
 
 
-    /* =========================================
-       LOAD PANELS AFTER SITE SELECTION
-    ========================================= */
+    /* =====================================================
+       LOAD SOLAR SITES
+    ===================================================== */
 
     useEffect(() => {
 
-        if (!siteId) {
+        let mounted = true;
 
-            setPanelId("");
+        const loadSites = async () => {
+
+            try {
+
+                const response =
+                    await api.get("/api/sites");
+
+                if (!mounted) {
+                    return;
+                }
+
+                const siteData =
+                    Array.isArray(response.data)
+                        ? response.data
+                        : [];
+
+                setSites(siteData);
+
+                /*
+                 * Do NOT automatically select the first site.
+                 * Let the user choose the site.
+                 */
+
+                setSelectedSite("");
+                setSelectedPanel("");
+
+            } catch (err) {
+
+                if (mounted) {
+
+                    setSites([]);
+
+                    setError(
+                        err.response?.data?.message ||
+                        "Unable to load solar sites."
+                    );
+                }
+
+            } finally {
+
+                if (mounted) {
+                    setLoadingSites(false);
+                }
+
+            }
+        };
+
+
+        loadSites();
+
+
+        return () => {
+            mounted = false;
+        };
+
+    }, []);
+
+
+    /* =====================================================
+       LOAD PANELS FOR SELECTED SITE
+    ===================================================== */
+
+    useEffect(() => {
+
+        let mounted = true;
+
+
+        if (!selectedSite) {
+
+            setPanels([]);
+
+            setSelectedPanel("");
 
             return;
         }
 
 
-        setPanelId("");
+        const loadPanels = async () => {
 
-        setLoadingPanels(true);
+            try {
 
+                setLoadingPanels(true);
 
-        dispatch(
-            fetchPanelsBySite(
-                Number(siteId)
-            )
-        ).finally(() => {
-
-            setLoadingPanels(false);
-
-        });
-
-    }, [dispatch, siteId]);
+                setError("");
 
 
-    /* =========================================
-       SUBMIT
-    ========================================= */
+                const response =
+                    await api.get(
+                        `/api/panels/site/${selectedSite}`
+                    );
+
+
+                if (!mounted) {
+                    return;
+                }
+
+
+                const panelData =
+                    Array.isArray(response.data)
+                        ? response.data
+                        : [];
+
+
+                setPanels(panelData);
+
+                setSelectedPanel("");
+
+            } catch (err) {
+
+                if (mounted) {
+
+                    setPanels([]);
+
+                    setSelectedPanel("");
+
+                    setError(
+                        err.response?.data?.message ||
+                        "Unable to load panels for this site."
+                    );
+                }
+
+            } finally {
+
+                if (mounted) {
+                    setLoadingPanels(false);
+                }
+
+            }
+
+        };
+
+
+        loadPanels();
+
+
+        return () => {
+            mounted = false;
+        };
+
+    }, [selectedSite]);
+
+
+    /* =====================================================
+       SUBMIT TICKET
+    ===================================================== */
 
     const handleSubmit = async (e) => {
 
         e.preventDefault();
 
+        setError("");
 
-        if (!siteId) {
 
-            alert(
+        /* -------------------------------
+           Validate Site
+        -------------------------------- */
+
+        if (!selectedSite) {
+
+            setError(
                 "Please select a solar site."
             );
 
@@ -116,9 +210,13 @@ function MaintenanceTicketForm({ onClose }) {
         }
 
 
-        if (!panelId) {
+        /* -------------------------------
+           Validate Panel
+        -------------------------------- */
 
-            alert(
+        if (!selectedPanel) {
+
+            setError(
                 "Please select a solar panel."
             );
 
@@ -126,10 +224,14 @@ function MaintenanceTicketForm({ onClose }) {
         }
 
 
-        if (!issueDescription.trim()) {
+        /* -------------------------------
+           Validate Description
+        -------------------------------- */
 
-            alert(
-                "Please enter the issue description."
+        if (!description.trim()) {
+
+            setError(
+                "Issue description is required."
             );
 
             return;
@@ -141,32 +243,67 @@ function MaintenanceTicketForm({ onClose }) {
 
         try {
 
-            const ticketData = {
+            /*
+             * This matches your backend:
+             *
+             * TicketService.createTicket()
+             * uses dto.getPanelId()
+             *
+             * siteId is also included because
+             * it belongs to TicketRequestDto.
+             */
 
-                siteId: Number(siteId),
+            const payload = {
 
-                panelId: Number(panelId),
+                siteId:
+                    Number(selectedSite),
+
+                panelId:
+                    Number(selectedPanel),
 
                 issueDescription:
-                    issueDescription.trim(),
+                    description.trim(),
 
-                priority: priority
-
+                priority:
+                    priority
             };
 
 
-            const result = await dispatch(
-                createTicket(ticketData)
+            /*
+             * IMPORTANT:
+             *
+             * Use api.post(), NOT axios.post().
+             *
+             * api.js automatically attaches:
+             *
+             * Authorization: Bearer <JWT>
+             */
+
+            await api.post(
+                "/api/tickets",
+                payload
             );
 
 
-            if (
-                createTicket.fulfilled.match(result)
-            ) {
+            /*
+             * Successful creation
+             */
 
-                onClose();
+            onClose();
 
-            }
+
+        } catch (err) {
+
+            console.error(
+                "Create ticket error:",
+                err
+            );
+
+
+            setError(
+                err.response?.data?.message ||
+                "Unable to create maintenance ticket."
+            );
 
         } finally {
 
@@ -181,7 +318,9 @@ function MaintenanceTicketForm({ onClose }) {
 
         <div className="ticket-form">
 
-            {/* HEADER */}
+            {/* =================================================
+                HEADER
+            ================================================= */}
 
             <div className="ticket-form-header">
 
@@ -203,6 +342,7 @@ function MaintenanceTicketForm({ onClose }) {
                     type="button"
                     className="close-button"
                     onClick={onClose}
+                    disabled={submitting}
                 >
                     ×
                 </button>
@@ -210,35 +350,54 @@ function MaintenanceTicketForm({ onClose }) {
             </div>
 
 
+            {/* =================================================
+                FORM
+            ================================================= */}
+
             <form onSubmit={handleSubmit}>
 
-                {/* =================================
-                    SITE
-                ================================= */}
+                {/* ============================
+                    SOLAR SITE
+                ============================ */}
 
                 <div className="form-group">
 
-                    <label>
+                    <label htmlFor="ticket-site">
                         Solar Site
                     </label>
 
 
                     <select
-                        value={siteId}
-                        onChange={(e) =>
-                            setSiteId(
+                        id="ticket-site"
+                        value={selectedSite}
+                        onChange={(e) => {
+
+                            setSelectedSite(
                                 e.target.value
-                            )
+                            );
+
+                            setSelectedPanel("");
+
+                            setError("");
+
+                        }}
+                        disabled={
+                            loadingSites ||
+                            submitting
                         }
                         required
                     >
 
                         <option value="">
-                            Select Solar Site
+
+                            {loadingSites
+                                ? "Loading sites..."
+                                : "Select Solar Site"}
+
                         </option>
 
 
-                        {sites.map(site => (
+                        {sites.map((site) => (
 
                             <option
                                 key={site.id}
@@ -251,66 +410,43 @@ function MaintenanceTicketForm({ onClose }) {
 
                     </select>
 
-
-                    {sites.length === 0 &&
-                        !siteError && (
-
-                        <small
-                            style={{
-                                color: "#94a3b8"
-                            }}
-                        >
-                            No solar sites available.
-                        </small>
-
-                    )}
-
-
-                    {siteError && (
-
-                        <small
-                            style={{
-                                color: "#f87171"
-                            }}
-                        >
-                            Unable to load solar sites:
-                            {" "}
-                            {siteError}
-                        </small>
-
-                    )}
-
                 </div>
 
 
-                {/* =================================
-                    PANEL
-                ================================= */}
+                {/* ============================
+                    SOLAR PANEL
+                ============================ */}
 
                 <div className="form-group">
 
-                    <label>
+                    <label htmlFor="ticket-panel">
                         Solar Panel
                     </label>
 
 
                     <select
-                        value={panelId}
-                        onChange={(e) =>
-                            setPanelId(
+                        id="ticket-panel"
+                        value={selectedPanel}
+                        onChange={(e) => {
+
+                            setSelectedPanel(
                                 e.target.value
-                            )
-                        }
+                            );
+
+                            setError("");
+
+                        }}
                         disabled={
-                            !siteId ||
-                            loadingPanels
+                            !selectedSite ||
+                            loadingPanels ||
+                            submitting
                         }
                         required
                     >
 
                         <option value="">
 
-                            {!siteId
+                            {!selectedSite
                                 ? "Select Solar Site first"
                                 : loadingPanels
                                     ? "Loading panels..."
@@ -321,16 +457,18 @@ function MaintenanceTicketForm({ onClose }) {
                         </option>
 
 
-                        {panels.map(panel => (
+                        {panels.map((panel) => (
 
                             <option
                                 key={panel.id}
                                 value={panel.id}
                             >
 
-                                {panel.serialNumber}
-                                {" - "}
-                                {panel.modelType}
+                                Panel #{panel.id}
+
+                                {panel.serialNumber
+                                    ? ` - ${panel.serialNumber}`
+                                    : ""}
 
                             </option>
 
@@ -339,16 +477,13 @@ function MaintenanceTicketForm({ onClose }) {
                     </select>
 
 
-                    {panelError && (
+                    {selectedSite &&
+                        !loadingPanels &&
+                        panels.length === 0 && (
 
-                        <small
-                            style={{
-                                color: "#f87171"
-                            }}
-                        >
-                            Unable to load panels:
-                            {" "}
-                            {panelError}
+                        <small className="ticket-form-help">
+                            No panels are available
+                            for this site.
                         </small>
 
                     )}
@@ -356,24 +491,26 @@ function MaintenanceTicketForm({ onClose }) {
                 </div>
 
 
-                {/* =================================
+                {/* ============================
                     PRIORITY
-                ================================= */}
+                ============================ */}
 
                 <div className="form-group">
 
-                    <label>
+                    <label htmlFor="ticket-priority">
                         Priority
                     </label>
 
 
                     <select
+                        id="ticket-priority"
                         value={priority}
                         onChange={(e) =>
                             setPriority(
                                 e.target.value
                             )
                         }
+                        disabled={submitting}
                     >
 
                         <option value="LOW">
@@ -397,44 +534,50 @@ function MaintenanceTicketForm({ onClose }) {
                 </div>
 
 
-                {/* =================================
+                {/* ============================
                     DESCRIPTION
-                ================================= */}
+                ============================ */}
 
                 <div className="form-group">
 
-                    <label>
+                    <label htmlFor="ticket-description">
                         Issue Description
                     </label>
 
 
                     <textarea
-                        value={issueDescription}
+                        id="ticket-description"
+                        placeholder="Describe the fault in detail"
+                        value={description}
                         onChange={(e) =>
-                            setIssueDescription(
+                            setDescription(
                                 e.target.value
                             )
                         }
-                        placeholder="Describe the fault in detail"
-                        rows="5"
+                        rows={5}
+                        disabled={submitting}
                         required
                     />
 
                 </div>
 
 
-                {/* ERROR */}
+                {/* ============================
+                    ERROR
+                ============================ */}
 
-                {ticketError && (
+                {error && (
 
                     <div className="ticket-form-error">
-                        {ticketError}
+                        {error}
                     </div>
 
                 )}
 
 
-                {/* BUTTONS */}
+                {/* ============================
+                    ACTIONS
+                ============================ */}
 
                 <div className="ticket-form-actions">
 
@@ -453,13 +596,15 @@ function MaintenanceTicketForm({ onClose }) {
                         className="ticket-submit-button"
                         disabled={
                             submitting ||
-                            !siteId ||
-                            !panelId
+                            !selectedSite ||
+                            !selectedPanel
                         }
                     >
+
                         {submitting
                             ? "Submitting..."
                             : "Submit Ticket"}
+
                     </button>
 
                 </div>
@@ -469,6 +614,3 @@ function MaintenanceTicketForm({ onClose }) {
         </div>
     );
 }
-
-
-export default MaintenanceTicketForm;
