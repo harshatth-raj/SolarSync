@@ -1,991 +1,439 @@
 import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
+    useEffect,
+    useMemo,
+    useState
 } from "react";
 
-import { useSelector } from "react-redux";
+import {
+    useDispatch,
+    useSelector
+} from "react-redux";
 
-import api from "../../services/api";
+import {
+    fetchTickets,
+    resolveTicket
+} from "../../store/slices/ticketSlice";
 
-import MaintenanceTicketForm from "./MaintenanceTicketForm";
 
-/* =========================================================
-   LIVE POLLING INTERVAL
-   ========================================================= */
+function MaintenanceTicketList() {
 
-const POLL_INTERVAL = 10000;
+    const dispatch = useDispatch();
 
-/* =========================================================
-   DATE / TIME FORMATTER
-   ========================================================= */
-
-const fmt = (dt) => {
-
-  if (!dt) {
-    return "—";
-  }
-
-  const d = new Date(dt);
-
-  if (Number.isNaN(d.getTime())) {
-    return "—";
-  }
-
-  return (
-    d.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }) +
-    " " +
-    d.toLocaleTimeString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  );
-};
-
-/* =========================================================
-   STATUS NORMALIZER
-   ========================================================= */
-
-const normalizeStatus = (status) => {
-
-  return String(status || "")
-    .trim()
-    .toUpperCase()
-    .replace(/[\s-]+/g, "_");
-};
-
-/* =========================================================
-   COMPONENT
-   ========================================================= */
-
-export default function MaintenanceTicketList() {
-
-  const { user } = useSelector(
-    (state) => state.auth
-  );
-
-  /* =======================================================
-     ROLE
-     ======================================================= */
-
-  const role = String(user?.role || "")
-    .replace(/^ROLE_/i, "")
-    .trim()
-    .replace(/[\s-]+/g, "_")
-    .toUpperCase();
-
-  const isOperator =
-    role === "SOLAR_OPERATOR";
-
-  const canResolve =
-    role === "MAINTENANCE_TECHNICIAN" ||
-    role === "SYSTEM_ADMINISTRATOR";
-
-  /* =======================================================
-     STATE
-     ======================================================= */
-
-  const [tickets, setTickets] = useState([]);
-
-  const [showForm, setShowForm] =
-    useState(false);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [filter, setFilter] =
-    useState("ALL");
-
-  const [lastUpdated, setLastUpdated] =
-    useState(null);
-
-  const [newIds, setNewIds] =
-    useState(new Set());
-
-  const prevIdsRef =
-    useRef(new Set());
-
-  /* =======================================================
-     LOAD TICKETS
-     ======================================================= */
-
-  const loadTickets = useCallback(
-    async (silent = false) => {
-
-      try {
-
-        if (!silent) {
-          setLoading(true);
-        }
-
-        const response =
-          await api.get(
-            "/api/tickets"
-          );
-
-        const data =
-          Array.isArray(response?.data)
-            ? response.data
-            : [];
-
-        /* -----------------------------------------------
-           DETECT NEW TICKETS
-           ----------------------------------------------- */
-
-        const incomingIds =
-          new Set(
-            data
-              .map((ticket) => ticket?.id)
-              .filter(
-                (id) =>
-                  id !== undefined &&
-                  id !== null
-              )
-          );
-
-        const addedIds =
-          [...incomingIds].filter(
-            (id) =>
-              !prevIdsRef.current.has(id)
-          );
-
-        if (
-          addedIds.length > 0 &&
-          prevIdsRef.current.size > 0
-        ) {
-
-          setNewIds(
-            new Set(addedIds)
-          );
-
-          setTimeout(() => {
-            setNewIds(new Set());
-          }, 2500);
-
-        }
-
-        prevIdsRef.current =
-          incomingIds;
-
-        /* -----------------------------------------------
-           UPDATE TICKETS
-           ----------------------------------------------- */
-
-        setTickets(data);
-
-        /* -----------------------------------------------
-           UPDATE LAST UPDATED
-           ----------------------------------------------- */
-
-        setLastUpdated(
-          new Date()
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Failed to load tickets:",
-          error
-        );
-
-      } finally {
-
-        setLoading(false);
-
-      }
-
-    },
-    []
-  );
-
-  /* =======================================================
-     INITIAL LOAD + CONTINUOUS POLLING
-     ======================================================= */
-
-  useEffect(() => {
-
-    loadTickets();
-
-    const interval =
-      setInterval(() => {
-
-        loadTickets(true);
-
-      }, POLL_INTERVAL);
-
-    return () => {
-
-      clearInterval(
-        interval
-      );
-
-    };
-
-  }, [loadTickets]);
-
-  /* =======================================================
-     RESOLVE TICKET
-     ======================================================= */
-
-  const handleResolve = async (
-    ticketId
-  ) => {
-
-    try {
-
-      await api.patch(
-        `/api/tickets/${ticketId}/resolve`,
-        {}
-      );
-
-      /*
-       * Immediately reload the ticket list
-       * after resolving.
-       */
-
-      await loadTickets(true);
-
-    } catch (error) {
-
-      console.error(
-        "Failed to resolve ticket:",
+    const {
+        items,
+        loading,
         error
-      );
+    } = useSelector(
+        state => state.tickets
+    );
 
-    }
+    const user = useSelector(
+        state => state.auth.user
+    );
 
-  };
+    const [search, setSearch] =
+        useState("");
 
-  /* =======================================================
-     GET SITE NAME
-     ======================================================= */
 
-  const getSiteName = (ticket) => {
+    /* --------------------------------
+       Fetch tickets
+    -------------------------------- */
 
-    /*
-     * Backend structure:
-     *
-     * ticket.panel.site.name
-     */
+    useEffect(() => {
 
-    if (
-      ticket?.panel?.site?.name
-    ) {
+        dispatch(fetchTickets());
 
-      return ticket.panel.site.name;
+    }, [dispatch]);
 
-    }
 
-    /*
-     * Fallback in case backend
-     * sends siteName directly.
-     */
+    /* --------------------------------
+       Search
+    -------------------------------- */
 
-    if (ticket?.siteName) {
+    const filteredTickets = useMemo(() => {
 
-      return ticket.siteName;
+        const query =
+            search.toLowerCase();
 
-    }
+        return items.filter(ticket => {
 
-    return "N/A";
+            const siteName =
+                ticket.site?.siteName ||
+                ticket.siteName ||
+                "";
 
-  };
+            const panelNumber =
+                ticket.panel?.serialNumber ||
+                ticket.panel?.id ||
+                ticket.panelId ||
+                "";
 
-  /* =======================================================
-     GET PANEL ID
-     ======================================================= */
+            const description =
+                ticket.issueDescription ||
+                ticket.description ||
+                "";
 
-  const getPanelId = (ticket) => {
-
-    /*
-     * Backend structure:
-     *
-     * ticket.panel.id
-     */
-
-    if (
-      ticket?.panel?.id !== undefined &&
-      ticket?.panel?.id !== null
-    ) {
-
-      return ticket.panel.id;
-
-    }
-
-    /*
-     * Fallback if API sends panelId.
-     */
-
-    if (
-      ticket?.panelId !== undefined &&
-      ticket?.panelId !== null
-    ) {
-
-      return ticket.panelId;
-
-    }
-
-    return "N/A";
-
-  };
-
-  /* =======================================================
-     GET TECHNICIAN
-     ======================================================= */
-
-  const getTechnician = (ticket) => {
-
-    /*
-     * Backend structure:
-     *
-     * ticket.assignedTechnician.username
-     */
-
-    if (
-      ticket?.assignedTechnician?.username
-    ) {
-
-      return (
-        ticket.assignedTechnician.username
-      );
-
-    }
-
-    /*
-     * Fallback if API sends
-     * technician username directly.
-     */
-
-    if (
-      typeof ticket?.assignedTechnician ===
-      "string"
-    ) {
-
-      return ticket.assignedTechnician;
-
-    }
-
-    return "Not Assigned";
-
-  };
-
-  /* =======================================================
-     TICKET COUNTS
-     ======================================================= */
-
-  const counts = {
-
-    OPEN:
-      tickets.filter(
-        (ticket) =>
-          normalizeStatus(
-            ticket?.status
-          ) === "OPEN"
-      ).length,
-
-    IN_PROGRESS:
-      tickets.filter(
-        (ticket) =>
-          normalizeStatus(
-            ticket?.status
-          ) === "IN_PROGRESS"
-      ).length,
-
-    RESOLVED:
-      tickets.filter(
-        (ticket) => {
-
-          const status =
-            normalizeStatus(
-              ticket?.status
-            );
-
-          return (
-            status === "RESOLVED" ||
-            status === "CLOSED"
-          );
-
-        }
-      ).length,
-
-    ALL:
-      tickets.length,
-
-  };
-
-  /* =======================================================
-     FILTER TICKETS
-     ======================================================= */
-
-  const filtered =
-    filter === "ALL"
-      ? tickets
-      : tickets.filter(
-          (ticket) => {
+            const priority =
+                ticket.priority ||
+                "";
 
             const status =
-              normalizeStatus(
-                ticket?.status
-              );
+                ticket.status ||
+                "";
 
-            if (
-              filter === "RESOLVED"
-            ) {
+            return (
+                String(siteName)
+                    .toLowerCase()
+                    .includes(query) ||
 
-              return (
-                status === "RESOLVED" ||
-                status === "CLOSED"
-              );
+                String(panelNumber)
+                    .toLowerCase()
+                    .includes(query) ||
 
-            }
+                String(description)
+                    .toLowerCase()
+                    .includes(query) ||
 
-            return status === filter;
+                String(priority)
+                    .toLowerCase()
+                    .includes(query) ||
 
-          }
-        );
+                String(status)
+                    .toLowerCase()
+                    .includes(query)
+            );
+        });
 
-  /* =======================================================
-     RENDER
-     ======================================================= */
+    }, [items, search]);
 
-  return (
-    <div className="tickets-page">
 
-      {/* ===================================================
-          HEADER
-          =================================================== */}
+    /* --------------------------------
+       Resolve ticket
+    -------------------------------- */
 
-      <div className="sites-header">
+    const handleResolve = async (id) => {
 
-        <div className="sites-title-section">
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to resolve this ticket?"
+            );
 
-          <h1>
-            Maintenance Tickets
-          </h1>
+        if (!confirmed) {
+            return;
+        }
 
-          <p className="sites-subtitle">
-            Track and manage solar panel
-            maintenance issues.
-          </p>
+        dispatch(resolveTicket(id));
+    };
 
-        </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
+    /* --------------------------------
+       Status class
+    -------------------------------- */
 
-          {/* ---------------------------------------------
-              LIVE INDICATOR
-              --------------------------------------------- */}
+    const getStatusClass = (status) => {
 
-          {lastUpdated && (
+        const value =
+            String(status || "")
+                .toUpperCase();
 
-            <span className="tickets-live-badge">
+        if (value === "RESOLVED") {
+            return "ticket-status resolved";
+        }
 
-              <span
-                className="live-pulse-dot"
-                style={{
-                  width: 7,
-                  height: 7,
-                }}
-              />
+        if (
+            value === "IN_PROGRESS" ||
+            value === "IN PROGRESS"
+        ) {
+            return "ticket-status progress";
+        }
 
-              LIVE ·{" "}
-              {lastUpdated.toLocaleTimeString(
-                "en-GB",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                }
-              )}
+        return "ticket-status open";
+    };
 
-            </span>
 
-          )}
+    /* --------------------------------
+       Priority class
+    -------------------------------- */
 
-          {/* ---------------------------------------------
-              REPORT ISSUE
-              --------------------------------------------- */}
+    const getPriorityClass = (priority) => {
 
-          {isOperator && (
+        const value =
+            String(priority || "")
+                .toUpperCase();
 
-            <button
-              type="button"
-              className="add-site-button"
-              onClick={() =>
-                setShowForm(true)
-              }
-            >
-              + Report Issue
-            </button>
+        if (value === "CRITICAL") {
+            return "ticket-priority critical";
+        }
 
-          )}
+        if (value === "HIGH") {
+            return "ticket-priority high";
+        }
 
-        </div>
+        if (value === "MEDIUM") {
+            return "ticket-priority medium";
+        }
 
-      </div>
+        return "ticket-priority low";
+    };
 
-      {/* ===================================================
-          STATS ROW
-          =================================================== */}
 
-      <div className="ticket-stats-row">
+    return (
 
-        {/* OPEN */}
+        <div className="ticket-page">
 
-        <div
-          className={
-            `ticket-stat ticket-stat--open` +
-            (
-              filter === "OPEN"
-                ? " ticket-stat--active"
-                : ""
-            )
-          }
-          onClick={() =>
-            setFilter(
-              filter === "OPEN"
-                ? "ALL"
-                : "OPEN"
-            )
-          }
-          style={{
-            cursor: "pointer",
-          }}
-        >
+            {/* ==================================
+                HEADER
+            ================================== */}
 
-          <span>
-            {counts.OPEN}
-          </span>
+            <div className="ticket-page-header">
 
-          <label>
-            Open
-          </label>
+                <div>
 
-        </div>
+                    <h1>
+                        Maintenance Tickets
+                    </h1>
 
-        {/* IN PROGRESS */}
+                    <p>
+                        Track and manage maintenance
+                        issues across solar panels.
+                    </p>
 
-        <div
-          className={
-            `ticket-stat ticket-stat--progress` +
-            (
-              filter === "IN_PROGRESS"
-                ? " ticket-stat--active"
-                : ""
-            )
-          }
-          onClick={() =>
-            setFilter(
-              filter === "IN_PROGRESS"
-                ? "ALL"
-                : "IN_PROGRESS"
-            )
-          }
-          style={{
-            cursor: "pointer",
-          }}
-        >
+                </div>
 
-          <span>
-            {counts.IN_PROGRESS}
-          </span>
+            </div>
 
-          <label>
-            In Progress
-          </label>
 
-        </div>
+            {/* ==================================
+                SEARCH
+            ================================== */}
 
-        {/* RESOLVED */}
+            <div className="ticket-search">
 
-        <div
-          className={
-            `ticket-stat ticket-stat--resolved` +
-            (
-              filter === "RESOLVED"
-                ? " ticket-stat--active"
-                : ""
-            )
-          }
-          onClick={() =>
-            setFilter(
-              filter === "RESOLVED"
-                ? "ALL"
-                : "RESOLVED"
-            )
-          }
-          style={{
-            cursor: "pointer",
-          }}
-        >
+                <input
+                    type="text"
+                    placeholder="Search maintenance tickets..."
+                    value={search}
+                    onChange={(e) =>
+                        setSearch(e.target.value)
+                    }
+                />
 
-          <span>
-            {counts.RESOLVED}
-          </span>
+            </div>
 
-          <label>
-            Resolved
-          </label>
 
-        </div>
+            {/* ==================================
+                ERROR
+            ================================== */}
 
-        {/* ALL */}
+            {error && (
 
-        <div
-          className={
-            `ticket-stat ticket-stat--total` +
-            (
-              filter === "ALL"
-                ? " ticket-stat--active"
-                : ""
-            )
-          }
-          onClick={() =>
-            setFilter("ALL")
-          }
-          style={{
-            cursor: "pointer",
-          }}
-        >
+                <div className="ticket-error">
+                    {error}
+                </div>
 
-          <span>
-            {counts.ALL}
-          </span>
-
-          <label>
-            All Tickets
-          </label>
-
-        </div>
-
-      </div>
-
-      {/* ===================================================
-          FILTER LABEL
-          =================================================== */}
-
-      {filter !== "ALL" && (
-
-        <div className="tickets-filter-bar">
-
-          Showing:{" "}
-
-          <strong>
-            {filter.replace(
-              "_",
-              " "
             )}
-          </strong>{" "}
 
-          tickets
 
-          <button
-            type="button"
-            className="tickets-filter-clear"
-            onClick={() =>
-              setFilter("ALL")
-            }
-          >
-            ✕ Clear filter
-          </button>
+            {/* ==================================
+                LOADING
+            ================================== */}
+
+            {loading ? (
+
+                <div className="ticket-loading">
+                    Loading tickets...
+                </div>
+
+            ) : filteredTickets.length === 0 ? (
+
+                <div className="ticket-empty">
+
+                    <h3>
+                        No Maintenance Tickets
+                    </h3>
+
+                    <p>
+                        There are currently no
+                        maintenance tickets to display.
+                    </p>
+
+                </div>
+
+            ) : (
+
+                /* ==================================
+                   TABLE
+                ================================== */
+
+                <div className="ticket-table-wrapper">
+
+                    <table className="ticket-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    SITE
+                                </th>
+
+                                <th>
+                                    PANEL ID
+                                </th>
+
+                                <th>
+                                    DESCRIPTION
+                                </th>
+
+                                <th>
+                                    PRIORITY
+                                </th>
+
+                                <th>
+                                    STATUS
+                                </th>
+
+                                <th>
+                                    TECHNICIAN
+                                </th>
+
+                                {user?.role ===
+                                    "MAINTENANCE_TECHNICIAN" && (
+                                    <th>
+                                        ACTION
+                                    </th>
+                                )}
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {filteredTickets.map(
+                                (ticket) => {
+
+                                    const siteName =
+                                        ticket.site?.siteName ||
+                                        ticket.siteName ||
+                                        "—";
+
+                                    const panel =
+                                        ticket.panel?.serialNumber ||
+                                        ticket.panel?.id ||
+                                        ticket.panelId ||
+                                        "—";
+
+                                    const description =
+                                        ticket.issueDescription ||
+                                        ticket.description ||
+                                        "—";
+
+                                    const technician =
+                                        ticket.technician?.username ||
+                                        ticket.technician?.name ||
+                                        ticket.technician ||
+                                        "—";
+
+                                    return (
+
+                                        <tr
+                                            key={ticket.id}
+                                        >
+
+                                            <td>
+                                                <strong>
+                                                    {siteName}
+                                                </strong>
+                                            </td>
+
+                                            <td>
+                                                {panel}
+                                            </td>
+
+                                            <td className="description-cell">
+                                                {description}
+                                            </td>
+
+                                            <td>
+
+                                                <span
+                                                    className={
+                                                        getPriorityClass(
+                                                            ticket.priority
+                                                        )
+                                                    }
+                                                >
+                                                    {ticket.priority ||
+                                                        "LOW"}
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span
+                                                    className={
+                                                        getStatusClass(
+                                                            ticket.status
+                                                        )
+                                                    }
+                                                >
+                                                    {ticket.status ||
+                                                        "OPEN"}
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+                                                {technician}
+                                            </td>
+
+
+                                            {user?.role ===
+                                                "MAINTENANCE_TECHNICIAN" && (
+
+                                                <td>
+
+                                                    {ticket.status !==
+                                                        "RESOLVED" && (
+
+                                                        <button
+                                                            className="resolve-ticket-btn"
+                                                            onClick={() =>
+                                                                handleResolve(
+                                                                    ticket.id
+                                                                )
+                                                            }
+                                                        >
+                                                            Resolve
+                                                        </button>
+
+                                                    )}
+
+                                                </td>
+
+                                            )}
+
+                                        </tr>
+
+                                    );
+
+                                }
+                            )}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            )}
 
         </div>
-
-      )}
-
-      {/* ===================================================
-          TABLE
-          =================================================== */}
-
-      {loading ? (
-
-        <div className="no-sites">
-          Loading maintenance tickets…
-        </div>
-
-      ) : filtered.length === 0 ? (
-
-        <div className="no-sites">
-
-          {filter === "ALL"
-            ? "No maintenance tickets found."
-            : `No ${filter
-                .replace(
-                  "_",
-                  " "
-                )
-                .toLowerCase()} tickets.`}
-
-        </div>
-
-      ) : (
-
-        <div className="sites-table-container">
-
-          <table className="sites-table">
-
-            <thead>
-
-              <tr>
-
-                <th>#</th>
-
-                <th>
-                  Site
-                </th>
-
-                <th>
-                  Panel
-                </th>
-
-                <th>
-                  Description
-                </th>
-
-                <th>
-                  Priority
-                </th>
-
-                <th>
-                  Status
-                </th>
-
-                <th>
-                  Technician
-                </th>
-
-                <th>
-                  Created
-                </th>
-
-                <th>
-                  Resolved
-                </th>
-
-                <th>
-                  Action
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {filtered.map(
-                (ticket) => {
-
-                  const status =
-                    normalizeStatus(
-                      ticket?.status
-                    );
-
-                  const isResolved =
-                    status ===
-                      "RESOLVED" ||
-                    status ===
-                      "CLOSED";
-
-                  const isNew =
-                    newIds.has(
-                      ticket?.id
-                    );
-
-                  const statusClass =
-                    `status-${String(
-                      ticket?.status ||
-                        ""
-                    ).toLowerCase()}`;
-
-                  return (
-
-                    <tr
-                      key={
-                        ticket?.id
-                      }
-                      className={
-                        isNew
-                          ? "ticket-row--new"
-                          : ""
-                      }
-                    >
-
-                      {/* ID */}
-
-                      <td>
-                        {ticket?.id}
-                      </td>
-
-                      {/* SITE */}
-
-                      <td>
-
-                        <strong>
-                          {getSiteName(
-                            ticket
-                          )}
-                        </strong>
-
-                      </td>
-
-                      {/* PANEL */}
-
-                      <td>
-                        #
-                        {getPanelId(
-                          ticket
-                        )}
-                      </td>
-
-                      {/* DESCRIPTION */}
-
-                      <td className="ticket-desc-cell">
-
-                        {ticket?.issueDescription ||
-                          "N/A"}
-
-                      </td>
-
-                      {/* PRIORITY */}
-
-                      <td>
-
-                        <span
-                          className={
-                            `ticket-priority priority-` +
-                            String(
-                              ticket?.priority ||
-                                ""
-                            ).toLowerCase()
-                          }
-                        >
-
-                          {ticket?.priority ||
-                            "N/A"}
-
-                        </span>
-
-                      </td>
-
-                      {/* STATUS */}
-
-                      <td>
-
-                        <span
-                          className={
-                            `ticket-status ${statusClass}`
-                          }
-                        >
-
-                          {isResolved
-                            ? "Resolved"
-                            : (
-                                ticket?.status ||
-                                "N/A"
-                              ).replace(
-                                "_",
-                                " "
-                              )}
-
-                        </span>
-
-                      </td>
-
-                      {/* TECHNICIAN */}
-
-                      <td>
-                        {getTechnician(
-                          ticket
-                        )}
-                      </td>
-
-                      {/* CREATED */}
-
-                      <td className="ticket-date-cell">
-
-                        {fmt(
-                          ticket?.createdAt
-                        )}
-
-                      </td>
-
-                      {/* RESOLVED */}
-
-                      <td className="ticket-date-cell">
-
-                        {fmt(
-                          ticket?.resolvedAt
-                        )}
-
-                      </td>
-
-                      {/* ACTION */}
-
-                      <td>
-
-                        {canResolve &&
-                          !isResolved && (
-
-                            <button
-                              type="button"
-                              className="ticket-action-button"
-                              onClick={() =>
-                                handleResolve(
-                                  ticket.id
-                                )
-                              }
-                            >
-                              Resolve
-                            </button>
-
-                          )}
-
-                      </td>
-
-                    </tr>
-
-                  );
-
-                }
-              )}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      )}
-
-      {/* ===================================================
-          REPORT ISSUE FORM
-          =================================================== */}
-
-      {showForm && (
-
-        <MaintenanceTicketForm
-          onClose={() => {
-
-            setShowForm(false);
-
-            loadTickets(true);
-
-          }}
-        />
-
-      )}
-
-    </div>
-  );
+    );
 }
+
+
+export default MaintenanceTicketList;
