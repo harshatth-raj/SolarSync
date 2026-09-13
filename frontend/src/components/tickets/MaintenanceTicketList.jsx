@@ -29,14 +29,47 @@ function MaintenanceTicketList() {
         useState("");
 
 
+    /* =========================================
+       REDUX STATE
+    ========================================= */
+
     const {
-        items,
+        items = [],
         loading,
         error
     } = useSelector(
         state => state.tickets
     );
 
+
+    const user = useSelector(
+        state => state.auth.user
+    );
+
+
+    /* =========================================
+       ROLE PERMISSIONS
+    ========================================= */
+
+    const role = String(
+        user?.role || ""
+    ).toUpperCase();
+
+
+    const canReportIssue =
+        role === "SYSTEM_ADMINISTRATOR" ||
+        role === "SOLAR_OPERATOR" ||
+        role === "MAINTENANCE_TECHNICIAN";
+
+
+    const canResolve =
+        role === "SYSTEM_ADMINISTRATOR" ||
+        role === "MAINTENANCE_TECHNICIAN";
+
+
+    /* =========================================
+       LOAD TICKETS
+    ========================================= */
 
     useEffect(() => {
 
@@ -45,79 +78,95 @@ function MaintenanceTicketList() {
     }, [dispatch]);
 
 
-    /* =====================================
-       SEARCH
-    ===================================== */
+    /* =========================================
+       FILTER TICKETS
+    ========================================= */
 
-    const filteredTickets =
-        useMemo(() => {
+    const filteredTickets = useMemo(() => {
 
-            const query =
-                search
+        const query =
+            search
+                .toLowerCase()
+                .trim();
+
+
+        if (!query) {
+            return items;
+        }
+
+
+        return items.filter(ticket => {
+
+            const siteName =
+                ticket.siteName || "";
+
+
+            const panelId =
+                ticket.panelId || "";
+
+
+            const description =
+                ticket.issueDescription || "";
+
+
+            const priority =
+                ticket.priority || "";
+
+
+            const status =
+                ticket.status || "";
+
+
+            const technician =
+                ticket.technicianName || "";
+
+
+            return (
+                String(siteName)
                     .toLowerCase()
-                    .trim();
+                    .includes(query)
+
+                ||
+
+                String(panelId)
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                String(description)
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                String(priority)
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                String(status)
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                String(technician)
+                    .toLowerCase()
+                    .includes(query)
+            );
+
+        });
+
+    }, [items, search]);
 
 
-            if (!query) {
-                return items;
-            }
+    /* =========================================
+       RESOLVE TICKET
+    ========================================= */
 
-
-            return items.filter(ticket => {
-
-                return (
-
-                    String(
-                        ticket.siteName || ""
-                    )
-                        .toLowerCase()
-                        .includes(query)
-
-                    ||
-
-                    String(
-                        ticket.panelId || ""
-                    )
-                        .toLowerCase()
-                        .includes(query)
-
-                    ||
-
-                    String(
-                        ticket.issueDescription ||
-                        ""
-                    )
-                        .toLowerCase()
-                        .includes(query)
-
-                    ||
-
-                    String(
-                        ticket.priority || ""
-                    )
-                        .toLowerCase()
-                        .includes(query)
-
-                    ||
-
-                    String(
-                        ticket.status || ""
-                    )
-                        .toLowerCase()
-                        .includes(query)
-
-                );
-
-            });
-
-        }, [items, search]);
-
-
-    /* =====================================
-       RESOLVE
-    ===================================== */
-
-    const handleResolve = async (id) => {
+    const handleResolve = async (ticketId) => {
 
         const confirmed =
             window.confirm(
@@ -130,76 +179,109 @@ function MaintenanceTicketList() {
         }
 
 
-        await dispatch(
-            resolveTicket(id)
-        );
+        const result =
+            await dispatch(
+                resolveTicket(ticketId)
+            );
+
+
+        if (
+            resolveTicket.fulfilled.match(result)
+        ) {
+
+            dispatch(fetchTickets());
+
+        }
 
     };
 
 
-    /* =====================================
+    /* =========================================
        PRIORITY CLASS
-    ===================================== */
+    ========================================= */
 
-    const getPriorityClass =
-        (priority) => {
+    const getPriorityClass = (priority) => {
 
-            switch (
-                String(priority)
-                    .toUpperCase()
-            ) {
+        switch (
+            String(priority || "")
+                .toUpperCase()
+        ) {
 
-                case "CRITICAL":
-                    return "critical";
+            case "CRITICAL":
+                return "critical";
 
-                case "HIGH":
-                    return "high";
+            case "HIGH":
+                return "high";
 
-                case "MEDIUM":
-                    return "medium";
+            case "MEDIUM":
+                return "medium";
 
-                default:
-                    return "low";
-            }
+            case "LOW":
+            default:
+                return "low";
+        }
 
-        };
+    };
 
 
-    /* =====================================
+    /* =========================================
        STATUS CLASS
-    ===================================== */
+    ========================================= */
 
-    const getStatusClass =
-        (status) => {
+    const getStatusClass = (status) => {
 
-            const value =
-                String(status || "")
-                    .toUpperCase();
-
-
-            if (value === "CLOSED") {
-                return "resolved";
-            }
+        const value =
+            String(status || "")
+                .toUpperCase();
 
 
-            if (
-                value === "IN_PROGRESS"
-            ) {
-                return "progress";
-            }
+        if (value === "CLOSED") {
+            return "resolved";
+        }
 
 
-            return "open";
-        };
+        if (value === "IN_PROGRESS") {
+            return "progress";
+        }
+
+
+        return "open";
+    };
+
+
+    /* =========================================
+       FORMAT STATUS
+    ========================================= */
+
+    const formatStatus = (status) => {
+
+        const value =
+            String(status || "OPEN")
+                .toUpperCase();
+
+
+        if (value === "IN_PROGRESS") {
+            return "IN PROGRESS";
+        }
+
+
+        if (value === "CLOSED") {
+            return "CLOSED";
+        }
+
+
+        return value;
+    };
 
 
     return (
 
         <div className="ticket-page">
 
-            {/* =================================
-                HEADER
-            ================================= */}
+
+            {/* =====================================
+                PAGE HEADER
+            ===================================== */}
 
             <div className="ticket-page-header">
 
@@ -217,21 +299,26 @@ function MaintenanceTicketList() {
                 </div>
 
 
-                <button
-                    className="btn-primary"
-                    onClick={() =>
-                        setShowForm(true)
-                    }
-                >
-                    + Report Issue
-                </button>
+                {canReportIssue && (
+
+                    <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() =>
+                            setShowForm(true)
+                        }
+                    >
+                        + Report Issue
+                    </button>
+
+                )}
 
             </div>
 
 
-            {/* =================================
+            {/* =====================================
                 SEARCH
-            ================================= */}
+            ===================================== */}
 
             <div className="ticket-search">
 
@@ -249,9 +336,9 @@ function MaintenanceTicketList() {
             </div>
 
 
-            {/* =================================
+            {/* =====================================
                 ERROR
-            ================================= */}
+            ===================================== */}
 
             {error && (
 
@@ -262,9 +349,9 @@ function MaintenanceTicketList() {
             )}
 
 
-            {/* =================================
+            {/* =====================================
                 LOADING
-            ================================= */}
+            ===================================== */}
 
             {loading ? (
 
@@ -281,13 +368,18 @@ function MaintenanceTicketList() {
                     </h3>
 
                     <p>
-                        Click "Report Issue" to
-                        create your first ticket.
+                        {canReportIssue
+                            ? 'Click "Report Issue" to create a ticket.'
+                            : "There are currently no maintenance tickets."}
                     </p>
 
                 </div>
 
             ) : (
+
+                /* =================================
+                   TICKET TABLE
+                ================================= */
 
                 <div className="ticket-table-wrapper">
 
@@ -321,9 +413,13 @@ function MaintenanceTicketList() {
                                     TECHNICIAN
                                 </th>
 
-                                <th>
-                                    ACTION
-                                </th>
+                                {canResolve && (
+
+                                    <th>
+                                        ACTION
+                                    </th>
+
+                                )}
 
                             </tr>
 
@@ -339,17 +435,23 @@ function MaintenanceTicketList() {
                                         key={ticket.id}
                                     >
 
+                                        {/* SITE */}
+
                                         <td>
                                             {ticket.siteName ||
                                                 "—"}
                                         </td>
 
 
+                                        {/* PANEL */}
+
                                         <td>
                                             {ticket.panelId ||
                                                 "—"}
                                         </td>
 
+
+                                        {/* DESCRIPTION */}
 
                                         <td
                                             className="description-cell"
@@ -360,6 +462,8 @@ function MaintenanceTicketList() {
                                             }
                                         </td>
 
+
+                                        {/* PRIORITY */}
 
                                         <td>
 
@@ -379,6 +483,8 @@ function MaintenanceTicketList() {
                                         </td>
 
 
+                                        {/* STATUS */}
+
                                         <td>
 
                                             <span
@@ -389,44 +495,53 @@ function MaintenanceTicketList() {
                                                 }
                                             >
                                                 {
-                                                    ticket.status ||
-                                                    "OPEN"
+                                                    formatStatus(
+                                                        ticket.status
+                                                    )
                                                 }
                                             </span>
 
                                         </td>
 
 
+                                        {/* TECHNICIAN */}
+
                                         <td>
                                             {
                                                 ticket.technicianName ||
-                                                ticket.techName ||
                                                 "—"
                                             }
                                         </td>
 
 
-                                        <td>
+                                        {/* ACTION */}
 
-                                            {String(
-                                                ticket.status
-                                            ).toUpperCase()
+                                        {canResolve && (
+
+                                            <td>
+
+                                                {String(
+                                                    ticket.status || ""
+                                                ).toUpperCase()
                                                 !== "CLOSED" && (
 
-                                                <button
-                                                    className="resolve-ticket-btn"
-                                                    onClick={() =>
-                                                        handleResolve(
-                                                            ticket.id
-                                                        )
-                                                    }
-                                                >
-                                                    Resolve
-                                                </button>
+                                                    <button
+                                                        type="button"
+                                                        className="resolve-ticket-btn"
+                                                        onClick={() =>
+                                                            handleResolve(
+                                                                ticket.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Resolve
+                                                    </button>
 
-                                            )}
+                                                )}
 
-                                        </td>
+                                            </td>
+
+                                        )}
 
                                     </tr>
 
@@ -442,9 +557,9 @@ function MaintenanceTicketList() {
             )}
 
 
-            {/* =================================
+            {/* =====================================
                 REPORT ISSUE MODAL
-            ================================= */}
+            ===================================== */}
 
             {showForm && (
 
@@ -453,15 +568,23 @@ function MaintenanceTicketList() {
                     <div className="modal-card ticket-modal">
 
                         <MaintenanceTicketForm
+
                             onClose={() => {
 
                                 setShowForm(false);
+
+                                /*
+                                 * Reload tickets after
+                                 * closing the form so a newly
+                                 * created ticket appears.
+                                 */
 
                                 dispatch(
                                     fetchTickets()
                                 );
 
                             }}
+
                         />
 
                     </div>

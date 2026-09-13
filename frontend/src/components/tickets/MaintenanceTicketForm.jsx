@@ -3,10 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
-    createTicket
-} from "../../store/slices/ticketSlice";
-
-import {
     fetchSites
 } from "../../store/slices/siteSlice";
 
@@ -14,12 +10,30 @@ import {
     fetchPanelsBySite
 } from "../../store/slices/panelSlice";
 
+import {
+    createTicket
+} from "../../store/slices/ticketSlice";
+
 
 function MaintenanceTicketForm({ onClose }) {
 
     const dispatch = useDispatch();
 
+    const sites = useSelector(
+        state => state.sites.items
+    );
+
+    const panels = useSelector(
+        state => state.panels.items
+    );
+
+    const ticketError = useSelector(
+        state => state.tickets.error
+    );
+
+
     const [siteId, setSiteId] = useState("");
+
     const [panelId, setPanelId] = useState("");
 
     const [priority, setPriority] =
@@ -31,22 +45,13 @@ function MaintenanceTicketForm({ onClose }) {
     const [loadingPanels, setLoadingPanels] =
         useState(false);
 
-    const sites = useSelector(
-        state => state.sites.items
-    );
-
-    const panels = useSelector(
-        state => state.panels.items
-    );
-
-    const error = useSelector(
-        state => state.tickets.error
-    );
+    const [submitting, setSubmitting] =
+        useState(false);
 
 
-    /* =====================================
+    /* =========================================
        LOAD SITES
-    ===================================== */
+    ========================================= */
 
     useEffect(() => {
 
@@ -55,9 +60,9 @@ function MaintenanceTicketForm({ onClose }) {
     }, [dispatch]);
 
 
-    /* =====================================
-       LOAD PANELS FOR SELECTED SITE
-    ===================================== */
+    /* =========================================
+       LOAD PANELS WHEN SITE CHANGES
+    ========================================= */
 
     useEffect(() => {
 
@@ -68,9 +73,11 @@ function MaintenanceTicketForm({ onClose }) {
             return;
         }
 
+
         setPanelId("");
 
         setLoadingPanels(true);
+
 
         dispatch(
             fetchPanelsBySite(
@@ -85,9 +92,9 @@ function MaintenanceTicketForm({ onClose }) {
     }, [dispatch, siteId]);
 
 
-    /* =====================================
-       SUBMIT
-    ===================================== */
+    /* =========================================
+       SUBMIT TICKET
+    ========================================= */
 
     const handleSubmit = async (e) => {
 
@@ -117,44 +124,57 @@ function MaintenanceTicketForm({ onClose }) {
         if (!issueDescription.trim()) {
 
             alert(
-                "Please enter the issue description."
+                "Please enter an issue description."
             );
 
             return;
         }
 
 
-        const ticketData = {
+        setSubmitting(true);
+
+
+        try {
 
             /*
-             * siteId is kept here because
-             * it is part of your TicketRequestDto.
+             * This matches TicketRequestDto:
              *
-             * The backend ultimately uses panelId
-             * to determine the site.
+             * siteId
+             * panelId
+             * issueDescription
+             * priority
              */
 
-            siteId: Number(siteId),
+            const ticketData = {
 
-            panelId: Number(panelId),
+                siteId: Number(siteId),
 
-            issueDescription:
-                issueDescription.trim(),
+                panelId: Number(panelId),
 
-            priority: priority
-        };
+                issueDescription:
+                    issueDescription.trim(),
 
-
-        const result = await dispatch(
-            createTicket(ticketData)
-        );
+                priority: priority
+            };
 
 
-        if (
-            createTicket.fulfilled.match(result)
-        ) {
+            const result = await dispatch(
+                createTicket(ticketData)
+            );
 
-            onClose();
+
+            if (
+                createTicket.fulfilled.match(result)
+            ) {
+
+                onClose();
+
+            }
+
+
+        } finally {
+
+            setSubmitting(false);
 
         }
 
@@ -164,8 +184,6 @@ function MaintenanceTicketForm({ onClose }) {
     return (
 
         <div className="ticket-form">
-
-            {/* HEADER */}
 
             <div className="ticket-form-header">
 
@@ -196,7 +214,9 @@ function MaintenanceTicketForm({ onClose }) {
 
             <form onSubmit={handleSubmit}>
 
-                {/* SITE */}
+                {/* ==============================
+                    SOLAR SITE
+                ============================== */}
 
                 <div className="form-group">
 
@@ -218,6 +238,7 @@ function MaintenanceTicketForm({ onClose }) {
                             Select Solar Site
                         </option>
 
+
                         {sites.map(site => (
 
                             <option
@@ -234,7 +255,9 @@ function MaintenanceTicketForm({ onClose }) {
                 </div>
 
 
-                {/* PANEL */}
+                {/* ==============================
+                    SOLAR PANEL
+                ============================== */}
 
                 <div className="form-group">
 
@@ -259,7 +282,7 @@ function MaintenanceTicketForm({ onClose }) {
                         <option value="">
 
                             {!siteId
-                                ? "Select a site first"
+                                ? "Select Solar Site first"
                                 : loadingPanels
                                     ? "Loading panels..."
                                     : panels.length === 0
@@ -289,7 +312,9 @@ function MaintenanceTicketForm({ onClose }) {
                 </div>
 
 
-                {/* PRIORITY */}
+                {/* ==============================
+                    PRIORITY
+                ============================== */}
 
                 <div className="form-group">
 
@@ -327,7 +352,9 @@ function MaintenanceTicketForm({ onClose }) {
                 </div>
 
 
-                {/* DESCRIPTION */}
+                {/* ==============================
+                    DESCRIPTION
+                ============================== */}
 
                 <div className="form-group">
 
@@ -350,18 +377,22 @@ function MaintenanceTicketForm({ onClose }) {
                 </div>
 
 
-                {/* ERROR */}
+                {/* ==============================
+                    ERROR
+                ============================== */}
 
-                {error && (
+                {ticketError && (
 
                     <div className="ticket-form-error">
-                        {error}
+                        {ticketError}
                     </div>
 
                 )}
 
 
-                {/* BUTTONS */}
+                {/* ==============================
+                    BUTTONS
+                ============================== */}
 
                 <div className="ticket-form-actions">
 
@@ -369,6 +400,7 @@ function MaintenanceTicketForm({ onClose }) {
                         type="button"
                         className="ticket-cancel-button"
                         onClick={onClose}
+                        disabled={submitting}
                     >
                         Cancel
                     </button>
@@ -377,8 +409,11 @@ function MaintenanceTicketForm({ onClose }) {
                     <button
                         type="submit"
                         className="ticket-submit-button"
+                        disabled={submitting}
                     >
-                        Submit Ticket
+                        {submitting
+                            ? "Submitting..."
+                            : "Submit Ticket"}
                     </button>
 
                 </div>
@@ -388,5 +423,6 @@ function MaintenanceTicketForm({ onClose }) {
         </div>
     );
 }
+
 
 export default MaintenanceTicketForm;
