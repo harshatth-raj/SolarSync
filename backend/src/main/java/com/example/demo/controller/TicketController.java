@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.dto.TicketRequestDto;
 import com.example.demo.dto.TicketResponseDto;
-import com.example.demo.entity.MaintenanceTicket;
 import com.example.demo.service.TicketService;
 
 @RestController
@@ -33,15 +32,12 @@ public class TicketController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_SOLAR_OPERATOR', 'ROLE_MAINTENANCE_TECHNICIAN', 'ROLE_SYSTEM_ADMINISTRATOR')")
-    public ResponseEntity<MaintenanceTicket> createTicket(
+    public ResponseEntity<TicketResponseDto> createTicket(
             @RequestBody TicketRequestDto dto) {
-
-        MaintenanceTicket ticket =
-                service.createTicket(dto);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ticket);
+                .body(service.createTicket(dto));
     }
 
     @PutMapping("/{ticketId}/assign")

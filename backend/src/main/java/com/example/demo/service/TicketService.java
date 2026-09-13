@@ -79,47 +79,36 @@ public class TicketService {
     // CREATE TICKET
     // --------------------------------------------------
 
-    public MaintenanceTicket createTicket(
-            TicketRequestDto dto) {
+    public TicketResponseDto createTicket(TicketRequestDto dto) {
 
         SolarPanel panel =
                 panelRepository.findById(dto.getPanelId())
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Panel not found"));
+                        .orElseThrow(() -> new RuntimeException("Panel not found"));
 
-        MaintenanceTicket ticket =
-                new MaintenanceTicket();
-
+        MaintenanceTicket ticket = new MaintenanceTicket();
         ticket.setPanel(panel);
+        ticket.setIssueDescription(dto.getIssueDescription());
+        ticket.setPriority(dto.getPriority());
+        ticket.setStatus(com.example.demo.enums.TicketStatus.OPEN);
+        ticket.setCreatedAt(LocalDateTime.now());
 
-        ticket.setIssueDescription(
-                dto.getIssueDescription());
-
-        ticket.setPriority(
-                dto.getPriority());
-
-        ticket.setStatus(
-                com.example.demo.enums.TicketStatus.OPEN);
-
-        ticket.setCreatedAt(
-                LocalDateTime.now());
-
-        // Assign technician if provided
         if (dto.getTechnicianId() != null) {
-
-            SystemUser technician =
-                    userRepository.findById(
-                            dto.getTechnicianId())
-                            .orElseThrow(() ->
-                                    new RuntimeException(
-                                            "Technician not found"));
-
-            ticket.setAssignedTechnician(
-                    technician);
+            SystemUser technician = userRepository.findById(dto.getTechnicianId())
+                    .orElseThrow(() -> new RuntimeException("Technician not found"));
+            ticket.setAssignedTechnician(technician);
         }
 
-        return ticketRepository.save(ticket);
+        ticketRepository.save(ticket);
+
+        String siteName = (panel.getSite() != null) ? panel.getSite().getSiteName() : null;
+        String techName = (ticket.getAssignedTechnician() != null)
+                ? ticket.getAssignedTechnician().getUsername() : null;
+
+        return new TicketResponseDto(
+                ticket.getId(), panel.getId(), siteName,
+                ticket.getIssueDescription(), ticket.getPriority(),
+                ticket.getStatus(), ticket.getCreatedAt(),
+                ticket.getResolvedAt(), techName);
     }
 
     // --------------------------------------------------

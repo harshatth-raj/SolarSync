@@ -118,7 +118,7 @@ function MaintenanceTicketList() {
 
 
             const technician =
-                ticket.technicianName || "";
+                ticket.assignedTechnician || "";
 
 
             return (
@@ -508,7 +508,7 @@ function MaintenanceTicketList() {
 
                                         <td>
                                             {
-                                                ticket.technicianName ||
+                                                ticket.assignedTechnician ||
                                                 "—"
                                             }
                                         </td>
